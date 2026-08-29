@@ -273,57 +273,117 @@
     </div>
 
     <script>
-        lucide.createIcons();
+    lucide.createIcons();
 
-        // Satıcı Modal İdarəsi
-        function openVendorModal() { document.getElementById('vendorModal').classList.remove('hidden'); }
-        function closeVendorModal() { document.getElementById('vendorModal').classList.add('hidden'); }
+    // Satıcı Modal İdarəsi
+    function openVendorModal() { document.getElementById('vendorModal').classList.remove('hidden'); }
+    function closeVendorModal() { document.getElementById('vendorModal').classList.add('hidden'); }
 
-        // Daxil Ol Modal İdarəsi
-        function openLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); }
-        function closeLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
+    // Daxil Ol Modal İdarəsi
+    function openLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); }
+    function closeLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
 
-        // Satıcı Müraciətinin Göndərilməsi (Admin Panelə ötürülür)
-        function handleVendorSubmit(event) {
-            event.preventDefault();
+    // Satıcı Müraciətinin Göndərilməsi (Admin Panelə ötürülür)
+    function handleVendorSubmit(event) {
+        event.preventDefault();
 
-            const requestData = {
-                id: Date.now(),
-                person: document.getElementById('v-person').value,
-                store: document.getElementById('v-store').value,
-                location: `${document.getElementById('v-city').value} - ${document.getElementById('v-district').value}`,
-                phone: document.getElementById('v-phone').value
-            };
+        const requestData = {
+            id: Date.now(),
+            person: document.getElementById('v-person').value,
+            store: document.getElementById('v-store').value,
+            location: `${document.getElementById('v-city').value} - ${document.getElementById('v-district').value}`,
+            phone: document.getElementById('v-phone').value
+        };
 
-            // Əvvəlki müraciətləri alıb yenisini əlavə edirik
-            let existingRequests = JSON.parse(localStorage.getItem('pendingRequests')) || [];
-            existingRequests.push(requestData);
-            localStorage.setItem('pendingRequests', JSON.stringify(existingRequests));
+        // Əvvəlki müraciətləri alıb yenisini əlavə edirik
+        let existingRequests = JSON.parse(localStorage.getItem('pendingRequests')) || [];
+        existingRequests.push(requestData);
+        localStorage.setItem('pendingRequests', JSON.stringify(existingRequests));
 
-            alert("Müraciətiniz qəbul olundu! Super Admin paneline yönləndirildi.");
-            closeVendorModal();
+        alert("Müraciətiniz qəbul olundu! Super Admin paneline yönləndirildi.");
+        closeVendorModal();
+    }
+
+    // Giriş Məntiqi (Rollar üzrə yönləndirmə)
+    function handleLoginSubmit(event) {
+        event.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const pass = document.getElementById('login-pass').value;
+
+        // 1. Super Admin Girişi
+        if (email === "admin@autoparts.az") {
+            window.location.href = "admin-dashboard.html";
+        } 
+        // 2. Satıcı (Vendor) Girişi - Admin tərəfindən təyin edilən şifrə ilə
+        else if (email === "vendor@autoparts.az" && pass === "Auto123456") {
+            window.location.href = "vendor-dashboard.html";
+        } 
+        // 3. Digər / Alıcı Girişi
+        else {
+            alert("Alıcı kimi daxil oldunuz!");
+            closeLoginModal();
+        }
+    }
+
+    /* =======================================================
+       DİNAMİK MARKA VƏ MODEL YÜKLƏMƏ MƏNTİQİ (API Əlaqəsi)
+       ======================================================= */
+    const API_URL = "http://localhost:5000/api";
+
+    // 1. Səhifə yüklənəndə bazadakı unikal markaları gətirir
+    async function loadBrands() {
+        try {
+            const res = await fetch(`${API_URL}/filters/brands`);
+            if (!res.ok) return;
+            const brands = await res.json();
+            
+            const brandSelect = document.getElementById("brandSelect");
+            if (!brandSelect) return;
+
+            brandSelect.innerHTML = '<option value="">Bütün Markalar</option>';
+            brands.forEach(brand => {
+                brandSelect.innerHTML += `<option value="${brand}">${brand}</option>`;
+            });
+        } catch (err) {
+            console.error("Markalar yüklənmədi:", err);
+        }
+    }
+
+    // 2. Marka seçildikdə ona uyğun unikal modelləri gətirir
+    async function loadModels(selectedBrand) {
+        const modelSelect = document.getElementById("modelSelect");
+        if (!modelSelect) return;
+
+        if (!selectedBrand) {
+            modelSelect.innerHTML = '<option value="">Bütün Modellər</option>';
+            return;
         }
 
-        // Giriş Məntiqi (Rollar üzrə yönləndirmə)
-        function handleLoginSubmit(event) {
-            event.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-pass').value;
-
-            // 1. Super Admin Girişi
-            if (email === "admin@autoparts.az") {
-                window.location.href = "admin-dashboard.html";
-            } 
-            // 2. Satıcı (Vendor) Girişi - Admin tərəfindən təyin edilən şifrə ilə
-            else if (email === "vendor@autoparts.az" && pass === "Auto123456") {
-                window.location.href = "vendor-dashboard.html";
-            } 
-            // 3. Digər / Alıcı Girişi
-            else {
-                alert("Alıcı kimi daxil oldunuz!");
-                closeLoginModal();
-            }
+        try {
+            const res = await fetch(`${API_URL}/filters/models?brand=${selectedBrand}`);
+            if (!res.ok) return;
+            const models = await res.json();
+            
+            modelSelect.innerHTML = '<option value="">Bütün Modellər</option>';
+            models.forEach(model => {
+                modelSelect.innerHTML += `<option value="${model}">${model}</option>`;
+            });
+        } catch (err) {
+            console.error("Modellər yüklənmədi:", err);
         }
-    </script>
+    }
+
+    // DOM yükləndikdə markaları doldurur və 'change' dinləyicisini qoşur
+    document.addEventListener("DOMContentLoaded", () => {
+        loadBrands();
+
+        const brandSelect = document.getElementById("brandSelect");
+        if (brandSelect) {
+            brandSelect.addEventListener("change", (e) => {
+                loadModels(e.target.value);
+            });
+        }
+    });
+</script>
 </body>
 </html>
