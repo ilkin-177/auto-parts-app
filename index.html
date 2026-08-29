@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="az" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoParts - Avto Ehtiyat Hissələri Marketplace</title>
+    <!-- FAVICON SƏTİRİ -->
+    <link rel="icon" type="image/png" href="e385bd9e-97fe-4c25-8a09-1f17f2a942b6.png">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#f59e0b', // Amber-500
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col">
+
+    <!-- 1. NAVIGATION BAR (NAVBAR) -->
+    <nav class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+            <!-- Logo -->
+            <img src="auto_parts_logo_160x40.png" alt="AutoParts Logo" class="h-10 w-auto">
+            <a href="#" class="flex items-center gap-2 text-2xl font-black tracking-wider">
+                <!-- <span class="text-amber-500">AUTO</span><span>PARTS</span> -->
+            </a>
+
+            <!-- Məkan / Şəhər Seçimi -->
+            <div class="flex items-center gap-2 bg-slate-800 px-3 py-2 rounded-xl text-sm border border-slate-700">
+                <i data-lucide="map-pin" class="text-amber-500 w-4 h-4"></i>
+                <select id="locationSelect" class="bg-transparent text-slate-200 outline-none cursor-pointer text-sm">
+                    <option value="all" class="bg-slate-800">Bütün Azərbaycan</option>
+                    <option value="baku-narimanov" class="bg-slate-800">Bakı - Nərimanov r.</option>
+                    <option value="baku-yasamal" class="bg-slate-800">Bakı - Yasamal r.</option>
+                    <option value="baku-nasimi" class="bg-slate-800">Bakı - Nəsimi r.</option>
+                    <option value="ganja" class="bg-slate-800">Gəncə</option>
+                    <option value="sumqayit" class="bg-slate-800">Sumqayıt</option>
+                </select>
+            </div>
+
+            <!-- Düymələr: Satıcı Ol və Giriş -->
+            <div class="flex items-center gap-3">
+                <button onclick="openVendorModal()" class="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-xl text-sm transition cursor-pointer">
+                    <i data-lucide="store" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">Satıcı Ol (Mağaza Aç)</span>
+                </button>
+                
+                <button onclick="openLoginModal()" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-sm transition border border-slate-700 cursor-pointer">
+                    <i data-lucide="user" class="w-4 h-4"></i>
+                    <span>Daxil Ol</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 2. HERO SECTION & AXTARIŞ PANELİ -->
+    <section class="bg-slate-950 py-12 px-4 border-b border-slate-800">
+        <div class="max-w-5xl mx-auto text-center">
+            <h1 class="text-3xl sm:text-5xl font-extrabold mb-4 leading-tight">
+                Real Mağazalardan <span class="text-amber-500">Orijinal Ehtiyat Hissələri</span>
+            </h1>
+            <p class="text-slate-400 mb-8 text-base sm:text-lg max-w-2xl mx-auto">
+                Şəhərinizi seçin, avtomobilinizə uyğun ehtiyat hissəsini fiziki mağazaların stokundan tapın və sifariş edin.
+            </p>
+
+            <!-- Axtarış Vidgeti -->
+            <div class="bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-2xl border border-slate-800">
+                <!-- Dropdown Filtrlər -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                    <select class="bg-slate-800 border border-slate-700 text-slate-200 p-3 rounded-xl text-sm outline-none focus:border-amber-500">
+                        <option value="">1. Marka Seçin</option>
+                        <option value="bmw">BMW</option>
+                        <option value="mercedes">Mercedes-Benz</option>
+                        <option value="toyota">Toyota</option>
+                        <option value="hyundai">Hyundai</option>
+                    </select>
+
+                    <select class="bg-slate-800 border border-slate-700 text-slate-200 p-3 rounded-xl text-sm outline-none focus:border-amber-500">
+                        <option value="">2. Model Seçin</option>
+                        <option value="f10">5 Series (F10)</option>
+                        <option value="w212">E-Class (W212)</option>
+                        <option value="camry">Camry</option>
+                    </select>
+
+                    <select class="bg-slate-800 border border-slate-700 text-slate-200 p-3 rounded-xl text-sm outline-none focus:border-amber-500">
+                        <option value="">3. İl Seçin</option>
+                        <option value="2015">2015</option>
+                        <option value="2016">2016</option>
+                        <option value="2017">2017</option>
+                    </select>
+
+                    <select class="bg-slate-800 border border-slate-700 text-slate-200 p-3 rounded-xl text-sm outline-none focus:border-amber-500">
+                        <option value="">4. Şəhər / Rayon</option>
+                        <option value="baku-narimanov">Bakı - Nərimanov</option>
+                        <option value="baku-yasamal">Bakı - Yasamal</option>
+                        <option value="ganja">Gəncə</option>
+                    </select>
+                </div>
+
+                <!-- Input + Axtar Düyməsi -->
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <div class="relative flex-1">
+                        <input 
+                            type="text" 
+                            placeholder="Ehtiyat hissəsinin adı və ya OEM kodu (məs: 34116794301)"
+                            class="w-full bg-slate-800 border border-slate-700 text-slate-200 pl-11 pr-4 py-3 rounded-xl text-sm outline-none focus:border-amber-500"
+                        />
+                        <i data-lucide="wrench" class="absolute left-4 top-3.5 text-slate-500 w-4 h-4"></i>
+                    </div>
+                    <button class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-8 py-3 rounded-xl flex items-center justify-center gap-2 transition cursor-pointer">
+                        <i data-lucide="search" class="w-5 h-5"></i>
+                        <span>Axtar</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. MƏHSULLAR VƏ MAĞAZALAR SİYAHISI -->
+    <main class="max-w-7xl mx-auto px-4 py-10 flex-grow">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h2 class="text-2xl font-bold text-white">Yaxınlıqdakı Mağazaların Məhsulları</h2>
+                <p class="text-slate-400 text-sm">Seçilmiş region üzrə real stokda olan ehtiyat hissələri</p>
+            </div>
+            <a href="#" class="text-amber-500 hover:underline text-sm font-semibold">Bütününü gör &rarr;</a>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- Məhsul 1 -->
+            <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden flex flex-col justify-between hover:border-slate-600 transition">
+                <div>
+                    <div class="h-44 bg-slate-900 relative flex items-center justify-center p-4">
+                        <i data-lucide="disc" class="w-20 h-20 text-slate-700"></i>
+                        <span class="absolute top-3 right-3 bg-slate-800 text-slate-300 text-xs px-2.5 py-1 rounded-md border border-slate-700 font-mono">
+                            OEM: 34116794301
+                        </span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-white text-base mb-1">Ön Tormoz Bəndi (Kolodka)</h3>
+                        <p class="text-slate-400 text-xs mb-3">BMW 5 Series (F10) 2010-2016</p>
+                        
+                        <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-700/50 space-y-1.5 text-xs">
+                            <div class="flex items-center gap-2 text-slate-200 font-medium">
+                                <i data-lucide="store" class="w-4 h-4 text-amber-500"></i>
+                                <span>Baku Auto Parts MMC</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-slate-400">
+                                <i data-lucide="map-pin" class="w-4 h-4 text-slate-500"></i>
+                                <span>Bakı, Nərimanov r. (Ə. Rəcəbli)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 pt-0 flex items-center justify-between border-t border-slate-700/50 mt-2">
+                    <div>
+                        <span class="text-xl font-black text-amber-500">120 AZN</span>
+                        <div class="flex items-center gap-1 text-[11px] text-emerald-400 font-medium mt-0.5">
+                            <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+                            <span>Stokda var</span>
+                        </div>
+                    </div>
+                    <button class="bg-slate-700 hover:bg-amber-500 hover:text-slate-950 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition cursor-pointer">
+                        Sifariş et
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Diğər Məhsullar... -->
+        </div>
+    </main>
+
+    <!-- 4. FOOTER -->
+    <footer class="bg-slate-950 border-t border-slate-800 text-slate-400 text-sm py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center sm:flex sm:justify-between sm:text-left">
+            <p>&copy; 2026 AutoParts Marketplace. Bütün hüquqlar qorunur.</p>
+            <div class="mt-4 sm:mt-0 space-x-4">
+                <a href="#" class="hover:text-amber-500">Haqqımızda</a>
+                <a href="#" class="hover:text-amber-500">Satıcı Şərtləri</a>
+                <a href="#" class="hover:text-amber-500">Əlaqə</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 5. SATICI QEYDİYYATI POP-UP MODAL -->
+    <div id="vendorModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl relative">
+            <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="bg-amber-500/10 p-2.5 rounded-xl text-amber-500 border border-amber-500/20">
+                        <i data-lucide="store" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white">Satıcı Hesabı Müraciəti</h3>
+                        <p class="text-xs text-slate-400">Mağazanızı platformaya qoşun və onlayn satışa başlayın</p>
+                    </div>
+                </div>
+                <button onclick="closeVendorModal()" class="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleVendorSubmit(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Məsul Şəxsin Adı və Soyadı *</label>
+                    <input type="text" id="v-person" required placeholder="Məs: Əli Əliyev" class="w-full bg-slate-800 border border-slate-700 text-slate-100 px-4 py-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Mağaza Adı *</label>
+                    <input type="text" id="v-store" required placeholder="Məs: Baku Auto Parts MMC" class="w-full bg-slate-800 border border-slate-700 text-slate-100 px-4 py-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Şəhər / Region *</label>
+                        <input type="text" id="v-city" required placeholder="Bakı" class="w-full bg-slate-800 border border-slate-700 text-slate-100 px-3 py-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Rayon / Ərazi *</label>
+                        <input type="text" id="v-district" required placeholder="Nərimanov r." class="w-full bg-slate-800 border border-slate-700 text-slate-100 px-3 py-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Əlaqə Nömrəsi *</label>
+                    <input type="tel" id="v-phone" required placeholder="+994 (50) 000-00-00" class="w-full bg-slate-800 border border-slate-700 text-slate-100 px-4 py-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                </div>
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition cursor-pointer">
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                    <span>Müraciəti Göndər</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 6. DAXİL OL MODALI (GİRİŞ) -->
+    <div id="loginModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl relative">
+            <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i data-lucide="log-in" class="text-amber-500 w-5 h-5"></i>
+                    Sistemə Daxil Ol
+                </h3>
+                <button onclick="closeLoginModal()" class="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleLoginSubmit(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">E-poçt / İstifadəçi Adı</label>
+                    <input type="email" id="login-email" required placeholder="vendor@autoparts.az" class="w-full bg-slate-800 border border-slate-700 text-slate-100 px-4 py-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Şifrə</label>
+                    <input type="password" id="login-pass" required placeholder="••••••••" class="w-full bg-slate-800 border border-slate-700 text-slate-100 px-4 py-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                </div>
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition cursor-pointer">
+                    <span>Daxil Ol</span>
+                </button>
+                <div class="text-center pt-2">
+                    <a href="register.html" class="text-xs text-amber-500 hover:underline">Alıcı hesabı yoxdur? Qeydiyyatdan keçin</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Satıcı Modal İdarəsi
+        function openVendorModal() { document.getElementById('vendorModal').classList.remove('hidden'); }
+        function closeVendorModal() { document.getElementById('vendorModal').classList.add('hidden'); }
+
+        // Daxil Ol Modal İdarəsi
+        function openLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); }
+        function closeLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
+
+        // Satıcı Müraciətinin Göndərilməsi (Admin Panelə ötürülür)
+        function handleVendorSubmit(event) {
+            event.preventDefault();
+
+            const requestData = {
+                id: Date.now(),
+                person: document.getElementById('v-person').value,
+                store: document.getElementById('v-store').value,
+                location: `${document.getElementById('v-city').value} - ${document.getElementById('v-district').value}`,
+                phone: document.getElementById('v-phone').value
+            };
+
+            // Əvvəlki müraciətləri alıb yenisini əlavə edirik
+            let existingRequests = JSON.parse(localStorage.getItem('pendingRequests')) || [];
+            existingRequests.push(requestData);
+            localStorage.setItem('pendingRequests', JSON.stringify(existingRequests));
+
+            alert("Müraciətiniz qəbul olundu! Super Admin paneline yönləndirildi.");
+            closeVendorModal();
+        }
+
+        // Giriş Məntiqi (Rollar üzrə yönləndirmə)
+        function handleLoginSubmit(event) {
+            event.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+
+            // 1. Super Admin Girişi
+            if (email === "admin@autoparts.az") {
+                window.location.href = "admin-dashboard.html";
+            } 
+            // 2. Satıcı (Vendor) Girişi - Admin tərəfindən təyin edilən şifrə ilə
+            else if (email === "vendor@autoparts.az" && pass === "Auto123456") {
+                window.location.href = "vendor-dashboard.html";
+            } 
+            // 3. Digər / Alıcı Girişi
+            else {
+                alert("Alıcı kimi daxil oldunuz!");
+                closeLoginModal();
+            }
+        }
+    </script>
+</body>
+</html>

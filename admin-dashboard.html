@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="az" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin Panel - AutoParts Marketplace</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#f59e0b', // Amber-500
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex">
+
+    <!-- 1. SOL SIDEBAR NAVİQASİYA -->
+    <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0 hidden md:flex">
+        <div>
+            <!-- Header Logo -->
+            <div class="p-6 border-b border-slate-800 flex items-center gap-2">
+                <span class="text-amber-500 font-black text-xl tracking-wider">AUTO</span>
+                <span class="font-bold text-lg">PARTS</span>
+                <span class="bg-amber-500/10 text-amber-500 text-[10px] font-bold px-2 py-0.5 rounded border border-amber-500/20 ml-auto">ADMIN</span>
+            </div>
+
+            <!-- Menyu Keçidləri -->
+            <nav class="p-4 space-y-1.5 text-sm">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center gap-3 bg-amber-500 text-slate-950 font-bold px-4 py-3 rounded-xl transition cursor-pointer">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                    <span>İdarə Paneli</span>
+                </button>
+                <button onclick="switchTab('stores')" id="nav-stores" class="nav-btn w-full flex items-center gap-3 text-slate-400 hover:text-white hover:bg-slate-800 px-4 py-3 rounded-xl transition cursor-pointer">
+                    <i data-lucide="store" class="w-5 h-5"></i>
+                    <span>Mağazalar</span>
+                </button>
+                <button onclick="switchTab('requests')" id="nav-requests" class="nav-btn w-full flex items-center gap-3 text-slate-400 hover:text-white hover:bg-slate-800 px-4 py-3 rounded-xl transition cursor-pointer">
+                    <i data-lucide="user-plus" class="w-5 h-5"></i>
+                    <span>Gözləyən Müraciətlər</span>
+                    <span id="pending-badge" class="bg-amber-500/20 text-amber-400 text-xs px-2 py-0.5 rounded-full font-bold ml-auto">2</span>
+                </button>
+                <button onclick="switchTab('payments')" id="nav-payments" class="nav-btn w-full flex items-center gap-3 text-slate-400 hover:text-white hover:bg-slate-800 px-4 py-3 rounded-xl transition cursor-pointer">
+                    <i data-lucide="credit-card" class="w-5 h-5"></i>
+                    <span>Aylıq Ödənişlər</span>
+                </button>
+                <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn w-full flex items-center gap-3 text-slate-400 hover:text-white hover:bg-slate-800 px-4 py-3 rounded-xl transition cursor-pointer">
+                    <i data-lucide="settings" class="w-5 h-5"></i>
+                    <span>Ayarlar</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- İstifadəçi Paneli və Çıxış -->
+        <div class="p-4 border-t border-slate-800">
+            <div class="flex items-center gap-3 p-2 bg-slate-800/50 rounded-xl mb-2">
+                <div class="w-9 h-9 bg-amber-500/20 text-amber-500 rounded-lg flex items-center justify-center font-bold">
+                    SA
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-white">Super Admin</p>
+                    <p class="text-[11px] text-slate-400">admin@autoparts.az</p>
+                </div>
+            </div>
+            <a href="index.html" class="flex items-center gap-2 text-rose-400 hover:bg-rose-500/10 p-2.5 rounded-xl text-xs font-semibold transition w-full">
+                <i data-lucide="log-out" class="w-4 h-4"></i>
+                <span>Sayta Qayıt</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- 2. ƏSAS MƏZMUN SAHƏSİ -->
+    <main class="flex-1 flex flex-col min-w-0">
+        
+        <!-- Top Bar -->
+        <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between sticky top-0 z-40">
+            <div class="flex items-center gap-3">
+                <h1 id="page-title" class="text-xl font-bold text-white">Platforma İdarəetmə Paneli</h1>
+            </div>
+            <button onclick="openNewStoreModal()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-sm flex items-center gap-2 transition cursor-pointer">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                <span>Yeni Mağaza Aç</span>
+            </button>
+        </header>
+
+        <!-- Məzmun Body -->
+        <div class="p-6 space-y-6 flex-1 overflow-y-auto">
+
+            <!-- STATİSTİKA KARTLARI (Əsas İdarə Panelində Görünür) -->
+            <div id="stats-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-slate-400 font-medium">Aktiv Mağazalar</p>
+                        <h3 id="stat-active-count" class="text-2xl font-black text-white mt-1">2</h3>
+                    </div>
+                    <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
+                        <i data-lucide="store" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-slate-400 font-medium">Cari Aylıq Gəlir</p>
+                        <h3 id="stat-revenue" class="text-2xl font-black text-amber-500 mt-1">80 AZN</h3>
+                    </div>
+                    <div class="p-3 bg-amber-500/10 text-amber-500 rounded-xl border border-amber-500/20">
+                        <i data-lucide="wallet" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-slate-400 font-medium">Gözləyən Müraciətlər</p>
+                        <h3 id="stat-pending-count" class="text-2xl font-black text-sky-400 mt-1">2</h3>
+                    </div>
+                    <div class="p-3 bg-sky-500/10 text-sky-400 rounded-xl border border-sky-500/20">
+                        <i data-lucide="user-plus" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-slate-400 font-medium">Deaktiv / Borclu Dükanlar</p>
+                        <h3 id="stat-debt-count" class="text-2xl font-black text-rose-400 mt-1">1</h3>
+                    </div>
+                    <div class="p-3 bg-rose-500/10 text-rose-400 rounded-xl border border-rose-500/20">
+                        <i data-lucide="alert-circle" class="w-6 h-6"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEKSİYA 1: İDARƏ PANELİ HOME / ÜMUMİ BAXIŞ -->
+            <div id="section-dashboard" class="tab-content space-y-6">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+                    <h2 class="text-lg font-bold text-white mb-2">Xoş gəlmisiniz, Super Admin! 👋</h2>
+                    <p class="text-slate-400 text-sm">Platformadakı mağazaların cari abunəlik vəziyyətinə, yeni müraciətlərə və ümumi maliyyə göstəricilərinə sol menyudan keçid edərək tam nəzarət edə bilərsiniz.</p>
+                </div>
+            </div>
+
+            <!-- SEKSİYA 2: GÖZLƏYƏN MÜRACİƏTLƏR -->
+            <div id="section-requests" class="tab-content hidden space-y-4">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+                    <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="user-plus" class="w-5 h-5 text-amber-500"></i>
+                            <h2 class="font-bold text-white text-base">Gözləyən Satıcı Müraciətləri</h2>
+                        </div>
+                        <span class="text-xs text-slate-400">Saytın düyməsindən qeydiyyatdan keçənlər</span>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-300">
+                            <thead class="bg-slate-950 text-slate-400 text-xs uppercase font-semibold border-b border-slate-800">
+                                <tr>
+                                    <th class="p-4">Məsul Şəxs</th>
+                                    <th class="p-4">Mağaza Adı</th>
+                                    <th class="p-4">Şəhər / Rayon</th>
+                                    <th class="p-4">Əlaqə</th>
+                                    <th class="p-4 text-right">Əməliyyat</th>
+                                </tr>
+                            </thead>
+                            <tbody id="requests-table-body" class="divide-y divide-slate-800">
+                                <!-- JS ilə dolacaq -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEKSİYA 3: BÜTÜN MAĞAZALAR -->
+            <div id="section-stores" class="tab-content hidden space-y-4">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+                    <div class="p-5 border-b border-slate-800 flex items-center justify-between flex-wrap gap-4">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="store" class="w-5 h-5 text-amber-500"></i>
+                            <h2 class="font-bold text-white text-base">Bütün Mağazalar və Abunəlik Statusu</h2>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="text" id="storeSearchInput" onkeyup="filterStores()" placeholder="Mağaza axtar..." class="bg-slate-800 border border-slate-700 text-xs text-white px-3 py-2 rounded-lg outline-none focus:border-amber-500 w-48 sm:w-64">
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-300">
+                            <thead class="bg-slate-950 text-slate-400 text-xs uppercase font-semibold border-b border-slate-800">
+                                <tr>
+                                    <th class="p-4">Mağaza Adı</th>
+                                    <th class="p-4">Lokasiya</th>
+                                    <th class="p-4">Aylıq Haqq</th>
+                                    <th class="p-4">Son Ödəniş Tarixi</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4 text-right">İdarə</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stores-table-body" class="divide-y divide-slate-800">
+                                <!-- JS ilə dolacaq -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEKSİYA 4: AYLIQ ÖDƏNİŞLƏR -->
+            <div id="section-payments" class="tab-content hidden space-y-4">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+                    <div class="flex items-center gap-2 mb-4">
+                        <i data-lucide="credit-card" class="w-5 h-5 text-amber-500"></i>
+                        <h2 class="font-bold text-white text-base">Borclu və Ödəniş Gözləyən Mağazalar</h2>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-300">
+                            <thead class="bg-slate-950 text-slate-400 text-xs uppercase font-semibold border-b border-slate-800">
+                                <tr>
+                                    <th class="p-4">Mağaza Adı</th>
+                                    <th class="p-4">Lokasiya</th>
+                                    <th class="p-4">Borc Məbləği</th>
+                                    <th class="p-4">Son Tarix</th>
+                                    <th class="p-4 text-right">Əməliyyat</th>
+                                </tr>
+                            </thead>
+                            <tbody id="payments-table-body" class="divide-y divide-slate-800">
+                                <!-- JS ilə dolacaq -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEKSİYA 5: AYARLAR -->
+            <div id="section-settings" class="tab-content hidden space-y-6">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-2xl">
+                    <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <i data-lucide="settings" class="w-5 h-5 text-amber-500"></i>
+                        Platforma Ümumi Ayarları
+                    </h2>
+                    <form onsubmit="handleSaveSettings(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Standart Aylıq Mağaza Haqqı (AZN)</label>
+                            <input type="number" id="setting-monthly-fee" value="40" class="w-full bg-slate-800 border border-slate-700 text-amber-500 font-bold p-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Əlaqə / Dəstək E-poçtu</label>
+                            <input type="email" value="support@autoparts.az" class="w-full bg-slate-800 border border-slate-700 text-white p-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Milli Valyuta Simgəsi</label>
+                            <input type="text" value="AZN" class="w-full bg-slate-800 border border-slate-700 text-white p-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                        </div>
+                        <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-sm transition cursor-pointer">
+                            Ayarları Yadda Saxla
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- 3. YENİ MAĞAZA AÇMA MODALI -->
+    <div id="newStoreModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl relative">
+            <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i data-lucide="plus-circle" class="text-amber-500 w-5 h-5"></i>
+                    Yeni Mağaza Əlavə Et
+                </h3>
+                <button onclick="closeNewStoreModal()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleCreateStore(event)" class="p-5 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Mağaza Adı *</label>
+                    <input type="text" id="modal-store-name" required placeholder="Məs: Premium Auto Parts" class="w-full bg-slate-800 border border-slate-700 text-slate-100 p-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Şəhər / Region *</label>
+                        <input type="text" id="modal-store-location" required placeholder="Bakı - Yasamal" class="w-full bg-slate-800 border border-slate-700 text-slate-100 p-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Aylıq Haqq (AZN)</label>
+                        <input type="number" id="modal-store-fee" value="40" class="w-full bg-slate-800 border border-slate-700 text-amber-500 font-bold p-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Satıcının Email-i *</label>
+                    <input type="email" id="modal-store-email" required placeholder="vendor@magaza.az" class="w-full bg-slate-800 border border-slate-700 text-slate-100 p-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Müvəqqəti Şifrə *</label>
+                    <input type="text" id="modal-store-pass" value="Auto123456" class="w-full bg-slate-800 border border-slate-700 text-slate-100 p-2.5 rounded-xl text-sm font-mono outline-none focus:border-amber-500">
+                </div>
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition cursor-pointer mt-2">
+                    <i data-lucide="check" class="w-4 h-4"></i>
+                    <span>Mağazanı Qoş və Şifrə Yarat</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- SCRIPT-LƏR (MƏNTİQ VƏ FUNKSİYALAR) -->
+    <script>
+        // DATA STATE (Data Bazasının Prototipi)
+        let pendingRequests = [
+            { id: 1, person: 'Tural Qasımov', store: 'German Auto Parts MMC', location: 'Bakı - Nərimanov r.', phone: '+994 50 222-33-44' },
+            { id: 2, person: 'Elnur Məmmədov', store: 'Gəncə Detal Mərkəzi', location: 'Gəncə şəhəri', phone: '+994 70 555-11-22' }
+        ];
+
+        let stores = [
+            { id: 101, name: 'Baku Auto Parts MMC', location: 'Bakı - Nərimanov r.', fee: 40, lastPayment: '01.08.2026', status: 'active' },
+            { id: 102, name: 'Toyota Original Shop', location: 'Bakı - Yasamal r.', fee: 40, lastPayment: '10.08.2026', status: 'active' },
+            { id: 103, name: 'Koreya Avto Hissə', location: 'Sumqayıt şəhəri', fee: 40, lastPayment: 'Gecikir (15 İyul)', status: 'deactive' }
+        ];
+
+        // DƏYİŞƏN VƏ İNİTİALİZASİYA
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAll();
+        });
+
+        function renderAll() {
+            renderRequests();
+            renderStores();
+            renderPayments();
+            updateStats();
+            lucide.createIcons();
+        }
+
+        // TAB SÜŞÜRMƏ FUNKSİYASI
+        function switchTab(tabName) {
+            const tabs = ['dashboard', 'stores', 'requests', 'payments', 'settings'];
+            const titles = {
+                'dashboard': 'Platforma İdarəetmə Paneli',
+                'stores': 'Mağazaların İdarə Edilməsi',
+                'requests': 'Gözləyən Satıcı Müraciətləri',
+                'payments': 'Aylıq Abunəlik Ödənişləri',
+                'settings': 'Sistem Ayarları'
+            };
+
+            tabs.forEach(tab => {
+                const section = document.getElementById(`section-${tab}`);
+                const btn = document.getElementById(`nav-${tab}`);
+                if (tab === tabName) {
+                    section.classList.remove('hidden');
+                    btn.className = "nav-btn w-full flex items-center gap-3 bg-amber-500 text-slate-950 font-bold px-4 py-3 rounded-xl transition cursor-pointer";
+                } else {
+                    section.classList.add('hidden');
+                    btn.className = "nav-btn w-full flex items-center gap-3 text-slate-400 hover:text-white hover:bg-slate-800 px-4 py-3 rounded-xl transition cursor-pointer";
+                }
+            });
+
+            document.getElementById('page-title').innerText = titles[tabName];
+        }
+
+        // 1. GÖZLƏYƏN MÜRACİƏTLƏRİ RENDER VƏ İDARƏ ET
+        function renderRequests() {
+            const tbody = document.getElementById('requests-table-body');
+            document.getElementById('pending-badge').innerText = pendingRequests.length;
+            document.getElementById('stat-pending-count').innerText = pendingRequests.length;
+
+            if (pendingRequests.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Gözləyən yeni müraciət yoxdur.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = pendingRequests.map(req => `
+                <tr>
+                    <td class="p-4 font-medium text-white">${req.person}</td>
+                    <td class="p-4 font-semibold text-amber-400">${req.store}</td>
+                    <td class="p-4">${req.location}</td>
+                    <td class="p-4 font-mono text-xs">${req.phone}</td>
+                    <td class="p-4 text-right space-x-2">
+                        <button onclick="approveVendor(${req.id})" class="bg-emerald-500/10 hover:bg-emerald-500 hover:text-slate-950 text-emerald-400 border border-emerald-500/30 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer">
+                            Təsdiqlə və Mağaza Aç
+                        </button>
+                        <button onclick="rejectVendor(${req.id})" class="bg-rose-500/10 hover:bg-rose-500 hover:text-white text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer">
+                            Ləğv et
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function approveVendor(id) {
+            const req = pendingRequests.find(r => r.id === id);
+            if (!req) return;
+
+            // Mağazalara əlavə et
+            stores.push({
+                id: Date.now(),
+                name: req.store,
+                location: req.location,
+                fee: 40,
+                lastPayment: 'YENİ (Ödənilməyib)',
+                status: 'active'
+            });
+
+            // Gözləyənlərdən sil
+            pendingRequests = pendingRequests.filter(r => r.id !== id);
+            alert(`"${req.store}" təsdiqləndi və sistemdə aktiv mağaza kimi yaradıldı!`);
+            renderAll();
+        }
+
+        function rejectVendor(id) {
+            if (confirm("Bu müraciəti ləğv etmək istədiyinizdən əminsiniz?")) {
+                pendingRequests = pendingRequests.filter(r => r.id !== id);
+                renderAll();
+            }
+        }
+
+        // 2. MAĞAZALARI RENDER VƏ İDARƏ ET
+        function renderStores() {
+            const tbody = document.getElementById('stores-table-body');
+            tbody.innerHTML = stores.map(store => `
+                <tr class="${store.status === 'deactive' ? 'bg-rose-950/10' : ''}">
+                    <td class="p-4 font-bold text-white flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full ${store.status === 'active' ? 'bg-emerald-500' : 'bg-rose-500'}"></div>
+                        ${store.name}
+                    </td>
+                    <td class="p-4 text-xs">${store.location}</td>
+                    <td class="p-4 font-mono font-bold text-amber-400">${store.fee} AZN</td>
+                    <td class="p-4 text-xs ${store.status === 'deactive' ? 'text-rose-400 font-bold' : 'text-slate-400'}">${store.lastPayment}</td>
+                    <td class="p-4">
+                        <span class="${store.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border-rose-500/20'} border text-xs px-2.5 py-1 rounded-full font-bold">
+                            ${store.status === 'active' ? 'Aktiv' : 'Deaktiv (Borclu)'}
+                        </span>
+                    </td>
+                    <td class="p-4 text-right space-x-2">
+                        ${store.status === 'active' ? 
+                            `<button onclick="toggleStoreStatus(${store.id})" class="bg-rose-500/10 hover:bg-rose-500 hover:text-white text-rose-400 border border-rose-500/30 px-3 py-1 rounded-lg text-xs font-semibold transition cursor-pointer">Deaktiv Et</button>` :
+                            `<button onclick="confirmPayment(${store.id})" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-3 py-1 rounded-lg text-xs transition cursor-pointer">Ödənişi Qəbul Et</button>`
+                        }
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterStores() {
+            const query = document.getElementById('storeSearchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#stores-table-body tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        function toggleStoreStatus(id) {
+            const store = stores.find(s => s.id === id);
+            if (store && confirm(`"${store.name}" mağazasını deaktiv etmək istəyirsiniz?`)) {
+                store.status = store.status === 'active' ? 'deactive' : 'active';
+                renderAll();
+            }
+        }
+
+        // 3. AYLIQ ÖDƏNİŞLƏRİ RENDER VƏ İDARƏ ET
+        function renderPayments() {
+            const tbody = document.getElementById('payments-table-body');
+            const deactiveStores = stores.filter(s => s.status === 'deactive');
+
+            if (deactiveStores.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Borcu olan mağaza yoxdur. Hamı ödənişini edib!</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = deactiveStores.map(store => `
+                <tr>
+                    <td class="p-4 font-bold text-white">${store.name}</td>
+                    <td class="p-4 text-xs">${store.location}</td>
+                    <td class="p-4 font-mono font-bold text-rose-400">${store.fee} AZN</td>
+                    <td class="p-4 text-xs text-rose-400 font-bold">${store.lastPayment}</td>
+                    <td class="p-4 text-right">
+                        <button onclick="confirmPayment(${store.id})" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-4 py-1.5 rounded-lg text-xs transition cursor-pointer">
+                            Ödənişi Qəbul Et & Aktivləşdir
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function confirmPayment(id) {
+            const store = stores.find(s => s.id === id);
+            if (store) {
+                store.status = 'active';
+                store.lastPayment = new Date().toLocaleDateString('az-AZ');
+                alert(`"${store.name}" üçün aylıq ödəniş qəbul olundu. Mağaza təzədən AKTİV edildi.`);
+                renderAll();
+            }
+        }
+
+        // STATİSTİKALARI YENİLƏ
+        function updateStats() {
+            const activeStores = stores.filter(s => s.status === 'active');
+            const deactiveStores = stores.filter(s => s.status === 'deactive');
+            
+            document.getElementById('stat-active-count').innerText = activeStores.length;
+            document.getElementById('stat-debt-count').innerText = deactiveStores.length;
+            
+            const totalRevenue = activeStores.reduce((acc, curr) => acc + curr.fee, 0);
+            document.getElementById('stat-revenue').innerText = `${totalRevenue} AZN`;
+        }
+
+        // MODAL FUNKSİYALARI
+        function openNewStoreModal() {
+            document.getElementById('newStoreModal').classList.remove('hidden');
+        }
+
+        function closeNewStoreModal() {
+            document.getElementById('newStoreModal').classList.add('hidden');
+        }
+
+        function handleCreateStore(e) {
+            e.preventDefault();
+            const name = document.getElementById('modal-store-name').value;
+            const location = document.getElementById('modal-store-location').value;
+            const fee = parseFloat(document.getElementById('modal-store-fee').value) || 40;
+
+            stores.push({
+                id: Date.now(),
+                name: name,
+                location: location,
+                fee: fee,
+                lastPayment: new Date().toLocaleDateString('az-AZ'),
+                status: 'active'
+            });
+
+            alert(`"${name}" mağazası uğurla yaradıldı!`);
+            closeNewStoreModal();
+            renderAll();
+        }
+
+        function handleSaveSettings(e) {
+            e.preventDefault();
+            alert("Platforma ayarları uğurla yadda saxlanıldı!");
+        }
+    </script>
+</body>
+</html>

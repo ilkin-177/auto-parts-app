@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="az" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satıcı Paneli - AutoParts Marketplace</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#f59e0b',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex">
+
+    <!-- 1. SOL SIDEBAR NAVİQASİYA -->
+    <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0 hidden md:flex">
+        <div>
+            <!-- Header Logo -->
+            <div class="p-6 border-b border-slate-800 flex items-center gap-2">
+                <span class="text-amber-500 font-black text-xl tracking-wider">AUTO</span>
+                <span class="font-bold text-lg">PARTS</span>
+                <span class="bg-amber-500/10 text-amber-500 text-[10px] font-bold px-2 py-0.5 rounded border border-amber-500/20 ml-auto">VENDOR</span>
+            </div>
+
+            <!-- Menyu Keçidləri -->
+            <nav class="p-4 space-y-1.5 text-sm">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center gap-3 bg-amber-500 text-slate-950 font-bold px-4 py-3 rounded-xl transition cursor-pointer">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                    <span>İdarə Paneli</span>
+                </button>
+                <button onclick="switchTab('inventory')" id="nav-inventory" class="nav-btn w-full flex items-center gap-3 text-slate-400 hover:text-white hover:bg-slate-800 px-4 py-3 rounded-xl transition cursor-pointer">
+                    <i data-lucide="package" class="w-5 h-5"></i>
+                    <span>Ehtiyat Hissələri (Stok)</span>
+                </button>
+                <button onclick="switchTab('orders')" id="nav-orders" class="nav-btn w-full flex items-center gap-3 text-slate-400 hover:text-white hover:bg-slate-800 px-4 py-3 rounded-xl transition cursor-pointer">
+                    <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                    <span>Sifarişlər</span>
+                    <span id="orders-badge" class="bg-amber-500/20 text-amber-400 text-xs px-2 py-0.5 rounded-full font-bold ml-auto">2</span>
+                </button>
+                <button onclick="switchTab('finance')" id="nav-finance" class="nav-btn w-full flex items-center gap-3 text-slate-400 hover:text-white hover:bg-slate-800 px-4 py-3 rounded-xl transition cursor-pointer">
+                    <i data-lucide="wallet" class="w-5 h-5"></i>
+                    <span>Maliyyə & Abunəlik</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Mağaza Profili -->
+        <div class="p-4 border-t border-slate-800">
+            <div class="flex items-center gap-3 p-2 bg-slate-800/50 rounded-xl mb-2">
+                <div class="w-9 h-9 bg-amber-500/20 text-amber-500 rounded-lg flex items-center justify-center font-bold">
+                    BA
+                </div>
+                <div class="truncate">
+                    <p class="text-xs font-bold text-white truncate">Baku Auto Parts</p>
+                    <p class="text-[11px] text-slate-400">Bakı, Nərimanov r.</p>
+                </div>
+            </div>
+            <a href="index.html" class="flex items-center gap-2 text-rose-400 hover:bg-rose-500/10 p-2.5 rounded-xl text-xs font-semibold transition w-full">
+                <i data-lucide="log-out" class="w-4 h-4"></i>
+                <span>Çıxış Et</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- 2. ƏSAS MƏZMUN SAHƏSİ -->
+    <main class="flex-1 flex flex-col min-w-0">
+        
+        <!-- Top Bar -->
+        <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between sticky top-0 z-40">
+            <div class="flex items-center gap-3">
+                <h1 id="page-title" class="text-xl font-bold text-white">Mağaza İdarə Paneli</h1>
+            </div>
+            <button onclick="openProductModal()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-sm flex items-center gap-2 transition cursor-pointer shadow-lg shadow-amber-500/10">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                <span>Yeni Hissə Əlavə Et</span>
+            </button>
+        </header>
+
+        <!-- Məzmun Body -->
+        <div class="p-6 space-y-6 flex-1 overflow-y-auto">
+
+            <!-- STATİSTİKA KARTLARI -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-slate-400 font-medium">Stokdakı Məhsullar</p>
+                        <h3 id="stat-total-products" class="text-2xl font-black text-white mt-1">0</h3>
+                    </div>
+                    <div class="p-3 bg-amber-500/10 text-amber-500 rounded-xl border border-amber-500/20">
+                        <i data-lucide="package" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-slate-400 font-medium">Gözləyən Sifarişlər</p>
+                        <h3 id="stat-pending-orders" class="text-2xl font-black text-sky-400 mt-1">0</h3>
+                    </div>
+                    <div class="p-3 bg-sky-500/10 text-sky-400 rounded-xl border border-sky-500/20">
+                        <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-slate-400 font-medium">Ümumi Satış Gəliri</p>
+                        <h3 id="stat-total-revenue" class="text-2xl font-black text-emerald-400 mt-1">0 AZN</h3>
+                    </div>
+                    <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
+                        <i data-lucide="trending-up" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-slate-400 font-medium">Abunəlik Statusu</p>
+                        <h3 class="text-lg font-black text-emerald-400 mt-1">AKTİV</h3>
+                    </div>
+                    <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
+                        <i data-lucide="shield-check" class="w-6 h-6"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEKSİYA 1: İDARƏ PANELİ HOME -->
+            <div id="section-dashboard" class="tab-content space-y-6">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+                    <h2 class="text-lg font-bold text-white mb-2">Baku Auto Parts paneline xoş gəldiniz! 👋</h2>
+                    <p class="text-slate-400 text-sm">Buradan mağazanıza yeni ehtiyat hissələri (Marka, Model, İllər, Rəng və OEM kodları ilə) əlavə edə, gələn sifarişlərin statusunu dəyişə və stok səviyyələrinizə nəzarət edə bilərsiniz.</p>
+                </div>
+            </div>
+
+            <!-- SEKSİYA 2: EHTİYAT HİSSƏLƏRİ (STOK) -->
+            <div id="section-inventory" class="tab-content hidden space-y-4">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+                    <div class="p-5 border-b border-slate-800 flex items-center justify-between flex-wrap gap-4">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="package" class="w-5 h-5 text-amber-500"></i>
+                            <h2 class="font-bold text-white text-base">Stokdakı Ehtiyat Hissələri</h2>
+                        </div>
+                        <input type="text" id="productSearchInput" onkeyup="filterProducts()" placeholder="OEM kod, Marka, Model və ya ad ilə axtar..." class="bg-slate-800 border border-slate-700 text-xs text-white px-3 py-2 rounded-lg outline-none focus:border-amber-500 w-72">
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-300">
+                            <thead class="bg-slate-950 text-slate-400 text-xs uppercase font-semibold border-b border-slate-800">
+                                <tr>
+                                    <th class="p-4">Hissə Adı</th>
+                                    <th class="p-4">OEM Kod</th>
+                                    <th class="p-4">Marka / Model / İl</th>
+                                    <th class="p-4">Vəziyyət / Rəng</th>
+                                    <th class="p-4">Qiymət</th>
+                                    <th class="p-4">Stok</th>
+                                    <th class="p-4 text-right">Əməliyyat</th>
+                                </tr>
+                            </thead>
+                            <tbody id="products-table-body" class="divide-y divide-slate-800">
+                                <!-- JS ilə dolacaq -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEKSİYA 3: SİFARİŞLƏR -->
+            <div id="section-orders" class="tab-content hidden space-y-4">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+                    <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="shopping-bag" class="w-5 h-5 text-amber-500"></i>
+                            <h2 class="font-bold text-white text-base">Müştəri Sifarişləri</h2>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-300">
+                            <thead class="bg-slate-950 text-slate-400 text-xs uppercase font-semibold border-b border-slate-800">
+                                <tr>
+                                    <th class="p-4">Sifariş ID</th>
+                                    <th class="p-4">Müştəri</th>
+                                    <th class="p-4">Məhsul</th>
+                                    <th class="p-4">Məbləğ</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4 text-right">Əməliyyat</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orders-table-body" class="divide-y divide-slate-800">
+                                <!-- JS ilə dolacaq -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEKSİYA 4: MALİYYƏ VƏ ABUNƏLİK -->
+            <div id="section-finance" class="tab-content hidden space-y-6">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-xl">
+                    <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <i data-lucide="wallet" class="w-5 h-5 text-amber-500"></i>
+                        Aylıq Abunəlik Məlumatları
+                    </h2>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between py-2 border-b border-slate-800">
+                            <span class="text-slate-400">Aylıq Xidmət Haqqı:</span>
+                            <span class="font-bold text-amber-500">40 AZN / ay</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b border-slate-800">
+                            <span class="text-slate-400">Son Ödəniş Tarixi:</span>
+                            <span class="font-semibold text-white">10.08.2026</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b border-slate-800">
+                            <span class="text-slate-400">Növbəti Ödəniş Tarixi:</span>
+                            <span class="font-semibold text-white">10.09.2026</span>
+                        </div>
+                        <div class="flex justify-between py-2">
+                            <span class="text-slate-400">Cari Status:</span>
+                            <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs px-2.5 py-0.5 rounded-full font-bold">Ödənilib (Aktiv)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- 3. YENİLƏNMİŞ GENİŞLƏNDİRİLMİŞ EHTİYAT HİSSƏSİ MODALI -->
+    <div id="productModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden overflow-y-auto">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl relative my-8">
+            <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i data-lucide="plus-circle" class="text-amber-500 w-5 h-5"></i>
+                    Yeni Ehtiyat Hissəsi Əlavə Et
+                </h3>
+                <button onclick="closeProductModal()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleCreateProduct(event)" class="p-6 space-y-4">
+                
+                <!-- Hissə Adı və OEM Kodu -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Hissə Adı *</label>
+                        <input type="text" id="modal-part-name" required placeholder="Məs: Qabaq Əyləc Bəndləri" class="w-full bg-slate-800 border border-slate-700 text-slate-100 p-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">OEM Kod *</label>
+                        <input type="text" id="modal-oem-code" required placeholder="Məs: 04465-33470" class="w-full bg-slate-800 border border-slate-700 text-slate-100 p-2.5 rounded-xl text-sm outline-none focus:border-amber-500 font-mono">
+                    </div>
+                </div>
+
+                <!-- Marka Və Model Seçimi -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Marka (Seçin) *</label>
+                        <select id="modal-brand" onchange="updateModelDropdown()" required class="w-full bg-slate-800 border border-slate-700 text-slate-100 p-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                            <option value="">Marka seçin...</option>
+                            <option value="Toyota">Toyota</option>
+                            <option value="BMW">BMW</option>
+                            <option value="Mercedes-Benz">Mercedes-Benz</option>
+                            <option value="Hyundai">Hyundai</option>
+                            <option value="Kia">Kia</option>
+                            <option value="Nissan">Nissan</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Model (Seçin) *</label>
+                        <select id="modal-model" required class="w-full bg-slate-800 border border-slate-700 text-slate-100 p-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                            <option value="">Əvvəlcə marka seçin</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- İl (Buraxılış İlləri), Qiymət Və Stok -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">İl / Buraxılış *</label>
+                        <input type="text" id="modal-year" required placeholder="2018-2023" class="w-full bg-slate-800 border border-slate-700 text-slate-100 p-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Qiymət (AZN) *</label>
+                        <input type="number" id="modal-price" required placeholder="85" class="w-full bg-slate-800 border border-slate-700 text-amber-500 font-bold p-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Stok Sayı *</label>
+                        <input type="number" id="modal-stock" required placeholder="10" class="w-full bg-slate-800 border border-slate-700 text-slate-100 p-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                    </div>
+                </div>
+
+                <!-- Rəng Və Vəziyyəti (Yeni/İşlənmiş) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Rəng (Opsional)</label>
+                        <input type="text" id="modal-color" placeholder="Qara / Gümüşü / Yoxdur" class="w-full bg-slate-800 border border-slate-700 text-slate-100 p-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Vəziyyəti *</label>
+                        <select id="modal-condition" required class="w-full bg-slate-800 border border-slate-700 text-slate-100 p-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                            <option value="Yeni (Təzə)">Yeni (Təzə)</option>
+                            <option value="İşlənmiş (Orijinal)">İşlənmiş (Orijinal)</option>
+                            <option value="Bərpa olunub">Bərpa olunub</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Təsvir / Əlavə Qeydlər -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Əlavə Qeyd / Təsvir</label>
+                    <textarea id="modal-description" rows="2" placeholder="İstehsalçı ölkə, zəmanət və ya digər xüsusiyyətlər..." class="w-full bg-slate-800 border border-slate-700 text-slate-100 p-2.5 rounded-xl text-sm outline-none focus:border-amber-500"></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition cursor-pointer mt-2 shadow-lg shadow-amber-500/10">
+                    <i data-lucide="check" class="w-4 h-4"></i>
+                    <span>Stoka Əlavə Et</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- SCRIPT-LƏR VƏ FUNKSİYALAR -->
+    <script>
+        // MARKA VƏ MODELLƏRİN DİNAMİK SİYAHISI
+        const carModels = {
+            'Toyota': ['Camry', 'Corolla', 'RAV4', 'Land Cruiser', 'Prado'],
+            'BMW': ['3 Series (F30/G20)', '5 Series (F10/G30)', 'X5 (F15/G05)', 'X6'],
+            'Mercedes-Benz': ['C-Class (W205)', 'E-Class (W213)', 'S-Class (W222)', 'G-Class'],
+            'Hyundai': ['Elantra', 'Sonata', 'Tucson', 'Santa Fe'],
+            'Kia': ['Optima / K5', 'Rio', 'Sportage', 'Sorento'],
+            'Nissan': ['Sunny', 'X-Trail', 'Qashqai', 'Patrol']
+        };
+
+        // MƏHSUL DATA PROTOTİPİ
+        let products = [
+            { id: 1, name: 'Qabaq Əyləc Bəndləri (Brembo)', oem: '04465-33470', brand: 'Toyota', model: 'Camry', year: '2018-2023', price: 85, stock: 12, color: 'Qara', condition: 'Yeni (Təzə)' },
+            { id: 2, name: 'Mühərrik Yağ Filtri', oem: '04152-YZZA6', brand: 'Toyota', model: 'RAV4', year: '2019+', price: 18, stock: 45, color: 'Standart', condition: 'Yeni (Təzə)' },
+            { id: 3, name: 'Yan Güzgü Şüşəsi (Sol)', oem: '51167285005', brand: 'BMW', model: '5 Series (F10/G30)', year: '2012-2017', price: 65, stock: 4, color: 'Gümüşü', condition: 'İşlənmiş (Orijinal)' }
+        ];
+
+        let orders = [
+            { id: 'ORD-1001', customer: 'Əli Məmmədov', item: 'Qabaq Əyləc Bəndləri', total: 85, status: 'pending' },
+            { id: 'ORD-1002', customer: 'Vüsal Həsənov', item: 'Mühərrik Yağ Filtri', total: 18, status: 'completed' }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAll();
+        });
+
+        function renderAll() {
+            renderProducts();
+            renderOrders();
+            updateStats();
+            lucide.createIcons();
+        }
+
+        // MARKA DƏYİŞDİKDƏ MODELLƏRİ DİNAMİK DOLDURMAQ
+        function updateModelDropdown() {
+            const brandSelect = document.getElementById('modal-brand');
+            const modelSelect = document.getElementById('modal-model');
+            const selectedBrand = brandSelect.value;
+
+            modelSelect.innerHTML = '<option value="">Model seçin...</option>';
+
+            if (selectedBrand && carModels[selectedBrand]) {
+                carModels[selectedBrand].forEach(model => {
+                    const opt = document.createElement('option');
+                    opt.value = model;
+                    opt.innerText = model;
+                    modelSelect.appendChild(opt);
+                });
+            }
+        }
+
+        // TAB SWITCHING
+        function switchTab(tabName) {
+            const tabs = ['dashboard', 'inventory', 'orders', 'finance'];
+            const titles = {
+                'dashboard': 'Mağaza İdarə Paneli',
+                'inventory': 'Ehtiyat Hissələri Stoku',
+                'orders': 'Gələn Sifarişlər',
+                'finance': 'Maliyyə və Abunəlik'
+            };
+
+            tabs.forEach(tab => {
+                const section = document.getElementById(`section-${tab}`);
+                const btn = document.getElementById(`nav-${tab}`);
+                if (tab === tabName) {
+                    section.classList.remove('hidden');
+                    btn.className = "nav-btn w-full flex items-center gap-3 bg-amber-500 text-slate-950 font-bold px-4 py-3 rounded-xl transition cursor-pointer";
+                } else {
+                    section.classList.add('hidden');
+                    btn.className = "nav-btn w-full flex items-center gap-3 text-slate-400 hover:text-white hover:bg-slate-800 px-4 py-3 rounded-xl transition cursor-pointer";
+                }
+            });
+
+            document.getElementById('page-title').innerText = titles[tabName];
+        }
+
+        // MƏHSULLARIN RENDER EDİLMƏSİ VƏ İDARƏSİ
+        function renderProducts() {
+            const tbody = document.getElementById('products-table-body');
+            if (products.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-500">Stokda ehtiyat hissəsi yoxdur.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = products.map(p => `
+                <tr>
+                    <td class="p-4 font-bold text-white">${p.name}</td>
+                    <td class="p-4 font-mono text-xs text-amber-400 font-bold">${p.oem}</td>
+                    <td class="p-4 text-xs">
+                        <span class="font-semibold text-slate-200">${p.brand} ${p.model}</span>
+                        <br><span class="text-slate-400">İl: ${p.year}</span>
+                    </td>
+                    <td class="p-4 text-xs">
+                        <span class="bg-slate-800 px-2 py-0.5 rounded border border-slate-700 text-slate-300 font-medium">${p.condition}</span>
+                        ${p.color ? `<div class="text-[11px] text-slate-400 mt-1">Rəng: ${p.color}</div>` : ''}
+                    </td>
+                    <td class="p-4 font-mono font-bold text-emerald-400">${p.price} AZN</td>
+                    <td class="p-4 font-bold ${p.stock < 10 ? 'text-amber-500' : 'text-slate-300'}">${p.stock} ədəd</td>
+                    <td class="p-4 text-right space-x-2">
+                        <button onclick="deleteProduct(${p.id})" class="bg-rose-500/10 hover:bg-rose-500 hover:text-white text-rose-400 border border-rose-500/30 px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer">
+                            Sil
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterProducts() {
+            const query = document.getElementById('productSearchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#products-table-body tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        function deleteProduct(id) {
+            if (confirm("Bu hissəni stokdan silmək istədiyinizdən əminsiniz?")) {
+                products = products.filter(p => p.id !== id);
+                renderAll();
+            }
+        }
+
+        // SİFARİŞLƏRİN RENDER EDİLMƏSİ VƏ STATUS YENİLƏNMƏSİ
+        function renderOrders() {
+            const tbody = document.getElementById('orders-table-body');
+            const pendingOrdersCount = orders.filter(o => o.status === 'pending').length;
+            document.getElementById('orders-badge').innerText = pendingOrdersCount;
+            document.getElementById('stat-pending-orders').innerText = pendingOrdersCount;
+
+            if (orders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500">Sifariş tapılmadı.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = orders.map(o => `
+                <tr>
+                    <td class="p-4 font-mono font-bold text-xs text-slate-400">${o.id}</td>
+                    <td class="p-4 font-medium text-white">${o.customer}</td>
+                    <td class="p-4 text-slate-300">${o.item}</td>
+                    <td class="p-4 font-mono font-bold text-amber-400">${o.total} AZN</td>
+                    <td class="p-4">
+                        <span class="${
+                            o.status === 'completed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 
+                            o.status === 'shipping' ? 'bg-sky-500/10 text-sky-400 border-sky-500/20' : 
+                            'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                        } border text-xs px-2.5 py-1 rounded-full font-bold">
+                            ${o.status === 'completed' ? 'Tamamlandı' : o.status === 'shipping' ? 'Çatdırılmada' : 'Gözləyir'}
+                        </span>
+                    </td>
+                    <td class="p-4 text-right space-x-1">
+                        ${o.status === 'pending' ? `
+                            <button onclick="updateOrderStatus('${o.id}', 'shipping')" class="bg-sky-500 hover:bg-sky-600 text-slate-950 font-bold px-3 py-1 rounded-lg text-xs transition cursor-pointer">Kuryerə Ver</button>
+                        ` : ''}
+                        ${o.status === 'shipping' ? `
+                            <button onclick="updateOrderStatus('${o.id}', 'completed')" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-3 py-1 rounded-lg text-xs transition cursor-pointer">Tamamla</button>
+                        ` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateOrderStatus(id, newStatus) {
+            const order = orders.find(o => o.id === id);
+            if (order) {
+                order.status = newStatus;
+                renderAll();
+            }
+        }
+
+        // STATİSTİKALARIN YENİLƏNMƏSİ
+        function updateStats() {
+            document.getElementById('stat-total-products').innerText = products.length;
+            const completedOrders = orders.filter(o => o.status === 'completed');
+            const totalRev = completedOrders.reduce((sum, item) => sum + item.total, 0);
+            document.getElementById('stat-total-revenue').innerText = `${totalRev} AZN`;
+        }
+
+        // MODAL FUNKSİYALARI
+        function openProductModal() {
+            document.getElementById('productModal').classList.remove('hidden');
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').classList.add('hidden');
+        }
+
+        // YENİ MƏHSULUN YARADILMASI
+        function handleCreateProduct(e) {
+            e.preventDefault();
+            const name = document.getElementById('modal-part-name').value;
+            const oem = document.getElementById('modal-oem-code').value;
+            const brand = document.getElementById('modal-brand').value;
+            const model = document.getElementById('modal-model').value;
+            const year = document.getElementById('modal-year').value;
+            const price = parseFloat(document.getElementById('modal-price').value);
+            const stock = parseInt(document.getElementById('modal-stock').value);
+            const color = document.getElementById('modal-color').value;
+            const condition = document.getElementById('modal-condition').value;
+
+            products.push({
+                id: Date.now(),
+                name: name,
+                oem: oem,
+                brand: brand,
+                model: model,
+                year: year,
+                price: price,
+                stock: stock,
+                color: color,
+                condition: condition
+            });
+
+            alert(`"${name}" ehtiyat hissəsi stoka əlavə olundu!`);
+            closeProductModal();
+            renderAll();
+        }
+    </script>
+</body>
+</html>
