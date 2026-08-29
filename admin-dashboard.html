@@ -586,12 +586,33 @@
         if (modal) modal.classList.add('hidden');
     }
 
-    function handleCreateStore(e) {
-        e.preventDefault();
-        const name = document.getElementById('modal-store-name').value;
-        const location = document.getElementById('modal-store-location').value;
-        const fee = parseFloat(document.getElementById('modal-store-fee').value) || 40;
+    async function handleCreateStore(e) {
+    e.preventDefault();
+    const name = document.getElementById('modal-store-name').value;
+    const location = document.getElementById('modal-store-location').value;
+    const fee = parseFloat(document.getElementById('modal-store-fee').value) || 40;
 
+    try {
+        const res = await fetch(`${API_URL}/admin/vendors`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                store_name: name,
+                location_city: location,
+                monthly_fee: fee,
+                status: 'active'
+            })
+        });
+
+        if (res.ok) {
+            alert(`"${name}" mağazası uğurla bazaya əlavə edildi!`);
+            closeNewStoreModal();
+            loadDataFromAPI();
+        } else {
+            alert("Mağaza yaradılarkən xəta baş verdi.");
+        }
+    } catch (err) {
+        console.error("API Xətası:", err);
         stores.push({
             id: Date.now(),
             name: name,
@@ -600,11 +621,10 @@
             lastPayment: new Date().toLocaleDateString('az-AZ'),
             status: 'active'
         });
-
-        alert(`"${name}" mağazası uğurla yaradıldı!`);
         closeNewStoreModal();
         renderAll();
     }
+}
 
     function handleSaveSettings(e) {
         e.preventDefault();

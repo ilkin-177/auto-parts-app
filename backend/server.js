@@ -90,3 +90,18 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server ${PORT} portunda çalışır...`);
 });
+// Yeni Mağaza Yaratmaq (Admin tərəfindən)
+app.post('/api/admin/vendors', async (req, res) => {
+  const { store_name, location_city, monthly_fee, status } = req.body;
+  try {
+    // Əvvəlcə dummy user id təyin edirik və ya mağaza yaradırıq
+    const newVendor = await pool.query(
+      `INSERT INTO vendors (store_name, location_city, monthly_fee, status) 
+       VALUES ($1, $2, $3, $4) RETURNING *`,
+      [store_name, location_city, monthly_fee || 40.00, status || 'active']
+    );
+    res.json(newVendor.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
