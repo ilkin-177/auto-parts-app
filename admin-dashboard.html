@@ -310,45 +310,68 @@
 
     <!-- SCRIPT-LƏR (MƏNTİQ VƏ FUNKSİYALAR) -->
     <script>
-        // DATA STATE (Data Bazasının Prototipi)
-        let pendingRequests = [
-            { id: 1, person: 'Tural Qasımov', store: 'German Auto Parts MMC', location: 'Bakı - Nərimanov r.', phone: '+994 50 222-33-44' },
-            { id: 2, person: 'Elnur Məmmədov', store: 'Gəncə Detal Mərkəzi', location: 'Gəncə şəhəri', phone: '+994 70 555-11-22' }
-        ];
+    const API_URL = "http://localhost:5000/api";
 
-        let stores = [
-            { id: 101, name: 'Baku Auto Parts MMC', location: 'Bakı - Nərimanov r.', fee: 40, lastPayment: '01.08.2026', status: 'active' },
-            { id: 102, name: 'Toyota Original Shop', location: 'Bakı - Yasamal r.', fee: 40, lastPayment: '10.08.2026', status: 'active' },
-            { id: 103, name: 'Koreya Avto Hissə', location: 'Sumqayıt şəhəri', fee: 40, lastPayment: 'Gecikir (15 İyul)', status: 'deactive' }
-        ];
+    // DATA STATE
+    let pendingRequests = [];
+    let stores = [];
 
-        // DƏYİŞƏN VƏ İNİTİALİZASİYA
-        document.addEventListener('DOMContentLoaded', () => {
+    // DƏYİŞƏN VƏ İNİTİALİZASİYA
+    document.addEventListener('DOMContentLoaded', () => {
+        loadDataFromAPI();
+    });
+
+    // API-dən məlumatların çəkilməsi
+    async function loadDataFromAPI() {
+        try {
+            // LocalStorage-dən gözləyən müraciətləri oxuyuruq
+            pendingRequests = JSON.parse(localStorage.getItem('pendingRequests')) || [];
+
+            // Backend API-dən bazadakı dükanları çəkirik
+            const res = await fetch(`${API_URL}/admin/vendors`);
+            if (res.ok) {
+                const apiVendors = await res.json();
+                stores = apiVendors.map(v => ({
+                    id: v.id,
+                    name: v.store_name,
+                    location: `${v.location_city || 'Bakı'}`,
+                    fee: parseFloat(v.monthly_fee) || 40,
+                    lastPayment: '01.08.2026',
+                    status: v.status === 'active' ? 'active' : 'deactive'
+                }));
+            }
+        } catch (err) {
+            console.error("API əlaqə xətası:", err);
+        } finally {
             renderAll();
-        });
+        }
+    }
 
-        function renderAll() {
-            renderRequests();
-            renderStores();
-            renderPayments();
-            updateStats();
+    function renderAll() {
+        renderRequests();
+        renderStores();
+        renderPayments();
+        updateStats();
+        if (window.lucide) {
             lucide.createIcons();
         }
+    }
 
-        // TAB SÜŞÜRMƏ FUNKSİYASI
-        function switchTab(tabName) {
-            const tabs = ['dashboard', 'stores', 'requests', 'payments', 'settings'];
-            const titles = {
-                'dashboard': 'Platforma İdarəetmə Paneli',
-                'stores': 'Mağazaların İdarə Edilməsi',
-                'requests': 'Gözləyən Satıcı Müraciətləri',
-                'payments': 'Aylıq Abunəlik Ödənişləri',
-                'settings': 'Sistem Ayarları'
-            };
+    // TAB SÜRÜŞDÜRMƏ FUNKSİYASI
+    function switchTab(tabName) {
+        const tabs = ['dashboard', 'stores', 'requests', 'payments', 'settings'];
+        const titles = {
+            'dashboard': 'Platforma İdarəetmə Paneli',
+            'stores': 'Mağazaların İdarə Edilməsi',
+            'requests': 'Gözləyən Satıcı Müraciətləri',
+            'payments': 'Aylıq Abunəlik Ödənişləri',
+            'settings': 'Sistem Ayarları'
+        };
 
-            tabs.forEach(tab => {
-                const section = document.getElementById(`section-${tab}`);
-                const btn = document.getElementById(`nav-${tab}`);
+        tabs.forEach(tab => {
+            const section = document.getElementById(`section-${tab}`);
+            const btn = document.getElementById(`nav-${tab}`);
+            if (section && btn) {
                 if (tab === tabName) {
                     section.classList.remove('hidden');
                     btn.className = "nav-btn w-full flex items-center gap-3 bg-amber-500 text-slate-950 font-bold px-4 py-3 rounded-xl transition cursor-pointer";
@@ -356,191 +379,237 @@
                     section.classList.add('hidden');
                     btn.className = "nav-btn w-full flex items-center gap-3 text-slate-400 hover:text-white hover:bg-slate-800 px-4 py-3 rounded-xl transition cursor-pointer";
                 }
-            });
-
-            document.getElementById('page-title').innerText = titles[tabName];
-        }
-
-        // 1. GÖZLƏYƏN MÜRACİƏTLƏRİ RENDER VƏ İDARƏ ET
-        function renderRequests() {
-            const tbody = document.getElementById('requests-table-body');
-            document.getElementById('pending-badge').innerText = pendingRequests.length;
-            document.getElementById('stat-pending-count').innerText = pendingRequests.length;
-
-            if (pendingRequests.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Gözləyən yeni müraciət yoxdur.</td></tr>`;
-                return;
             }
+        });
 
-            tbody.innerHTML = pendingRequests.map(req => `
-                <tr>
-                    <td class="p-4 font-medium text-white">${req.person}</td>
-                    <td class="p-4 font-semibold text-amber-400">${req.store}</td>
-                    <td class="p-4">${req.location}</td>
-                    <td class="p-4 font-mono text-xs">${req.phone}</td>
-                    <td class="p-4 text-right space-x-2">
-                        <button onclick="approveVendor(${req.id})" class="bg-emerald-500/10 hover:bg-emerald-500 hover:text-slate-950 text-emerald-400 border border-emerald-500/30 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer">
-                            Təsdiqlə və Mağaza Aç
-                        </button>
-                        <button onclick="rejectVendor(${req.id})" class="bg-rose-500/10 hover:bg-rose-500 hover:text-white text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer">
-                            Ləğv et
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+        const pageTitle = document.getElementById('page-title');
+        if (pageTitle) pageTitle.innerText = titles[tabName];
+    }
+
+    // 1. GÖZLƏYƏN MÜRACİƏTLƏRİ RENDER VƏ İDARƏ ET
+    function renderRequests() {
+        const tbody = document.getElementById('requests-table-body');
+        const badge = document.getElementById('pending-badge');
+        const statCount = document.getElementById('stat-pending-count');
+
+        if (badge) badge.innerText = pendingRequests.length;
+        if (statCount) statCount.innerText = pendingRequests.length;
+
+        if (!tbody) return;
+
+        if (pendingRequests.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Gözləyən yeni müraciət yoxdur.</td></tr>`;
+            return;
         }
 
-        function approveVendor(id) {
-            const req = pendingRequests.find(r => r.id === id);
-            if (!req) return;
+        tbody.innerHTML = pendingRequests.map(req => `
+            <tr>
+                <td class="p-4 font-medium text-white">${req.person}</td>
+                <td class="p-4 font-semibold text-amber-400">${req.store}</td>
+                <td class="p-4">${req.location}</td>
+                <td class="p-4 font-mono text-xs">${req.phone}</td>
+                <td class="p-4 text-right space-x-2">
+                    <button onclick="approveVendor(${req.id})" class="bg-emerald-500/10 hover:bg-emerald-500 hover:text-slate-950 text-emerald-400 border border-emerald-500/30 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer">
+                        Təsdiqlə və Mağaza Aç
+                    </button>
+                    <button onclick="rejectVendor(${req.id})" class="bg-rose-500/10 hover:bg-rose-500 hover:text-white text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer">
+                        Ləğv et
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
 
-            // Mağazalara əlavə et
-            stores.push({
-                id: Date.now(),
-                name: req.store,
-                location: req.location,
-                fee: 40,
-                lastPayment: 'YENİ (Ödənilməyib)',
-                status: 'active'
-            });
+    function approveVendor(id) {
+        const req = pendingRequests.find(r => r.id === id);
+        if (!req) return;
 
-            // Gözləyənlərdən sil
+        stores.push({
+            id: Date.now(),
+            name: req.store,
+            location: req.location,
+            fee: 40,
+            lastPayment: 'YENİ (Ödənilməyib)',
+            status: 'active'
+        });
+
+        pendingRequests = pendingRequests.filter(r => r.id !== id);
+        localStorage.setItem('pendingRequests', JSON.stringify(pendingRequests));
+
+        alert(`"${req.store}" təsdiqləndi və sistemdə aktiv mağaza kimi yaradıldı!`);
+        renderAll();
+    }
+
+    function rejectVendor(id) {
+        if (confirm("Bu müraciəti ləğv etmək istədiyinizdən əminsiniz?")) {
             pendingRequests = pendingRequests.filter(r => r.id !== id);
-            alert(`"${req.store}" təsdiqləndi və sistemdə aktiv mağaza kimi yaradıldı!`);
+            localStorage.setItem('pendingRequests', JSON.stringify(pendingRequests));
             renderAll();
         }
+    }
 
-        function rejectVendor(id) {
-            if (confirm("Bu müraciəti ləğv etmək istədiyinizdən əminsiniz?")) {
-                pendingRequests = pendingRequests.filter(r => r.id !== id);
-                renderAll();
-            }
-        }
+    // 2. MAĞAZALARI RENDER VƏ İDARƏ ET
+    function renderStores() {
+        const tbody = document.getElementById('stores-table-body');
+        if (!tbody) return;
 
-        // 2. MAĞAZALARI RENDER VƏ İDARƏ ET
-        function renderStores() {
-            const tbody = document.getElementById('stores-table-body');
-            tbody.innerHTML = stores.map(store => `
-                <tr class="${store.status === 'deactive' ? 'bg-rose-950/10' : ''}">
-                    <td class="p-4 font-bold text-white flex items-center gap-2">
-                        <div class="w-2 h-2 rounded-full ${store.status === 'active' ? 'bg-emerald-500' : 'bg-rose-500'}"></div>
-                        ${store.name}
-                    </td>
-                    <td class="p-4 text-xs">${store.location}</td>
-                    <td class="p-4 font-mono font-bold text-amber-400">${store.fee} AZN</td>
-                    <td class="p-4 text-xs ${store.status === 'deactive' ? 'text-rose-400 font-bold' : 'text-slate-400'}">${store.lastPayment}</td>
-                    <td class="p-4">
-                        <span class="${store.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border-rose-500/20'} border text-xs px-2.5 py-1 rounded-full font-bold">
-                            ${store.status === 'active' ? 'Aktiv' : 'Deaktiv (Borclu)'}
-                        </span>
-                    </td>
-                    <td class="p-4 text-right space-x-2">
-                        ${store.status === 'active' ? 
-                            `<button onclick="toggleStoreStatus(${store.id})" class="bg-rose-500/10 hover:bg-rose-500 hover:text-white text-rose-400 border border-rose-500/30 px-3 py-1 rounded-lg text-xs font-semibold transition cursor-pointer">Deaktiv Et</button>` :
-                            `<button onclick="confirmPayment(${store.id})" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-3 py-1 rounded-lg text-xs transition cursor-pointer">Ödənişi Qəbul Et</button>`
-                        }
-                    </td>
-                </tr>
-            `).join('');
-        }
+        tbody.innerHTML = stores.map(store => `
+            <tr class="${store.status === 'deactive' ? 'bg-rose-950/10' : ''}">
+                <td class="p-4 font-bold text-white flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full ${store.status === 'active' ? 'bg-emerald-500' : 'bg-rose-500'}"></div>
+                    ${store.name}
+                </td>
+                <td class="p-4 text-xs">${store.location}</td>
+                <td class="p-4 font-mono font-bold text-amber-400">${store.fee} AZN</td>
+                <td class="p-4 text-xs ${store.status === 'deactive' ? 'text-rose-400 font-bold' : 'text-slate-400'}">${store.lastPayment}</td>
+                <td class="p-4">
+                    <span class="${store.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border-rose-500/20'} border text-xs px-2.5 py-1 rounded-full font-bold">
+                        ${store.status === 'active' ? 'Aktiv' : 'Deaktiv (Borclu)'}
+                    </span>
+                </td>
+                <td class="p-4 text-right space-x-2">
+                    ${store.status === 'active' ? 
+                        `<button onclick="toggleStoreStatus(${store.id})" class="bg-rose-500/10 hover:bg-rose-500 hover:text-white text-rose-400 border border-rose-500/30 px-3 py-1 rounded-lg text-xs font-semibold transition cursor-pointer">Deaktiv Et</button>` :
+                        `<button onclick="confirmPayment(${store.id})" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-3 py-1 rounded-lg text-xs transition cursor-pointer">Ödənişi Qəbul Et</button>`
+                    }
+                </td>
+            </tr>
+        `).join('');
+    }
 
-        function filterStores() {
-            const query = document.getElementById('storeSearchInput').value.toLowerCase();
-            const rows = document.querySelectorAll('#stores-table-body tr');
-            rows.forEach(row => {
-                const text = row.innerText.toLowerCase();
-                row.style.display = text.includes(query) ? '' : 'none';
-            });
-        }
+    function filterStores() {
+        const query = document.getElementById('storeSearchInput').value.toLowerCase();
+        const rows = document.querySelectorAll('#stores-table-body tr');
+        rows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            row.style.display = text.includes(query) ? '' : 'none';
+        });
+    }
 
-        function toggleStoreStatus(id) {
-            const store = stores.find(s => s.id === id);
-            if (store && confirm(`"${store.name}" mağazasını deaktiv etmək istəyirsiniz?`)) {
+    async function toggleStoreStatus(id) {
+        const store = stores.find(s => s.id === id);
+        if (!store) return;
+
+        const newStatus = store.status === 'active' ? 'inactive' : 'active';
+        if (confirm(`"${store.name}" mağazasını ${newStatus === 'inactive' ? 'deaktiv' : 'aktiv'} etmək istəyirsiniz?`)) {
+            try {
+                const res = await fetch(`${API_URL}/admin/vendors/${id}/status`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+
+                if (res.ok) {
+                    store.status = newStatus === 'active' ? 'active' : 'deactive';
+                    renderAll();
+                }
+            } catch (err) {
+                console.error("Status dəyişmə xətası:", err);
+                // API olmasa belə lokal göstərmək üçün:
                 store.status = store.status === 'active' ? 'deactive' : 'active';
                 renderAll();
             }
         }
+    }
 
-        // 3. AYLIQ ÖDƏNİŞLƏRİ RENDER VƏ İDARƏ ET
-        function renderPayments() {
-            const tbody = document.getElementById('payments-table-body');
-            const deactiveStores = stores.filter(s => s.status === 'deactive');
+    // 3. AYLIQ ÖDƏNİŞLƏRİ RENDER VƏ İDARƏ ET
+    function renderPayments() {
+        const tbody = document.getElementById('payments-table-body');
+        if (!tbody) return;
 
-            if (deactiveStores.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Borcu olan mağaza yoxdur. Hamı ödənişini edib!</td></tr>`;
-                return;
-            }
+        const deactiveStores = stores.filter(s => s.status === 'deactive');
 
-            tbody.innerHTML = deactiveStores.map(store => `
-                <tr>
-                    <td class="p-4 font-bold text-white">${store.name}</td>
-                    <td class="p-4 text-xs">${store.location}</td>
-                    <td class="p-4 font-mono font-bold text-rose-400">${store.fee} AZN</td>
-                    <td class="p-4 text-xs text-rose-400 font-bold">${store.lastPayment}</td>
-                    <td class="p-4 text-right">
-                        <button onclick="confirmPayment(${store.id})" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-4 py-1.5 rounded-lg text-xs transition cursor-pointer">
-                            Ödənişi Qəbul Et & Aktivləşdir
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+        if (deactiveStores.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Borcu olan mağaza yoxdur. Hamı ödənişini edib!</td></tr>`;
+            return;
         }
 
-        function confirmPayment(id) {
-            const store = stores.find(s => s.id === id);
-            if (store) {
-                store.status = 'active';
-                store.lastPayment = new Date().toLocaleDateString('az-AZ');
-                alert(`"${store.name}" üçün aylıq ödəniş qəbul olundu. Mağaza təzədən AKTİV edildi.`);
-                renderAll();
-            }
-        }
+        tbody.innerHTML = deactiveStores.map(store => `
+            <tr>
+                <td class="p-4 font-bold text-white">${store.name}</td>
+                <td class="p-4 text-xs">${store.location}</td>
+                <td class="p-4 font-mono font-bold text-rose-400">${store.fee} AZN</td>
+                <td class="p-4 text-xs text-rose-400 font-bold">${store.lastPayment}</td>
+                <td class="p-4 text-right">
+                    <button onclick="confirmPayment(${store.id})" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-4 py-1.5 rounded-lg text-xs transition cursor-pointer">
+                        Ödənişi Qəbul Et & Aktivləşdir
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
 
-        // STATİSTİKALARI YENİLƏ
-        function updateStats() {
-            const activeStores = stores.filter(s => s.status === 'active');
-            const deactiveStores = stores.filter(s => s.status === 'deactive');
-            
-            document.getElementById('stat-active-count').innerText = activeStores.length;
-            document.getElementById('stat-debt-count').innerText = deactiveStores.length;
-            
-            const totalRevenue = activeStores.reduce((acc, curr) => acc + curr.fee, 0);
-            document.getElementById('stat-revenue').innerText = `${totalRevenue} AZN`;
-        }
+    async function confirmPayment(id) {
+        const store = stores.find(s => s.id === id);
+        if (!store) return;
 
-        // MODAL FUNKSİYALARI
-        function openNewStoreModal() {
-            document.getElementById('newStoreModal').classList.remove('hidden');
-        }
-
-        function closeNewStoreModal() {
-            document.getElementById('newStoreModal').classList.add('hidden');
-        }
-
-        function handleCreateStore(e) {
-            e.preventDefault();
-            const name = document.getElementById('modal-store-name').value;
-            const location = document.getElementById('modal-store-location').value;
-            const fee = parseFloat(document.getElementById('modal-store-fee').value) || 40;
-
-            stores.push({
-                id: Date.now(),
-                name: name,
-                location: location,
-                fee: fee,
-                lastPayment: new Date().toLocaleDateString('az-AZ'),
-                status: 'active'
+        try {
+            await fetch(`${API_URL}/admin/vendors/${id}/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'active' })
             });
-
-            alert(`"${name}" mağazası uğurla yaradıldı!`);
-            closeNewStoreModal();
-            renderAll();
+        } catch (err) {
+            console.error(err);
         }
 
-        function handleSaveSettings(e) {
-            e.preventDefault();
-            alert("Platforma ayarları uğurla yadda saxlanıldı!");
-        }
-    </script>
+        store.status = 'active';
+        store.lastPayment = new Date().toLocaleDateString('az-AZ');
+        alert(`"${store.name}" üçün aylıq ödəniş qəbul olundu. Mağaza təzədən AKTİV edildi.`);
+        renderAll();
+    }
+
+    // STATİSTİKALARI YENİLƏ
+    function updateStats() {
+        const activeStores = stores.filter(s => s.status === 'active');
+        const deactiveStores = stores.filter(s => s.status === 'deactive');
+        
+        const activeElem = document.getElementById('stat-active-count');
+        const debtElem = document.getElementById('stat-debt-count');
+        const revElem = document.getElementById('stat-revenue');
+
+        if (activeElem) activeElem.innerText = activeStores.length;
+        if (debtElem) debtElem.innerText = deactiveStores.length;
+        
+        const totalRevenue = activeStores.reduce((acc, curr) => acc + curr.fee, 0);
+        if (revElem) revElem.innerText = `${totalRevenue} AZN`;
+    }
+
+    // MODAL FUNKSİYALARI
+    function openNewStoreModal() {
+        const modal = document.getElementById('newStoreModal');
+        if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeNewStoreModal() {
+        const modal = document.getElementById('newStoreModal');
+        if (modal) modal.classList.add('hidden');
+    }
+
+    function handleCreateStore(e) {
+        e.preventDefault();
+        const name = document.getElementById('modal-store-name').value;
+        const location = document.getElementById('modal-store-location').value;
+        const fee = parseFloat(document.getElementById('modal-store-fee').value) || 40;
+
+        stores.push({
+            id: Date.now(),
+            name: name,
+            location: location,
+            fee: fee,
+            lastPayment: new Date().toLocaleDateString('az-AZ'),
+            status: 'active'
+        });
+
+        alert(`"${name}" mağazası uğurla yaradıldı!`);
+        closeNewStoreModal();
+        renderAll();
+    }
+
+    function handleSaveSettings(e) {
+        e.preventDefault();
+        alert("Platforma ayarları uğurla yadda saxlanıldı!");
+    }
+</script>
 </body>
 </html>
