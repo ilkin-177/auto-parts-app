@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -391,9 +393,12 @@
         </div>
     </div>
 
-    <!-- SCRIPT-LƏR (MƏNTİQ VƏ FUNKSİYALAR) -->
+    <!-- SCRIPT-LƏR (SUPABASE MƏNTİQİ VƏ FUNKSİYALAR) -->
     <script>
-    const API_URL = "http://localhost:5000/api";
+    // SUPABASE CONFIG
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     // DATA STATE
     let pendingRequests = [];
@@ -401,36 +406,62 @@
 
     // İNİTİALİZASİYA
     document.addEventListener('DOMContentLoaded', () => {
-        loadDataFromAPI();
+        loadDataFromSupabase();
+        listenToRealtime();
     });
 
-    // API-dən məlumatların çəkilməsi
-    async function loadDataFromAPI() {
-        try {
-            pendingRequests = JSON.parse(localStorage.getItem('pendingRequests')) || [
-                { id: 101, person: 'Elvin Məmmədov', store: 'Baku Auto Parts', location: 'Bakı - Nərimanov', phone: '+994 50 123 45 67' },
-                { id: 102, person: 'Anar Qasımov', store: 'Gəncə Ehtiyat Hissələri', location: 'Gəncə', phone: '+994 55 987 65 43' }
-            ];
+    // Real-time Sinxronizasiya
+    function listenToRealtime() {
+        _supabase
+            .channel('public:stores')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'stores' }, () => {
+                loadDataFromSupabase();
+            })
+            .subscribe();
 
-            const res = await fetch(`${API_URL}/admin/vendors`);
-            if (res.ok) {
-                const apiVendors = await res.json();
-                stores = apiVendors.map(v => ({
+        _supabase
+            .channel('public:pending_requests')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'pending_requests' }, () => {
+                loadDataFromSupabase();
+            })
+            .subscribe();
+    }
+
+    // Supabase-dən məlumatların çəkilməsi
+    async function loadDataFromSupabase() {
+        try {
+            // 1. Gözləyən müraciətləri gətir
+            const { data: reqData, error: reqErr } = await _supabase
+                .from('pending_requests')
+                .select('*');
+            
+            if (!reqErr && reqData) {
+                pendingRequests = reqData;
+            }
+
+            // 2. Mağazaları gətir
+            const { data: storeData, error: storeErr } = await _supabase
+                .from('stores')
+                .select('*')
+                .order('id', { ascending: false });
+
+            if (!storeErr && storeData) {
+                stores = storeData.map(v => ({
                     id: v.id,
                     name: v.store_name,
                     person: v.responsible_person || v.person || 'Məsul Şəxs',
-                    registrationNo: v.registration_no || v.voen || ('VÖEN-100' + v.id),
-                    email: v.email || `vendor${v.id}@store.az`,
-                    phone: v.phone || '+994 50 000 00 00',
-                    password: v.password || 'Auto123456',
-                    location: `${v.location_city || 'Bakı'}`,
-                    fee: parseFloat(v.monthly_fee) || 40,
-                    lastPayment: v.last_payment_date || '01.08.2026',
+                    registrationNo: v.registration_no || v.voen || ('VÖEN-' + v.id),
+                    email: v.store_email || v.email,
+                    phone: v.phone || '',
+                    password: v.store_pass || v.password,
+                    location: v.location || 'Bakı',
+                    fee: parseFloat(v.fee) || 40,
+                    lastPayment: v.last_payment || '01.08.2026',
                     status: v.status === 'active' ? 'active' : 'deactive'
                 }));
             }
         } catch (err) {
-            console.error("API əlaqə xətası:", err);
+            console.error("Supabase əlaqə xətası:", err);
         } finally {
             renderAll();
         }
@@ -493,10 +524,10 @@
 
         tbody.innerHTML = pendingRequests.map(req => `
             <tr>
-                <td class="p-4 font-medium text-white">${req.person}</td>
-                <td class="p-4 font-semibold text-amber-400">${req.store}</td>
-                <td class="p-4">${req.location}</td>
-                <td class="p-4 font-mono text-xs">${req.phone}</td>
+                <td class="p-4 font-medium text-white">${req.person || ''}</td>
+                <td class="p-4 font-semibold text-amber-400">${req.store || ''}</td>
+                <td class="p-4">${req.location || ''}</td>
+                <td class="p-4 font-mono text-xs">${req.phone || ''}</td>
                 <td class="p-4 text-right space-x-2">
                     <button onclick="approveVendor(${req.id})" class="bg-emerald-500/10 hover:bg-emerald-500 hover:text-slate-950 text-emerald-400 border border-emerald-500/30 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer">
                         Təsdiqlə və Mağaza Aç
@@ -509,36 +540,41 @@
         `).join('');
     }
 
-    function approveVendor(id) {
+    async function approveVendor(id) {
         const req = pendingRequests.find(r => r.id === id);
         if (!req) return;
 
-        stores.push({
-            id: Date.now(),
-            name: req.store,
-            person: req.person,
-            registrationNo: 'REG-' + Math.floor(100000 + Math.random() * 900000),
-            email: req.phone.replace(/[^0-9]/g, '') + '@store.az',
+        const newStore = {
+            store_name: req.store,
+            responsible_person: req.person,
+            registration_no: 'REG-' + Math.floor(100000 + Math.random() * 900000),
+            store_email: req.phone ? (req.phone.replace(/[^0-9]/g, '') + '@store.az') : 'vendor@store.az',
             phone: req.phone,
-            password: 'Auto' + Math.floor(1000 + Math.random() * 9000),
+            store_pass: 'Auto' + Math.floor(1000 + Math.random() * 9000),
             location: req.location,
             fee: 40,
-            lastPayment: 'YENİ (Ödənilməyib)',
+            last_payment: 'YENİ (Ödənilməyib)',
             status: 'active'
-        });
+        };
 
-        pendingRequests = pendingRequests.filter(r => r.id !== id);
-        localStorage.setItem('pendingRequests', JSON.stringify(pendingRequests));
-
-        alert(`"${req.store}" təsdiqləndi və sistemdə aktiv mağaza kimi yaradıldı!`);
-        renderAll();
+        const { error: insertErr } = await _supabase.from('stores').insert([newStore]);
+        if (!insertErr) {
+            await _supabase.from('pending_requests').delete().eq('id', id);
+            alert(`"${req.store}" təsdiqləndi və Supabase-də aktiv mağaza kimi yaradıldı!`);
+            loadDataFromSupabase();
+        } else {
+            alert("Xəta baş verdi: " + insertErr.message);
+        }
     }
 
-    function rejectVendor(id) {
+    async function rejectVendor(id) {
         if (confirm("Bu müraciəti ləğv etmək istədiyinizdən əminsiniz?")) {
-            pendingRequests = pendingRequests.filter(r => r.id !== id);
-            localStorage.setItem('pendingRequests', JSON.stringify(pendingRequests));
-            renderAll();
+            const { error } = await _supabase.from('pending_requests').delete().eq('id', id);
+            if (!error) {
+                loadDataFromSupabase();
+            } else {
+                alert("Xəta baş verdi: " + error.message);
+            }
         }
     }
 
@@ -597,19 +633,18 @@
         const store = stores.find(s => s.id === id);
         if (!store) return;
 
-        const newStatus = store.status === 'active' ? 'inactive' : 'active';
-        if (confirm(`"${store.name}" mağazasını ${newStatus === 'inactive' ? 'deaktiv' : 'aktiv'} etmək istəyirsiniz?`)) {
-            try {
-                await fetch(`${API_URL}/admin/vendors/${id}/status`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: newStatus })
-                });
-            } catch (err) {
-                console.error("Status dəyişmə xətası:", err);
+        const newStatus = store.status === 'active' ? 'deactive' : 'active';
+        if (confirm(`"${store.name}" mağazasını ${newStatus === 'deactive' ? 'deaktiv' : 'aktiv'} etmək istəyirsiniz?`)) {
+            const { error } = await _supabase
+                .from('stores')
+                .update({ status: newStatus })
+                .eq('id', id);
+
+            if (!error) {
+                loadDataFromSupabase();
+            } else {
+                alert("Xəta baş verdi: " + error.message);
             }
-            store.status = newStatus === 'active' ? 'active' : 'deactive';
-            renderAll();
         }
     }
 
@@ -651,45 +686,28 @@
         const pass = document.getElementById('edit-store-pass').value;
         const lastPayment = document.getElementById('edit-store-last-payment').value;
 
-        try {
-            await fetch(`${API_URL}/admin/vendors/${id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    store_name: name,
-                    responsible_person: person,
-                    registration_no: regNo,
-                    location_city: location,
-                    monthly_fee: fee,
-                    email: email,
-                    phone: phone,
-                    password: pass,
-                    last_payment_date: lastPayment
-                })
-            });
-        } catch (err) {
-            console.error("API xətası:", err);
-        }
-
-        const storeIndex = stores.findIndex(s => s.id == id);
-        if (storeIndex !== -1) {
-            stores[storeIndex] = {
-                ...stores[storeIndex],
-                name: name,
-                person: person,
-                registrationNo: regNo,
+        const { error } = await _supabase
+            .from('stores')
+            .update({
+                store_name: name,
+                responsible_person: person,
+                registration_no: regNo,
                 location: location,
                 fee: fee,
-                email: email,
+                store_email: email,
                 phone: phone,
-                password: pass,
-                lastPayment: lastPayment
-            };
-        }
+                store_pass: pass,
+                last_payment: lastPayment
+            })
+            .eq('id', id);
 
-        alert(`"${name}" mağazasının məlumatları uğurla yeniləndi!`);
-        closeEditStoreModal();
-        renderAll();
+        if (!error) {
+            alert(`"${name}" mağazasının məlumatları uğurla yeniləndi!`);
+            closeEditStoreModal();
+            loadDataFromSupabase();
+        } else {
+            alert("Xəta baş verdi: " + error.message);
+        }
     }
 
     // 3. AYLIQ ÖDƏNİŞLƏRİ RENDER VƏ İDARƏ ET
@@ -723,20 +741,19 @@
         const store = stores.find(s => s.id === id);
         if (!store) return;
 
-        try {
-            await fetch(`${API_URL}/admin/vendors/${id}/status`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: 'active' })
-            });
-        } catch (err) {
-            console.error(err);
-        }
+        const today = new Date().toLocaleDateString('az-AZ');
 
-        store.status = 'active';
-        store.lastPayment = new Date().toLocaleDateString('az-AZ');
-        alert(`"${store.name}" üçün aylıq ödəniş qəbul olundu. Mağaza təzədən AKTİV edildi.`);
-        renderAll();
+        const { error } = await _supabase
+            .from('stores')
+            .update({ status: 'active', last_payment: today })
+            .eq('id', id);
+
+        if (!error) {
+            alert(`"${store.name}" üçün aylıq ödəniş qəbul olundu. Mağaza təzədən AKTİV edildi.`);
+            loadDataFromSupabase();
+        } else {
+            alert("Xəta baş verdi: " + error.message);
+        }
     }
 
     // STATİSTİKALARI YENİLƏ
@@ -778,51 +795,28 @@
         const pass = document.getElementById('modal-store-pass').value;
         const lastPayment = document.getElementById('modal-store-last-payment').value;
 
-        try {
-            const res = await fetch(`${API_URL}/admin/vendors`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    store_name: name,
-                    responsible_person: person,
-                    registration_no: regNo,
-                    location_city: location,
-                    monthly_fee: fee,
-                    email: email,
-                    phone: phone,
-                    password: pass,
-                    last_payment_date: lastPayment,
-                    status: 'active'
-                })
-            });
-
-            if (res.ok) {
-                alert(`"${name}" mağazası uğurla bazaya əlavə edildi!`);
-                closeNewStoreModal();
-                loadDataFromAPI();
-                return;
-            }
-        } catch (err) {
-            console.error("API Xətası:", err);
-        }
-
-        stores.push({
-            id: Date.now(),
-            name: name,
-            person: person,
-            registrationNo: regNo,
-            email: email,
-            phone: phone,
-            password: pass,
+        const newStore = {
+            store_name: name,
+            responsible_person: person,
+            registration_no: regNo,
             location: location,
             fee: fee,
-            lastPayment: lastPayment || new Date().toLocaleDateString('az-AZ'),
+            store_email: email,
+            phone: phone,
+            store_pass: pass,
+            last_payment: lastPayment || new Date().toLocaleDateString('az-AZ'),
             status: 'active'
-        });
+        };
 
-        alert(`"${name}" mağazası uğurla yaradıldı!`);
-        closeNewStoreModal();
-        renderAll();
+        const { error } = await _supabase.from('stores').insert([newStore]);
+
+        if (!error) {
+            alert(`"${name}" mağazası uğurla Supabase-ə əlavə edildi!`);
+            closeNewStoreModal();
+            loadDataFromSupabase();
+        } else {
+            alert("Xəta baş verdi: " + error.message);
+        }
     }
 
     function handleSaveSettings(e) {
