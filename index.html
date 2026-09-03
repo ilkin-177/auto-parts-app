@@ -31,21 +31,20 @@
     <nav class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
             <!-- Logo -->
-            <img src="auto_parts_logo_160x40.png" alt="AutoParts Logo" class="h-10 w-auto">
             <a href="#" class="flex items-center gap-2 text-2xl font-black tracking-wider">
+                <img src="auto_parts_logo_160x40.png" alt="AutoParts Logo" class="h-10 w-auto">
             </a>
 
-            <!-- Məkan / Şəhər Seçimi -->
+            <!-- Məkan / Şəhər Seçimi (Navbar) -->
             <div class="flex items-center gap-2 bg-slate-800 px-3 py-2 rounded-xl text-sm border border-slate-700">
                 <i data-lucide="map-pin" class="text-amber-500 w-4 h-4"></i>
-                <select id="locationSelect" class="bg-transparent text-slate-200 outline-none cursor-pointer text-sm">
-                    <option value="all" class="bg-slate-800">Bütün Azərbaycan</option>
-                    <option value="baku-narimanov" class="bg-slate-800">Bakı - Nərimanov r.</option>
-                    <option value="baku-yasamal" class="bg-slate-800">Bakı - Yasamal r.</option>
-                    <option value="baku-nasimi" class="bg-slate-800">Bakı - Nəsimi r.</option>
-                    <option value="ganja" class="bg-slate-800">Gəncə</option>
-                    <option value="sumqayit" class="bg-slate-800">Sumqayıt</option>
-                </select>
+                <input 
+                    list="locationsList" 
+                    id="locationSelect" 
+                    placeholder="Bütün Azərbaycan" 
+                    oninput="syncLocationFilter(this.value)"
+                    class="bg-transparent text-slate-200 outline-none text-sm w-36 sm:w-48 placeholder-slate-400"
+                />
             </div>
 
             <!-- Düymələr: Satıcı Ol və Giriş / Profil -->
@@ -77,40 +76,64 @@
             <div class="bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-2xl border border-slate-800">
                 <!-- Dropdown Filtrlər -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-                    <select id="brandSelect" class="bg-slate-800 border border-slate-700 text-slate-200 p-3 rounded-xl text-sm outline-none focus:border-amber-500">
+                    <!-- Marka -->
+                    <select id="brandSelect" onchange="onBrandChange()" class="bg-slate-800 border border-slate-700 text-slate-200 p-3 rounded-xl text-sm outline-none focus:border-amber-500">
                         <option value="">1. Marka Seçin</option>
                     </select>
 
-                    <select id="modelSelect" class="bg-slate-800 border border-slate-700 text-slate-200 p-3 rounded-xl text-sm outline-none focus:border-amber-500">
+                    <!-- Model -->
+                    <select id="modelSelect" onchange="fetchProducts()" class="bg-slate-800 border border-slate-700 text-slate-200 p-3 rounded-xl text-sm outline-none focus:border-amber-500">
                         <option value="">2. Model Seçin</option>
                     </select>
 
-                    <select class="bg-slate-800 border border-slate-700 text-slate-200 p-3 rounded-xl text-sm outline-none focus:border-amber-500">
-                        <option value="">3. İl Seçin</option>
-                        <option value="2015">2015</option>
-                        <option value="2016">2016</option>
-                        <option value="2017">2017</option>
-                    </select>
+                    <!-- İl Aralığı (Min - Max) -->
+                    <div class="grid grid-cols-2 gap-2">
+                        <input 
+                            type="number" 
+                            id="yearFromInput" 
+                            placeholder="İldən (məs: 2015)" 
+                            oninput="fetchProducts()"
+                            class="bg-slate-800 border border-slate-700 text-slate-200 p-3 rounded-xl text-sm outline-none focus:border-amber-500 w-full"
+                        />
+                        <input 
+                            type="number" 
+                            id="yearToInput" 
+                            placeholder="İlə (məs: 2020)" 
+                            oninput="fetchProducts()"
+                            class="bg-slate-800 border border-slate-700 text-slate-200 p-3 rounded-xl text-sm outline-none focus:border-amber-500 w-full"
+                        />
+                    </div>
 
-                    <select class="bg-slate-800 border border-slate-700 text-slate-200 p-3 rounded-xl text-sm outline-none focus:border-amber-500">
-                        <option value="">4. Şəhər / Rayon</option>
-                        <option value="baku-narimanov">Bakı - Nərimanov</option>
-                        <option value="baku-yasamal">Bakı - Yasamal</option>
-                        <option value="ganja">Gəncə</option>
-                    </select>
+                    <!-- Şəhər / Rayon (Əllə yazılan və siyahıdan seçilən) -->
+                    <div class="relative">
+                        <input 
+                            list="locationsList" 
+                            id="regionSelect" 
+                            placeholder="4. Şəhər / Rayon yazıb seçin" 
+                            oninput="fetchProducts()"
+                            class="bg-slate-800 border border-slate-700 text-slate-200 p-3 rounded-xl text-sm outline-none focus:border-amber-500 w-full placeholder-slate-400"
+                        />
+                    </div>
                 </div>
+
+                <!-- Bütün məkanlar üçün tək datalist (JS ilə dolur) -->
+                <datalist id="locationsList">
+                    <!-- Datalist variantları JS tərəfindən dinamik əlavə olunacaq -->
+                </datalist>
 
                 <!-- Input + Axtar Düyməsi -->
                 <div class="flex flex-col sm:flex-row gap-3">
                     <div class="relative flex-1">
                         <input 
                             type="text" 
+                            id="searchInput"
+                            oninput="fetchProducts()"
                             placeholder="Ehtiyat hissəsinin adı və ya OEM kodu (məs: 34116794301)"
                             class="w-full bg-slate-800 border border-slate-700 text-slate-200 pl-11 pr-4 py-3 rounded-xl text-sm outline-none focus:border-amber-500"
                         />
                         <i data-lucide="wrench" class="absolute left-4 top-3.5 text-slate-500 w-4 h-4"></i>
                     </div>
-                    <button class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-8 py-3 rounded-xl flex items-center justify-center gap-2 transition cursor-pointer">
+                    <button onclick="fetchProducts()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-8 py-3 rounded-xl flex items-center justify-center gap-2 transition cursor-pointer">
                         <i data-lucide="search" class="w-5 h-5"></i>
                         <span>Axtar</span>
                     </button>
@@ -120,54 +143,17 @@
     </section>
 
     <!-- 3. MƏHSULLAR VƏ MAĞAZALAR SİYAHISI -->
-    <main class="max-w-7xl mx-auto px-4 py-10 flex-grow">
+    <main class="max-w-7xl mx-auto px-4 py-10 flex-grow w-full">
         <div class="flex items-center justify-between mb-6">
             <div>
                 <h2 class="text-2xl font-bold text-white">Yaxınlıqdakı Mağazaların Məhsulları</h2>
                 <p class="text-slate-400 text-sm">Seçilmiş region üzrə real stokda olan ehtiyat hissələri</p>
             </div>
-            <a href="#" class="text-amber-500 hover:underline text-sm font-semibold">Bütününü gör &rarr;</a>
+            <a href="javascript:void(0)" onclick="resetFilters()" class="text-amber-500 hover:underline text-sm font-semibold">Bütününü gör &rarr;</a>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            <!-- Məhsul 1 -->
-            <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden flex flex-col justify-between hover:border-slate-600 transition">
-                <div>
-                    <div class="h-44 bg-slate-900 relative flex items-center justify-center p-4">
-                        <i data-lucide="disc" class="w-20 h-20 text-slate-700"></i>
-                        <span class="absolute top-3 right-3 bg-slate-800 text-slate-300 text-xs px-2.5 py-1 rounded-md border border-slate-700 font-mono">
-                            OEM: 34116794301
-                        </span>
-                    </div>
-                    <div class="p-4">
-                        <h3 class="font-bold text-white text-base mb-1">Ön Tormoz Bəndi (Kolodka)</h3>
-                        <p class="text-slate-400 text-xs mb-3">BMW 5 Series (F10) 2010-2016</p>
-                        
-                        <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-700/50 space-y-1.5 text-xs">
-                            <div class="flex items-center gap-2 text-slate-200 font-medium">
-                                <i data-lucide="store" class="w-4 h-4 text-amber-500"></i>
-                                <span>Baku Auto Parts MMC</span>
-                            </div>
-                            <div class="flex items-center gap-2 text-slate-400">
-                                <i data-lucide="map-pin" class="w-4 h-4 text-slate-500"></i>
-                                <span>Bakı, Nərimanov r. (Ə. Rəcəbli)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-4 pt-0 flex items-center justify-between border-t border-slate-700/50 mt-2">
-                    <div>
-                        <span class="text-xl font-black text-amber-500">120 AZN</span>
-                        <div class="flex items-center gap-1 text-[11px] text-emerald-400 font-medium mt-0.5">
-                            <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
-                            <span>Stokda var</span>
-                        </div>
-                    </div>
-                    <button class="bg-slate-700 hover:bg-amber-500 hover:text-slate-950 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition cursor-pointer">
-                        Sifariş et
-                    </button>
-                </div>
-            </div>
+        <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- Məhsullar JS tərəfindən buraya doldurulacaq -->
         </div>
     </main>
 
@@ -303,29 +289,53 @@
         btn.disabled = false;
     }
 
-    // ÜMUMİ GİRİŞ MƏNTİQİ (Admin, Satıcı, Alıcı)
+    // ÜMUMİ GİRİŞ MƏNTİQİ (PROBLEM VƏ TƏHLÜKƏSİZLİK DÜZƏLDİLDİ)
     async function handleLoginSubmit(event) {
         event.preventDefault();
-        const emailInput = document.getElementById('login-email').value.trim();
+        const emailInput = document.getElementById('login-email').value.trim().toLowerCase();
         const passInput = document.getElementById('login-pass').value.trim();
         const submitBtn = document.getElementById('login-submit-btn');
 
         submitBtn.disabled = true;
 
-        // 1. SUPER ADMİN GİRİŞİ
-        if (emailInput === "admin@autoparts.az" && passInput === "admin-123456") {
+        // Bütün köhnə seans qalıqlarını təmizləyirik
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('activeVendor');
+        localStorage.removeItem('activeUser');
+        localStorage.removeItem('activeAdmin');
+
+        // 1. ADMİN GİRİŞİ (Supabase-də 'admins' cədvəlindən yoxlayır)
+        const { data: adminData } = await _supabase
+            .from('admins')
+            .select('*')
+            .ilike('email', emailInput)
+            .eq('password', passInput)
+            .maybeSingle();
+
+        if (adminData) {
             localStorage.setItem('userRole', 'admin');
+            localStorage.setItem('activeAdmin', JSON.stringify(adminData));
             window.location.href = "admin-dashboard.html";
             return;
         }
 
-        // 2. SATICI (VENDOR) GİRİŞİ (stores cədvəlindən yoxlanılır)
-        const { data: storeData, error: storeError } = await _supabase
+        // 2. SATICI GİRİŞİ (Sütun adlarında fərqlilik ehtimalına qarşı cədvəldən genişləndirilmiş yoxlama)
+        let { data: storeData } = await _supabase
             .from('stores')
             .select('*')
-            .eq('store_email', emailInput)
+            .ilike('store_email', emailInput)
             .eq('store_pass', passInput)
-            .single();
+            .maybeSingle();
+
+        if (!storeData) {
+            const { data: storeAlt } = await _supabase
+                .from('stores')
+                .select('*')
+                .ilike('email', emailInput)
+                .eq('password', passInput)
+                .maybeSingle();
+            storeData = storeAlt;
+        }
 
         if (storeData) {
             localStorage.setItem('userRole', 'vendor');
@@ -334,13 +344,13 @@
             return;
         }
 
-        // 3. ALICI (BUYER) GİRİŞİ (users cədvəlindən yoxlanılır)
-        const { data: userData, error: userError } = await _supabase
+        // 3. ALICI GİRİŞİ
+        const { data: userData } = await _supabase
             .from('users')
             .select('*')
-            .eq('email', emailInput)
+            .ilike('email', emailInput)
             .eq('password', passInput)
-            .single();
+            .maybeSingle();
 
         if (userData) {
             localStorage.setItem('userRole', 'buyer');
@@ -355,7 +365,6 @@
         submitBtn.disabled = false;
     }
 
-    // Səhifə açıldıqda daxil olmuş Alıcı interfeysini yeniləmək üçün
     function updateUIForLoggedInUser(user) {
         const navButtons = document.getElementById('nav-buttons');
         if (navButtons) {
@@ -375,7 +384,7 @@
         window.location.reload();
     }
 
-    // Dom yüklənərkən Alıcı seansını yoxlayır
+    // DOM YÜKLƏNDİKDƏ
     document.addEventListener("DOMContentLoaded", () => {
         const savedUser = localStorage.getItem('activeUser');
         const role = localStorage.getItem('userRole');
@@ -383,9 +392,11 @@
             updateUIForLoggedInUser(JSON.parse(savedUser));
         }
         loadBrands();
+        loadLocations(); // Bazadan Şəhər/Rayon məlumatlarını çəkir
+        fetchProducts();
     });
 
-    // Marka və Modellərin Yüklənməsi
+    // MARKA VƏ MODELLƏRİN YÜKLƏNMƏSİ
     async function loadBrands() {
         try {
             const { data } = await _supabase.from('products').select('brand');
@@ -398,6 +409,194 @@
             }
         } catch (err) { console.error(err); }
     }
-</script>
+
+    // BAZADAN ŞƏHƏR VƏ RAYON MƏLUMATLARININ DİNAMİK YÜKLƏNMƏSİ
+    async function loadLocations() {
+        try {
+            const { data: stores, error } = await _supabase
+                .from('stores')
+                .select('location, store_location, address');
+
+            if (error || !stores) return;
+
+            // Bütün ünvan imkanlarını tək array-ə yığırıq (heç bir sütun silinmədən)
+            const rawLocations = stores
+                .map(s => s.location || s.store_location || s.address)
+                .filter(Boolean);
+            
+            // Təkrar olunan yerləri təmizləyirik
+            const uniqueLocations = [...new Set(rawLocations)];
+
+            const datalist = document.getElementById("locationsList");
+            if (datalist) {
+                datalist.innerHTML = '';
+                uniqueLocations.forEach(loc => {
+                    datalist.innerHTML += `<option value="${loc}">`;
+                });
+            }
+        } catch (err) {
+            console.error("Məkanlar yüklənərkən xəta:", err);
+        }
+    }
+
+    async function onBrandChange() {
+        const brand = document.getElementById("brandSelect").value;
+        const modelSelect = document.getElementById("modelSelect");
+        modelSelect.innerHTML = '<option value="">2. Model Seçin</option>';
+
+        if (brand) {
+            const { data } = await _supabase.from('products').select('model').eq('brand', brand);
+            if (data) {
+                const models = [...new Set(data.map(i => i.model).filter(Boolean))];
+                models.forEach(m => modelSelect.innerHTML += `<option value="${m}">${m}</option>`);
+            }
+        }
+        fetchProducts();
+    }
+
+    function syncLocationFilter(val) {
+        document.getElementById('regionSelect').value = val;
+        fetchProducts();
+    }
+
+    function resetFilters() {
+        document.getElementById('brandSelect').value = '';
+        document.getElementById('modelSelect').value = '';
+        document.getElementById('yearFromInput').value = '';
+        document.getElementById('yearToInput').value = '';
+        document.getElementById('regionSelect').value = '';
+        document.getElementById('locationSelect').value = '';
+        document.getElementById('searchInput').value = '';
+        fetchProducts();
+    }
+
+    // MƏHSULLARIN VƏ MAĞAZA MƏLUMATLARININ SÜZÜLMƏSİ VƏ YÜKLƏNMƏSİ
+    async function fetchProducts() {
+        const brand = document.getElementById('brandSelect').value;
+        const model = document.getElementById('modelSelect').value;
+        const yearFrom = parseInt(document.getElementById('yearFromInput').value) || null;
+        const yearTo = parseInt(document.getElementById('yearToInput').value) || null;
+        const region = document.getElementById('regionSelect').value.trim().toLowerCase();
+        const search = document.getElementById('searchInput').value.trim().toLowerCase();
+
+        // Products və Mağaza məlumatlarını çəkirik
+        let { data: products, error } = await _supabase.from('products').select('*, stores(*)');
+
+        if (error) {
+            console.error("Məhsul yüklənərkən xəta:", error);
+            return;
+        }
+
+        const grid = document.getElementById('productsGrid');
+        grid.innerHTML = '';
+
+        if (!products || products.length === 0) {
+            grid.innerHTML = '<p class="col-span-full text-center text-slate-500 py-10">Heç bir ehtiyat hissəsi tapılmadı.</p>';
+            return;
+        }
+
+        // JS Tərəfində Kompleks Filtrləmə
+        const filtered = products.filter(item => {
+            // Mağazanın ünvanı (location, store_location və ya address sütunundan götürülür)
+            const storeLoc = item.stores?.location || item.stores?.store_location || item.stores?.address || '';
+
+            // 1. Marka Filtri
+            if (brand && item.brand !== brand) return false;
+
+            // 2. Model Filtri
+            if (model && item.model !== model) return false;
+
+            // 3. İl Aralığı (İldən - İlə)
+            const itemYear = parseInt(item.year);
+            if (!isNaN(itemYear)) {
+                if (yearFrom && itemYear < yearFrom) return false;
+                if (yearTo && itemYear > yearTo) return false;
+            } else if (yearFrom || yearTo) {
+                if (item.year) {
+                    const yearMatches = item.year.match(/\d{4}/g);
+                    if (yearMatches) {
+                        const minY = Math.min(...yearMatches.map(Number));
+                        const maxY = Math.max(...yearMatches.map(Number));
+                        if (yearFrom && maxY < yearFrom) return false;
+                        if (yearTo && minY > yearTo) return false;
+                    }
+                }
+            }
+
+            // 4. Region / Şəhər Filtri (Mağazanın ünvanına görə canlı axtarış)
+            if (region) {
+                if (!storeLoc.toLowerCase().includes(region)) return false;
+            }
+
+            // 5. Axtarış Sözü (Ad və ya OEM)
+            if (search) {
+                const nameMatch = (item.name || item.title || '').toLowerCase().includes(search);
+                const oemMatch = (item.oem || '').toLowerCase().includes(search);
+                const descMatch = (item.description || '').toLowerCase().includes(search);
+                if (!nameMatch && !oemMatch && !descMatch) return false;
+            }
+
+            return true;
+        });
+
+        if (filtered.length === 0) {
+            grid.innerHTML = '<p class="col-span-full text-center text-slate-500 py-10">Axtarışınıza uyğun ehtiyat hissəsi tapılmadı.</p>';
+            return;
+        }
+
+        // Məhsulları Render Etmək
+        filtered.forEach(p => {
+            // Mağaza adı və ünvan dinamik şəkildə yoxlanılır
+            const storeName = p.stores?.store_name || p.stores?.store || p.stores?.person || 'Mağaza';
+            const storeLoc = p.stores?.location || p.stores?.store_location || p.stores?.address || 'Ünvan qeyd olunmayıb';
+            
+            const title = p.name || p.title || 'Adsız Məhsul';
+            const imageContent = p.image 
+                ? `<img src="${p.image}" alt="${title}" class="h-full w-full object-cover">`
+                : `<i data-lucide="disc" class="w-20 h-20 text-slate-700"></i>`;
+
+            const card = document.createElement('div');
+            card.className = "bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden flex flex-col justify-between hover:border-slate-600 transition";
+            card.innerHTML = `
+                <div>
+                    <div class="h-44 bg-slate-900 relative flex items-center justify-center overflow-hidden">
+                        ${imageContent}
+                        ${p.oem ? `<span class="absolute top-3 right-3 bg-slate-800/90 backdrop-blur-md text-slate-300 text-xs px-2.5 py-1 rounded-md border border-slate-700 font-mono">OEM: ${p.oem}</span>` : ''}
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-white text-base mb-1 line-clamp-1">${title}</h3>
+                        <p class="text-slate-400 text-xs mb-3">${p.brand || ''} ${p.model || ''} ${p.year ? `(${p.year})` : ''}</p>
+                        
+                        <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-700/50 space-y-1.5 text-xs">
+                            <div class="flex items-center gap-2 text-slate-200 font-medium">
+                                <i data-lucide="store" class="w-4 h-4 text-amber-500"></i>
+                                <span class="truncate">${storeName}</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-slate-400">
+                                <i data-lucide="map-pin" class="w-4 h-4 text-slate-500"></i>
+                                <span class="truncate">${storeLoc}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 pt-0 flex items-center justify-between border-t border-slate-700/50 mt-2">
+                    <div>
+                        <span class="text-xl font-black text-amber-500">${p.price || 0} AZN</span>
+                        <div class="flex items-center gap-1 text-[11px] ${p.stock > 0 ? 'text-emerald-400' : 'text-red-400'} font-medium mt-0.5">
+                            <i data-lucide="${p.stock > 0 ? 'check-circle-2' : 'x-circle'}" class="w-3.5 h-3.5"></i>
+                            <span>${p.stock > 0 ? `Stokda var (${p.stock} əd.)` : 'Stokda yoxdur'}</span>
+                        </div>
+                    </div>
+                    <button class="bg-slate-700 hover:bg-amber-500 hover:text-slate-950 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition cursor-pointer">
+                        Sifariş et
+                    </button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+        lucide.createIcons();
+    }
+    </script>
 </body>
 </html>

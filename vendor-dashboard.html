@@ -25,30 +25,6 @@
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex">
 
-    <!-- LOGIN MODAL / DAXİLOLMA EKRANI -->
-    <div id="authOverlay" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl w-full max-w-md shadow-2xl text-center space-y-4">
-            <div class="w-12 h-12 bg-amber-500/10 text-amber-500 rounded-xl flex items-center justify-center mx-auto border border-amber-500/20">
-                <i data-lucide="store" class="w-6 h-6"></i>
-            </div>
-            <div>
-                <h2 class="text-xl font-bold text-white">Satıcı Panelinə Giriş</h2>
-                <p class="text-xs text-slate-400 mt-1">Admin panelində mağazaya təyin edilmiş email və parolu daxil edin.</p>
-            </div>
-            <form onsubmit="handleVendorLogin(event)" class="space-y-3 text-left">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Mağaza Email-i</label>
-                    <input type="email" id="vendor-login-email" required placeholder="magaza@autoparts.az" class="w-full bg-slate-800 border border-slate-700 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Mağaza Parolu</label>
-                    <input type="password" id="vendor-login-pass" required placeholder="••••••••" class="w-full bg-slate-800 border border-slate-700 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
-                </div>
-                <button type="submit" id="login-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition mt-2 cursor-pointer shadow-lg shadow-amber-500/10">Daxil Ol</button>
-            </form>
-        </div>
-    </div>
-
     <!-- 1. SOL SIDEBAR NAVİQASİYA -->
     <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0 hidden md:flex">
         <div>
@@ -81,9 +57,9 @@
             </nav>
         </div>
 
-        <!-- Mağaza Profili -->
-        <div class="p-4 border-t border-slate-800">
-            <div class="flex items-center gap-3 p-2 bg-slate-800/50 rounded-xl mb-2">
+        <!-- Mağaza Profili və Çıxış düyməsi -->
+        <div class="p-4 border-t border-slate-800 space-y-2">
+            <div class="flex items-center gap-3 p-2 bg-slate-800/50 rounded-xl">
                 <div id="store-avatar" class="w-9 h-9 bg-amber-500/20 text-amber-500 rounded-lg flex items-center justify-center font-bold">
                     --
                 </div>
@@ -92,9 +68,11 @@
                     <p id="sidebar-store-email" class="text-[10px] text-slate-400 truncate">--</p>
                 </div>
             </div>
-            <button onclick="handleLogout()" class="flex items-center gap-2 text-rose-400 hover:bg-rose-500/10 p-2.5 rounded-xl text-xs font-semibold transition w-full cursor-pointer">
+
+            <!-- ÇIXIŞ İŞARƏSİ VƏ DÜYMƏSİ -->
+            <button onclick="logoutStore()" class="w-full flex items-center justify-center gap-2 text-rose-400 hover:text-white hover:bg-rose-500/20 border border-rose-500/20 px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer">
                 <i data-lucide="log-out" class="w-4 h-4"></i>
-                <span>Çıxış Et</span>
+                <span>Hesabdan Çıxış</span>
             </button>
         </div>
     </aside>
@@ -302,22 +280,22 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1">Marka *</label>
-                        <select id="modal-brand" onchange="updateModelDropdown()" required class="w-full bg-slate-800 border border-slate-700 text-slate-100 p-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
-                            <option value="">Marka seçin...</option>
-                            <option value="Toyota">Toyota</option>
-                            <option value="BMW">BMW</option>
-                            <option value="Mercedes-Benz">Mercedes-Benz</option>
-                            <option value="Hyundai">Hyundai</option>
-                            <option value="Kia">Kia</option>
-                            <option value="Nissan">Nissan</option>
-                        </select>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Marka (Seçin və ya yazın) *</label>
+                        <input type="text" id="modal-brand" list="brands-list" oninput="updateModelDropdown()" required placeholder="Məs: Toyota" class="w-full bg-slate-800 border border-slate-700 text-slate-100 p-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                        <datalist id="brands-list">
+                            <option value="Toyota"></option>
+                            <option value="BMW"></option>
+                            <option value="Mercedes-Benz"></option>
+                            <option value="Hyundai"></option>
+                            <option value="Kia"></option>
+                            <option value="Nissan"></option>
+                        </datalist>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1">Model *</label>
-                        <select id="modal-model" required class="w-full bg-slate-800 border border-slate-700 text-slate-100 p-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
-                            <option value="">Əvvəlcə marka seçin</option>
-                        </select>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Model (Seçin və ya yazın) *</label>
+                        <input type="text" id="modal-model" list="models-list" required placeholder="Məs: Camry" class="w-full bg-slate-800 border border-slate-700 text-slate-100 p-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                        <datalist id="models-list">
+                        </datalist>
                     </div>
                 </div>
 
@@ -366,7 +344,6 @@
 
     <!-- SUPABASE VƏ ƏLAQƏLƏNDİRMƏ LOGİKASI -->
     <script>
-        // SUPABASE KONFİQURASİYASI
         const SUPABASE_URL = "https://nfessouynmrhqkppbdbg.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5mZXNzb3V5bm1yaHFrcHBiZGJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzMzk1MzgsImV4cCI6MjEwMzkxNTUzOH0.zQ0la4lh4tlZtufUhJVwXokSKcrN7A8dSLoFn7VX2YI";
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -386,79 +363,81 @@
         };
 
         document.addEventListener('DOMContentLoaded', () => {
-            checkAuth();
+            initStoreSession();
             lucide.createIcons();
         });
 
-        // 1. SUPABASE İLƏ AUTHENTICATION VƏ SESSİYA YOXLANILMASI
-        async function checkAuth() {
-            const activeStoreId = sessionStorage.getItem('activeVendorStoreId');
-            
-            if (activeStoreId) {
-                try {
-                    const { data, error } = await _supabase
-                        .from('stores')
-                        .select('*')
-                        .eq('id', activeStoreId)
-                        .single();
-
-                    if (!error && data) {
-                        currentStore = data;
-                        document.getElementById('authOverlay').classList.add('hidden');
-                        await fetchStoreData();
-                        return;
-                    }
-                } catch (err) {
-                    console.error("Giriş verifikasiya xətası:", err);
-                }
-            }
-            document.getElementById('authOverlay').classList.remove('hidden');
-        }
-
-        async function handleVendorLogin(e) {
-            e.preventDefault();
-            const emailInput = document.getElementById('vendor-login-email').value.trim().toLowerCase();
-            const passInput = document.getElementById('vendor-login-pass').value.trim();
-            const loginBtn = document.getElementById('login-btn');
-
-            loginBtn.innerText = "Yoxlanılır...";
-            loginBtn.disabled = true;
-
+        // 1. DÜZƏLDİLMİŞ SESSİYA FUNKSİYASI
+        async function initStoreSession() {
             try {
-                // Email və Parola görə Supabase 'stores' cədvəlindən yoxlayırıq
+                let activeStoreId = sessionStorage.getItem('activeVendorStoreId') || localStorage.getItem('activeVendorStoreId');
+
+                if (!activeStoreId) {
+                    const vendorRaw = localStorage.getItem('activeVendor') || sessionStorage.getItem('activeVendor');
+                    if (vendorRaw) {
+                        try {
+                            const parsedVendor = JSON.parse(vendorRaw);
+                            activeStoreId = parsedVendor.id || parsedVendor.store_id || parsedVendor.storeId;
+                        } catch (e) {
+                            console.error("activeVendor oxunarkən xəta:", e);
+                        }
+                    }
+                }
+
+                if (!activeStoreId) {
+                    alert("Sessiya tapılmadı! Lütfən yenidən daxil olun.");
+                    window.location.href = "index_3.html";
+                    return;
+                }
+
                 const { data, error } = await _supabase
                     .from('stores')
                     .select('*')
-                    .or(`store_email.eq.${emailInput},email.eq.${emailInput}`)
-                    .or(`store_pass.eq.${passInput},password.eq.${passInput}`)
+                    .eq('id', activeStoreId)
                     .single();
 
                 if (error || !data) {
-                    alert("Xəta: Daxil etdiyiniz Email və ya Parol yanlışdır!");
-                } else {
-                    sessionStorage.setItem('activeVendorStoreId', data.id);
-                    currentStore = data;
-                    document.getElementById('authOverlay').classList.add('hidden');
+                    alert("Mağaza məlumatları tapılmadı!");
+                    window.location.href = "index_3.html";
+                    return;
+                }
+
+                currentStore = data;
+
+                if (currentStore.status === 'deactive') {
+                    alert("⚠️ Abunəlik müddətiniz bitdiyi üçün paneliniz bloklanıb! Lütfən abunəlik ödənişini edin.");
+                    window.location.href = "index_3.html?blocked=true";
+                    return;
+                }
+
+            } catch (err) {
+                console.error("Mağaza yüklənmə xətası:", err);
+            } finally {
+                if (currentStore) {
                     await fetchStoreData();
                 }
-            } catch (err) {
-                alert("Sistem xətası baş verdi: " + err.message);
-            } finally {
-                loginBtn.innerText = "Daxil Ol";
-                loginBtn.disabled = false;
             }
         }
 
-        function handleLogout() {
-            sessionStorage.removeItem('activeVendorStoreId');
-            window.location.reload();
+        async function logoutStore() {
+            if (confirm("Satıcı hesabından çıxmaq istədiyinizdən əminsiniz?")) {
+                try {
+                    await _supabase.auth.signOut();
+                } catch (e) {
+                    console.log("Supabase auth çıxış istisnası", e);
+                }
+                sessionStorage.removeItem('activeVendorStoreId');
+                localStorage.removeItem('activeVendorStoreId');
+                localStorage.removeItem('activeVendor');
+                localStorage.removeItem('userRole');
+                localStorage.removeItem('supabase.auth.token');
+                window.location.href = 'index_3.html';
+            }
         }
 
-        // 2. SUPABASE-DƏN MƏLUMATLARIN ÇƏKİLMƏSİ (PARALEL PROMISE.ALL)
         async function fetchStoreData() {
             if (!currentStore) return;
 
-            // UI Profil Yenilənməsi
             const storeName = currentStore.store_name || currentStore.name || 'Mağaza';
             const storeEmail = currentStore.store_email || currentStore.email || '-';
 
@@ -467,7 +446,6 @@
             document.getElementById('store-avatar').innerText = storeName.substring(0, 2).toUpperCase();
             document.getElementById('welcome-heading').innerText = `${storeName} paneline xoş gəldiniz! 👋`;
 
-            // Maliyyə Paneli İnfoları
             document.getElementById('finance-fee').innerText = `${currentStore.fee || 40} AZN / ay`;
             document.getElementById('finance-last-payment').innerText = currentStore.last_payment || 'YENİ';
             
@@ -488,7 +466,6 @@
             }
 
             try {
-                // Eyni vaxtda məhsulları və sifarişləri Supabase-dən çəkirik
                 const [productsRes, ordersRes] = await Promise.all([
                     _supabase.from('products').select('*').eq('store_id', currentStore.id).order('id', { ascending: false }),
                     _supabase.from('orders').select('*').eq('store_id', currentStore.id).order('id', { ascending: false })
@@ -511,7 +488,6 @@
             lucide.createIcons();
         }
 
-        // 3. EHTİYAT HİSSƏLƏRİ İDARƏETMƏSİ (CRUD)
         function renderProducts() {
             const tbody = document.getElementById('products-table-body');
             if (products.length === 0) {
@@ -561,9 +537,10 @@
                 store_id: currentStore.id,
                 image: uploadedBase64Image,
                 name: document.getElementById('modal-part-name').value.trim(),
+                title: document.getElementById('modal-part-name').value.trim(),
                 oem: document.getElementById('modal-oem-code').value.trim(),
-                brand: document.getElementById('modal-brand').value,
-                model: document.getElementById('modal-model').value,
+                brand: document.getElementById('modal-brand').value.trim(),
+                model: document.getElementById('modal-model').value.trim(),
                 year: document.getElementById('modal-year').value.trim(),
                 price: parseFloat(document.getElementById('modal-price').value) || 0,
                 stock: parseInt(document.getElementById('modal-stock').value) || 0,
@@ -602,7 +579,6 @@
             }
         }
 
-        // 4. SİFARİŞLƏR İDARƏETMƏSİ
         function renderOrders() {
             const tbody = document.getElementById('orders-table-body');
             const pendingOrdersCount = orders.filter(o => o.status === 'pending').length;
@@ -656,7 +632,6 @@
             }
         }
 
-        // ƏLAVƏ YARDIMÇI FUNKSİYALAR
         function filterProducts() {
             const query = document.getElementById('productSearchInput').value.toLowerCase();
             const rows = document.querySelectorAll('#products-table-body tr');
@@ -701,18 +676,16 @@
         }
 
         function updateModelDropdown() {
-            const brandSelect = document.getElementById('modal-brand');
-            const modelSelect = document.getElementById('modal-model');
-            const selectedBrand = brandSelect.value;
+            const brandVal = document.getElementById('modal-brand').value.trim();
+            const modelsList = document.getElementById('models-list');
 
-            modelSelect.innerHTML = '<option value="">Model seçin...</option>';
+            modelsList.innerHTML = '';
 
-            if (selectedBrand && carModels[selectedBrand]) {
-                carModels[selectedBrand].forEach(model => {
+            if (brandVal && carModels[brandVal]) {
+                carModels[brandVal].forEach(model => {
                     const opt = document.createElement('option');
                     opt.value = model;
-                    opt.innerText = model;
-                    modelSelect.appendChild(opt);
+                    modelsList.appendChild(opt);
                 });
             }
         }
