@@ -6,6 +6,8 @@
     <title>AutoParts - Avto Ehtiyat Hissələri Marketplace</title>
     <!-- FAVICON SƏTİRİ -->
     <link rel="icon" type="image/png" href="e385bd9e-97fe-4c25-8a09-1f17f2a942b6.png">
+    <!-- FontAwesome CDN (HEAD teqinə əlavə edin və ya birbaşa bura qoyun) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons CDN -->
@@ -47,17 +49,25 @@
                 />
             </div>
 
-            <!-- Düymələr: Satıcı Ol və Giriş / Profil -->
+            <!-- Düymələr: Səbət, Satıcı Ol və Giriş / Profil -->
             <div class="flex items-center gap-3" id="nav-buttons">
+                <!-- Səbət Düyməsi -->
+                <button onclick="openCartModal()" class="relative flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-amber-500 p-2.5 rounded-xl border border-slate-700 cursor-pointer transition">
+                    <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                    <span id="cart-badge" class="absolute -top-1.5 -right-1.5 bg-amber-500 text-slate-950 text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-slate-900 hidden">0</span>
+                </button>
+
                 <button onclick="openVendorModal()" class="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-xl text-sm transition cursor-pointer">
                     <i data-lucide="store" class="w-4 h-4"></i>
                     <span class="hidden sm:inline">Satıcı Ol (Mağaza Aç)</span>
                 </button>
                 
-                <button onclick="openLoginModal()" id="login-btn" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-sm transition border border-slate-700 cursor-pointer">
-                    <i data-lucide="user" class="w-4 h-4"></i>
-                    <span>Daxil Ol</span>
-                </button>
+                <div id="user-auth-area">
+                    <button onclick="openLoginModal()" id="login-btn" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-sm transition border border-slate-700 cursor-pointer">
+                        <i data-lucide="user" class="w-4 h-4"></i>
+                        <span>Daxil Ol</span>
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
@@ -159,13 +169,61 @@
 
     <!-- 4. FOOTER -->
     <footer class="bg-slate-950 border-t border-slate-800 text-slate-400 text-sm py-8">
-        <div class="max-w-7xl mx-auto px-4 text-center sm:flex sm:justify-between sm:text-left">
-            <p>&copy; 2026 AutoParts Marketplace. Bütün hüquqlar qorunur.</p>
-            <div class="mt-4 sm:mt-0 space-x-4">
-                <a href="#" class="hover:text-amber-500">Haqqımızda</a>
-                <a href="#" class="hover:text-amber-500">Satıcı Şərtləri</a>
-                <a href="#" class="hover:text-amber-500">Əlaqə</a>
+        <div class="max-w-7xl mx-auto px-4 flex flex-col items-center gap-4 md:flex-row md:justify-between md:gap-0">
+        
+            <!-- Müəllif Hüquqları -->
+            <p class="order-2 md:order-1 text-center md:text-left">&copy; 2026 AutoParts Marketplace. Bütün hüquqlar qorunur.</p>
+        
+            <!-- Sosial Media İkonları (Tam Mərkəzdə) -->
+            <div class="order-1 md:order-2 flex items-center justify-center gap-5">
+                <!-- WhatsApp -->
+                <a href="https://wa.me/YOUR_PHONE_NUMBER" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-900 border border-slate-800 rounded-full hover:bg-emerald-500/10 hover:border-emerald-500/30 hover:text-emerald-400 transition flex items-center justify-center w-10 h-10" title="WhatsApp">
+                <i class="fa-brands fa-whatsapp text-lg"></i>
+                </a>
+                <!-- Instagram -->
+                <a href="https://instagram.com/YOUR_PROFILE" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-900 border border-slate-800 rounded-full hover:bg-pink-500/10 hover:border-pink-500/30 hover:text-pink-400 transition flex items-center justify-center w-10 h-10" title="Instagram">
+                <i class="fa-brands fa-instagram text-lg"></i>
+                </a>
+                <!-- Facebook -->
+                <a href="https://facebook.com/YOUR_PROFILE" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-900 border border-slate-800 rounded-full hover:bg-blue-500/10 hover:border-blue-500/30 hover:text-blue-400 transition flex items-center justify-center w-10 h-10" title="Facebook">
+                <i class="fa-brands fa-facebook-f text-lg"></i>
+                </a>
             </div>
+
+            <!-- FOOTER KEÇİDLƏRİ (Düyməyə çevrildi) -->
+    <div class="order-3 flex items-center justify-center space-x-4">
+        <button onclick="openInfoModal('about')" class="hover:text-amber-500 transition cursor-pointer">Haqqımızda</button>
+        <button onclick="openInfoModal('terms')" class="hover:text-amber-500 transition cursor-pointer">Satıcı Şərtləri</button>
+        <button onclick="openInfoModal('contact')" class="hover:text-amber-500 transition cursor-pointer">Əlaqə</button>
+    </div>
+
+    <!-- MƏLUMAT MODALI (ÇƏRÇİVƏ) -->
+    <div id="infoModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+            <!-- Header -->
+            <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+                <h3 id="infoModalTitle" class="text-lg font-bold text-white flex items-center gap-2">
+                    <!-- Başlıq dinamik olacaq -->
+                </h3>
+                <button onclick="closeInfoModal()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Mətn Sahəsi -->
+            <div id="infoModalContent" class="p-6 text-slate-300 text-sm space-y-3 max-h-[70vh] overflow-y-auto leading-relaxed">
+            <!-- Mətn dinamik olacaq -->
+            </div>
+
+            <!-- Footer / Bağla Düyməsi -->
+            <div class="p-4 border-t border-slate-800 flex justify-end">
+                <button onclick="closeInfoModal()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold px-5 py-2 rounded-xl text-xs transition">
+                Bağla
+                </button>
+            </div>
+        </div>
+    </div>
+
         </div>
     </footer>
 
@@ -244,9 +302,98 @@
                     <span>Daxil Ol</span>
                 </button>
                 <div class="text-center pt-2">
-                    <a href="register.html" class="text-xs text-amber-500 hover:underline">Alıcı hesabı yoxdur? Qeydiyyatdan keçin</a>
+                    <a href="javascript:void(0)" onclick="openRegisterModal()" class="text-xs text-amber-500 hover:underline">Alıcı hesabı yoxdur? Qeydiyyatdan keçin</a>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- 7. ALICI QEYDİYYAT MODALI -->
+    <div id="registerModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl relative">
+            <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i data-lucide="user-plus" class="text-amber-500 w-5 h-5"></i>
+                    Alıcı Qeydiyyatı
+                </h3>
+                <button onclick="closeRegisterModal()" class="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleRegisterSubmit(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Ad və Soyad *</label>
+                    <input type="text" id="reg-fullname" required placeholder="Məs: Əli Məmmədov" class="w-full bg-slate-800 border border-slate-700 text-slate-100 px-4 py-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">E-poçt *</label>
+                    <input type="email" id="reg-email" required placeholder="email@domain.az" class="w-full bg-slate-800 border border-slate-700 text-slate-100 px-4 py-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Telefon Nömrəsi *</label>
+                    <input type="tel" id="reg-phone" required placeholder="+994 50 000 00 00" class="w-full bg-slate-800 border border-slate-700 text-slate-100 px-4 py-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Şifrə *</label>
+                    <input type="password" id="reg-pass" required placeholder="••••••••" class="w-full bg-slate-800 border border-slate-700 text-slate-100 px-4 py-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
+                </div>
+                <button type="submit" id="reg-submit-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition cursor-pointer">
+                    <span>Qeydiyyatı Tamamla</span>
+                </button>
+                <div class="text-center pt-2">
+                    <a href="javascript:void(0)" onclick="openLoginModal()" class="text-xs text-amber-500 hover:underline">Artıq hesabınız var? Daxil olun</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 8. SƏBƏT VƏ SİFARİŞİ TƏSDİQLƏ MODALI -->
+    <div id="cartModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
+            <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i data-lucide="shopping-cart" class="text-amber-500 w-5 h-5"></i>
+                    Səbətim
+                </h3>
+                <button onclick="closeCartModal()" class="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Səbət Məhsulları Siyahısı -->
+            <div id="cartItemsContainer" class="p-6 overflow-y-auto space-y-3 flex-1 divide-y divide-slate-800">
+                <!-- Səbət məhsulları buraya gələcək -->
+            </div>
+
+            <!-- Çatdırılma Məlumatları Bütöv Forması -->
+            <div id="checkoutFormSection" class="p-6 bg-slate-950 border-t border-slate-800 hidden space-y-3">
+                <h4 class="text-sm font-bold text-amber-500">Çatdırılma Məlumatları</h4>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[11px] text-slate-400 mb-1">Ad, Soyad *</label>
+                        <input type="text" id="order-fullname" required class="w-full bg-slate-800 border border-slate-700 text-slate-100 p-2 rounded-lg text-xs outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-slate-400 mb-1">Əlaqə Nömrəsi *</label>
+                        <input type="tel" id="order-phone" required class="w-full bg-slate-800 border border-slate-700 text-slate-100 p-2 rounded-lg text-xs outline-none focus:border-amber-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[11px] text-slate-400 mb-1">Çatdırılma Ünvanı *</label>
+                    <textarea id="order-address" rows="2" required placeholder="Şəhər, küçə, ev və s." class="w-full bg-slate-800 border border-slate-700 text-slate-100 p-2 rounded-lg text-xs outline-none focus:border-amber-500"></textarea>
+                </div>
+            </div>
+
+            <div class="p-6 border-t border-slate-800 flex items-center justify-between bg-slate-900/50">
+                <div>
+                    <span class="block text-xs text-slate-400">Ümumi Məbləğ:</span>
+                    <span id="cartTotalPrice" class="text-xl font-extrabold text-amber-500">0 AZN</span>
+                </div>
+                <button id="checkoutBtn" onclick="toggleCheckoutForm()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-6 py-2.5 rounded-xl transition text-sm cursor-pointer">
+                    Səbəti Təsdiqlə
+                </button>
+            </div>
         </div>
     </div>
 
@@ -258,11 +405,63 @@
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5mZXNzb3V5bm1yaHFrcHBiZGJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzMzk1MzgsImV4cCI6MjEwMzkxNTUzOH0.zQ0la4lh4tlZtufUhJVwXokSKcrN7A8dSLoFn7VX2YI";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    // SƏBƏT DƏYİŞƏNİ
+    let cart = JSON.parse(localStorage.getItem('userCart')) || [];
+
     // Modal İdarəsi
     function openVendorModal() { document.getElementById('vendorModal').classList.remove('hidden'); }
     function closeVendorModal() { document.getElementById('vendorModal').classList.add('hidden'); }
-    function openLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); }
+    function openLoginModal() { 
+        closeRegisterModal();
+        document.getElementById('loginModal').classList.remove('hidden'); 
+    }
     function closeLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
+    
+    function openRegisterModal() {
+        closeLoginModal();
+        document.getElementById('registerModal').classList.remove('hidden');
+    }
+    function closeRegisterModal() { document.getElementById('registerModal').classList.add('hidden'); }
+
+    function openCartModal() { 
+        renderCartItems();
+        document.getElementById('cartModal').classList.remove('hidden'); 
+    }
+    function closeCartModal() { 
+        document.getElementById('cartModal').classList.add('hidden'); 
+        document.getElementById('checkoutFormSection').classList.add('hidden');
+        document.getElementById('checkoutBtn').innerText = 'Səbəti Təsdiqlə';
+        document.getElementById('checkoutBtn').onclick = toggleCheckoutForm;
+    }
+
+    // ALICI QEYDİYYAT İŞLƏMİ (SUPABASE-Ə YAZIR)
+    async function handleRegisterSubmit(event) {
+        event.preventDefault();
+        const submitBtn = document.getElementById('reg-submit-btn');
+        submitBtn.disabled = true;
+
+        const fullName = document.getElementById('reg-fullname').value.trim();
+        const email = document.getElementById('reg-email').value.trim().toLowerCase();
+        const phone = document.getElementById('reg-phone').value.trim();
+        const password = document.getElementById('reg-pass').value.trim();
+
+        const { data, error } = await _supabase
+            .from('users')
+            .insert([{ full_name: fullName, email: email, phone: phone, password: password }])
+            .select()
+            .single();
+
+        if (error) {
+            alert("Qeydiyyat zamanı xəta yarandı: " + error.message);
+        } else {
+            alert("Qeydiyyat uğurla tamamlandı!");
+            localStorage.setItem('userRole', 'buyer');
+            localStorage.setItem('activeUser', JSON.stringify(data));
+            closeRegisterModal();
+            updateUIForLoggedInUser(data);
+        }
+        submitBtn.disabled = false;
+    }
 
     // Satıcı Müraciəti
     async function handleVendorSubmit(event) {
@@ -289,7 +488,7 @@
         btn.disabled = false;
     }
 
-    // ÜMUMİ GİRİŞ MƏNTİQİ (PROBLEM VƏ TƏHLÜKƏSİZLİK DÜZƏLDİLDİ)
+    // ÜMUMİ GİRİŞ MƏNTİQİ
     async function handleLoginSubmit(event) {
         event.preventDefault();
         const emailInput = document.getElementById('login-email').value.trim().toLowerCase();
@@ -304,7 +503,7 @@
         localStorage.removeItem('activeUser');
         localStorage.removeItem('activeAdmin');
 
-        // 1. ADMİN GİRİŞİ (Supabase-də 'admins' cədvəlindən yoxlayır)
+        // 1. ADMİN GİRİŞİ
         const { data: adminData } = await _supabase
             .from('admins')
             .select('*')
@@ -319,7 +518,7 @@
             return;
         }
 
-        // 2. SATICI GİRİŞİ (Sütun adlarında fərqlilik ehtimalına qarşı cədvəldən genişləndirilmiş yoxlama)
+        // 2. SATICI GİRİŞİ
         let { data: storeData } = await _supabase
             .from('stores')
             .select('*')
@@ -365,18 +564,25 @@
         submitBtn.disabled = false;
     }
 
+    // ALICI GİRİŞ ETDİKDƏ ARAYÜZÜN YENİSYƏNMƏSİ
     function updateUIForLoggedInUser(user) {
-        const navButtons = document.getElementById('nav-buttons');
-        if (navButtons) {
-            navButtons.innerHTML = `
-                <div class="flex items-center gap-3">
-                    <span class="text-sm font-semibold text-amber-500">👤 ${user.full_name || user.email}</span>
-                    <button onclick="logoutUser()" class="bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded-xl text-xs transition">
+        const authArea = document.getElementById('user-auth-area');
+        if (authArea) {
+            authArea.innerHTML = `
+                <div class="flex items-center gap-2 bg-slate-800 p-1.5 px-3 rounded-xl border border-slate-700">
+                    <span class="text-xs font-semibold text-amber-500">👤 ${user.full_name || user.email}</span>
+                    <button onclick="logoutUser()" class="bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white px-2 py-1 rounded-lg text-xs transition cursor-pointer">
                         Çıxış
                     </button>
                 </div>
             `;
         }
+
+        // Əgər form açılıbsa, alıcı məlumatlarını öncədən doldurur
+        const nameInp = document.getElementById('order-fullname');
+        const phoneInp = document.getElementById('order-phone');
+        if(nameInp) nameInp.value = user.full_name || '';
+        if(phoneInp) phoneInp.value = user.phone || '';
     }
 
     function logoutUser() {
@@ -391,10 +597,173 @@
         if (savedUser && role === 'buyer') {
             updateUIForLoggedInUser(JSON.parse(savedUser));
         }
+        updateCartBadge();
         loadBrands();
-        loadLocations(); // Bazadan Şəhər/Rayon məlumatlarını çəkir
+        loadLocations();
         fetchProducts();
     });
+
+    // SƏBƏTƏ ƏLAVƏ ET
+    function addToCart(product) {
+        const existing = cart.find(item => String(item.id) === String(product.id));
+        if (existing) {
+            existing.quantity += 1;
+        } else {
+            cart.push({ ...product, quantity: 1 });
+        }
+        saveCart();
+        alert("Məhsul səbətə əlavə olundu!");
+    }
+
+    // MƏHSUL SAYININ DƏYİŞDİRİLMƏSİ (+ / -)
+    function updateCartQuantity(id, change) {
+        const item = cart.find(i => String(i.id) === String(id));
+        if (item) {
+            item.quantity += change;
+            if (item.quantity <= 0) {
+                removeFromCart(id);
+                return;
+            }
+            saveCart();
+            renderCartItems();
+        }
+    }
+
+    // MƏHSULUN SƏBƏTDƏN SİLİNMƏSİ
+    function removeFromCart(id) {
+        cart = cart.filter(item => String(item.id) !== String(id));
+        saveCart();
+        renderCartItems();
+    }
+
+    function saveCart() {
+        localStorage.setItem('userCart', JSON.stringify(cart));
+        updateCartBadge();
+    }
+
+    function updateCartBadge() {
+        const badge = document.getElementById('cart-badge');
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        if (totalItems > 0) {
+            badge.innerText = totalItems;
+            badge.classList.remove('hidden');
+        } else {
+            badge.classList.add('hidden');
+        }
+    }
+
+    function renderCartItems() {
+        const container = document.getElementById('cartItemsContainer');
+        const totalPriceEl = document.getElementById('cartTotalPrice');
+        container.innerHTML = '';
+
+        if (cart.length === 0) {
+            container.innerHTML = `<p class="text-center text-slate-500 text-sm py-8">Səbətiniz boşdur.</p>`;
+            totalPriceEl.innerText = `0 AZN`;
+            return;
+        }
+
+        let total = 0;
+        cart.forEach(item => {
+            const itemTotal = (parseFloat(item.price) || 0) * item.quantity;
+            total += itemTotal;
+
+            const div = document.createElement('div');
+            div.className = "py-3 flex items-center justify-between gap-3";
+            div.innerHTML = `
+                <div class="flex-1">
+                    <h4 class="text-sm font-bold text-white line-clamp-1">${item.name || item.title}</h4>
+                    <p class="text-xs text-slate-400">${item.store_name} | ${item.price} AZN</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <!-- SAYİ DEYISDIRME ( - 1 + ) -->
+                    <div class="flex items-center bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
+                        <button onclick="updateCartQuantity('${item.id}', -1)" class="px-2 py-1 bg-slate-700/50 hover:bg-slate-700 text-slate-200 text-xs font-bold transition cursor-pointer">-</button>
+                        <span class="px-2.5 text-xs font-extrabold text-amber-500">${item.quantity}</span>
+                        <button onclick="updateCartQuantity('${item.id}', 1)" class="px-2 py-1 bg-slate-700/50 hover:bg-slate-700 text-slate-200 text-xs font-bold transition cursor-pointer">+</button>
+                    </div>
+                    <span class="text-sm font-black text-amber-500 w-16 text-right">${itemTotal} AZN</span>
+                    <button onclick="removeFromCart('${item.id}')" class="text-red-400 hover:text-red-300 p-1.5 hover:bg-red-500/10 rounded-lg transition cursor-pointer">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+
+        totalPriceEl.innerText = `${total} AZN`;
+        lucide.createIcons();
+    }
+
+    // FORM AÇ / SİFARİŞ ET MƏNTİQİ
+    function toggleCheckoutForm() {
+        const activeUser = localStorage.getItem('activeUser');
+        if (!activeUser) {
+            alert("Sifariş vermək üçün zəhmət olmasa hesabınıza daxil olun!");
+            closeCartModal();
+            openLoginModal();
+            return;
+        }
+
+        if (cart.length === 0) {
+            alert("Səbətiniz boşdur!");
+            return;
+        }
+
+        const checkoutSection = document.getElementById('checkoutFormSection');
+        const checkoutBtn = document.getElementById('checkoutBtn');
+
+        if (checkoutSection.classList.contains('hidden')) {
+            checkoutSection.classList.remove('hidden');
+            checkoutBtn.innerText = 'Sifarişi Göndər';
+            checkoutBtn.onclick = submitOrderToVendor;
+        }
+    }
+
+    // SİFARİŞİN SATICIYA (SUPABASE 'orders' CƏDVƏLİNƏ) GÖNDƏRİLMƏSİ
+    async function submitOrderToVendor() {
+        const activeUser = JSON.parse(localStorage.getItem('activeUser'));
+        const fullName = document.getElementById('order-fullname').value.trim();
+        const phone = document.getElementById('order-phone').value.trim();
+        const address = document.getElementById('order-address').value.trim();
+
+        if (!fullName || !phone || !address) {
+            alert("Lütfən bütün çatdırılma məlumatlarını doldurun!");
+            return;
+        }
+
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        checkoutBtn.disabled = true;
+
+        // Bütün səbət məhsullarını hazırlayırıq
+        const ordersToInsert = cart.map(item => ({
+            product_id: item.id ? parseInt(item.id) : null,
+            store_id: item.store_id ? parseInt(item.store_id) : null,
+            product_name: item.name || item.title,
+            price: parseFloat(item.price) || 0,
+            quantity: parseInt(item.quantity) || 1,
+            total_price: (parseFloat(item.price) || 0) * (parseInt(item.quantity) || 1),
+            buyer_id: activeUser && activeUser.id ? parseInt(activeUser.id) : null,
+            buyer_name: fullName,
+            buyer_phone: phone,
+            buyer_address: address,
+            status: 'Gözləyir',
+            created_at: new Date()
+        }));
+
+        const { data, error } = await _supabase.from('orders').insert(ordersToInsert);
+
+        if (error) {
+            alert("Sifariş yaradılarkən xəta yarandı: " + error.message);
+        } else {
+            alert("Sifarişiniz uğurla satıcıya gönderildi!");
+            cart = [];
+            saveCart();
+            closeCartModal();
+        }
+
+        checkoutBtn.disabled = false;
+    }
 
     // MARKA VƏ MODELLƏRİN YÜKLƏNMƏSİ
     async function loadBrands() {
@@ -419,12 +788,10 @@
 
             if (error || !stores) return;
 
-            // Bütün ünvan imkanlarını tək array-ə yığırıq (heç bir sütun silinmədən)
             const rawLocations = stores
                 .map(s => s.location || s.store_location || s.address)
                 .filter(Boolean);
             
-            // Təkrar olunan yerləri təmizləyirik
             const uniqueLocations = [...new Set(rawLocations)];
 
             const datalist = document.getElementById("locationsList");
@@ -479,7 +846,6 @@
         const region = document.getElementById('regionSelect').value.trim().toLowerCase();
         const search = document.getElementById('searchInput').value.trim().toLowerCase();
 
-        // Products və Mağaza məlumatlarını çəkirik
         let { data: products, error } = await _supabase.from('products').select('*, stores(*)');
 
         if (error) {
@@ -495,18 +861,12 @@
             return;
         }
 
-        // JS Tərəfində Kompleks Filtrləmə
         const filtered = products.filter(item => {
-            // Mağazanın ünvanı (location, store_location və ya address sütunundan götürülür)
             const storeLoc = item.stores?.location || item.stores?.store_location || item.stores?.address || '';
 
-            // 1. Marka Filtri
             if (brand && item.brand !== brand) return false;
-
-            // 2. Model Filtri
             if (model && item.model !== model) return false;
 
-            // 3. İl Aralığı (İldən - İlə)
             const itemYear = parseInt(item.year);
             if (!isNaN(itemYear)) {
                 if (yearFrom && itemYear < yearFrom) return false;
@@ -523,12 +883,8 @@
                 }
             }
 
-            // 4. Region / Şəhər Filtri (Mağazanın ünvanına görə canlı axtarış)
-            if (region) {
-                if (!storeLoc.toLowerCase().includes(region)) return false;
-            }
+            if (region && !storeLoc.toLowerCase().includes(region)) return false;
 
-            // 5. Axtarış Sözü (Ad və ya OEM)
             if (search) {
                 const nameMatch = (item.name || item.title || '').toLowerCase().includes(search);
                 const oemMatch = (item.oem || '').toLowerCase().includes(search);
@@ -544,9 +900,7 @@
             return;
         }
 
-        // Məhsulları Render Etmək
         filtered.forEach(p => {
-            // Mağaza adı və ünvan dinamik şəkildə yoxlanılır
             const storeName = p.stores?.store_name || p.stores?.store || p.stores?.person || 'Mağaza';
             const storeLoc = p.stores?.location || p.stores?.store_location || p.stores?.address || 'Ünvan qeyd olunmayıb';
             
@@ -557,6 +911,16 @@
 
             const card = document.createElement('div');
             card.className = "bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden flex flex-col justify-between hover:border-slate-600 transition";
+            
+            // Səbətə ötürüləcək məhsul obyekti
+            const pObj = {
+                id: p.id,
+                name: title,
+                price: p.price || 0,
+                store_id: p.store_id || p.stores?.id,
+                store_name: storeName
+            };
+
             card.innerHTML = `
                 <div>
                     <div class="h-44 bg-slate-900 relative flex items-center justify-center overflow-hidden">
@@ -587,8 +951,9 @@
                             <span>${p.stock > 0 ? `Stokda var (${p.stock} əd.)` : 'Stokda yoxdur'}</span>
                         </div>
                     </div>
-                    <button class="bg-slate-700 hover:bg-amber-500 hover:text-slate-950 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition cursor-pointer">
-                        Sifariş et
+                    <button onclick='addToCart(${JSON.stringify(pObj)})' class="bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold px-4 py-2.5 rounded-xl transition cursor-pointer flex items-center gap-1">
+                        <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i>
+                        <span>Səbətə at</span>
                     </button>
                 </div>
             `;
@@ -597,6 +962,56 @@
 
         lucide.createIcons();
     }
+    // Modal məlumat bazası
+const infoData = {
+    about: {
+        title: '<i class="fa-solid fa-circle-info text-amber-500"></i> Haqqımızda',
+        content: `
+            <p class="font-semibold text-white">AutoParts Marketplace-ə xoş gəldiniz!</p>
+            <p>Platformamız avtomobil ehtiyat hissələrinin alışı və satışı üçün ixtisaslaşmış müasir online bazardır.</p>
+            <p>Məqsədimiz satıcılar və alıcılar arasında dürüst, şəffaf və sürətli əlaqə yaradaraq avto-stok idarəetməsini və ehtiyat hissəsi axtarışını maksimum rahatlaşdırmaqdır.</p>
+        `
+    },
+    terms: {
+        title: '<i class="fa-solid fa-file-contract text-amber-500"></i> Satıcı Şərtləri',
+        content: `
+            <ul class="list-disc list-inside space-y-2">
+                <li>Satıcı platformaya daxil etdiyi məhsulların (OEM kod, marka, qiymət və vəziyyət) dəqiqliyinə cavabdehdir.</li>
+                <li>Gələn sifarişlər 24 saat ərzində təsdiqlənməli və ya ləğv edilməlidir.</li>
+                <li>Aylıq abunəlik haqqı vaxtında ödənilmədiyi halda mağaza statusu deaktiv edilə bilər.</li>
+                <li>Saxta və ya aldadıcı məhsul yerləşdirən satıcıların hesabı dərhal dondurulur.</li>
+            </ul>
+        `
+    },
+    contact: {
+        title: '<i class="fa-solid fa-headset text-amber-500"></i> Əlaqə & Dəstək',
+        content: `
+            <p class="mb-3">Bizimlə istənilən vaxt əlaqə saxlayaraq suallarınızı ünvanlaya bilərsiniz:</p>
+            <div class="space-y-2 border-t border-slate-800 pt-3">
+                <p><strong class="text-white">Telefon / WhatsApp:</strong> +994 (50) 123-45-67</p>
+                <p><strong class="text-white">E-poçt:</strong> support@autoparts.az</p>
+                <p><strong class="text-white">Ünvan:</strong> Bakı şəhəri, Nərimanov r-nu, Əhməd Rəcəbli küç.</p>
+                <p><strong class="text-white">İş saatları:</strong> B.e - Ş. 09:00 - 18:00</p>
+            </div>
+        `
+    }
+};
+
+// Modalı açmaq funksiyası
+function openInfoModal(type) {
+    const data = infoData[type];
+    if (!data) return;
+
+    document.getElementById('infoModalTitle').innerHTML = data.title;
+    document.getElementById('infoModalContent').innerHTML = data.content;
+    document.getElementById('infoModal').classList.remove('hidden');
+}
+
+// Modalı bağlamaq funksiyası
+function closeInfoModal() {
+    document.getElementById('infoModal').classList.add('hidden');
+}
+
     </script>
 </body>
 </html>

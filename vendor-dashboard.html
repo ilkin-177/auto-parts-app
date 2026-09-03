@@ -195,9 +195,11 @@
                                     <th class="p-4">Sifariş ID</th>
                                     <th class="p-4">Müştəri</th>
                                     <th class="p-4">Məhsul</th>
+                                    <th class="p-4 text-center">Ədəd</th>
                                     <th class="p-4">Məbləğ</th>
-                                    <th class="p-4">Status</th>
-                                    <th class="p-4 text-right">Əməliyyat</th>
+                                    <th class="p-4">Ünvan</th>
+                                    <th class="p-4 text-center">Status</th>
+                                    <th class="p-4 text-center">Əməliyyat</th>
                                 </tr>
                             </thead>
                             <tbody id="orders-table-body" class="divide-y divide-slate-800">
@@ -386,7 +388,7 @@
 
                 if (!activeStoreId) {
                     alert("Sessiya tapılmadı! Lütfən yenidən daxil olun.");
-                    window.location.href = "index_3.html";
+                    window.location.href = "index.html";
                     return;
                 }
 
@@ -398,7 +400,7 @@
 
                 if (error || !data) {
                     alert("Mağaza məlumatları tapılmadı!");
-                    window.location.href = "index_3.html";
+                    window.location.href = "index.html";
                     return;
                 }
 
@@ -406,7 +408,7 @@
 
                 if (currentStore.status === 'deactive') {
                     alert("⚠️ Abunəlik müddətiniz bitdiyi üçün paneliniz bloklanıb! Lütfən abunəlik ödənişini edin.");
-                    window.location.href = "index_3.html?blocked=true";
+                    window.location.href = "index.html?blocked=true";
                     return;
                 }
 
@@ -431,7 +433,7 @@
                 localStorage.removeItem('activeVendor');
                 localStorage.removeItem('userRole');
                 localStorage.removeItem('supabase.auth.token');
-                window.location.href = 'index_3.html';
+                window.location.href = 'index.html';
             }
         }
 
@@ -468,7 +470,7 @@
             try {
                 const [productsRes, ordersRes] = await Promise.all([
                     _supabase.from('products').select('*').eq('store_id', currentStore.id).order('id', { ascending: false }),
-                    _supabase.from('orders').select('*').eq('store_id', currentStore.id).order('id', { ascending: false })
+                    _supabase.from('orders').select('*, products(oem)').eq('store_id', currentStore.id).order('id', { ascending: false })
                 ]);
 
                 products = productsRes.data || [];
@@ -581,41 +583,63 @@
 
         function renderOrders() {
             const tbody = document.getElementById('orders-table-body');
-            const pendingOrdersCount = orders.filter(o => o.status === 'pending').length;
+            const pendingOrdersCount = orders.filter(o => o.status === 'Gözləyir' || o.status === 'pending').length;
             
             document.getElementById('orders-badge').innerText = pendingOrdersCount;
             document.getElementById('stat-pending-orders').innerText = pendingOrdersCount;
 
             if (orders.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500">Sifariş tapılmadı.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-500">Sifariş tapılmadı.</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = orders.map(o => `
-                <tr>
-                    <td class="p-4 font-mono font-bold text-xs text-slate-400">#${o.id}</td>
-                    <td class="p-4 font-medium text-white">${o.customer || 'Müştəri'}</td>
-                    <td class="p-4 text-slate-300">${o.item || 'Ehtiyat hissəsi'}</td>
-                    <td class="p-4 font-mono font-bold text-amber-400">${o.total} AZN</td>
+            tbody.innerHTML = orders.map(o => {
+                const oemCode = o.products?.oem || o.oem;
+                const oemDisplay = oemCode ? `<span class="text-[11px] text-slate-400 block font-mono">(${oemCode})</span>` : '';
+                const totalAmount = o.total_price || o.total || (parseFloat(o.price || 0) * (parseInt(o.quantity) || 1));
+                const buyerName = o.buyer_name || o.customer || 'Müştəri';
+                const buyerPhone = o.buyer_phone || o.phone || '';
+                const buyerAddress = o.buyer_address || o.address || 'Təyin edilməyib';
+                const productName = o.product_name || o.item || 'Ehtiyat hissəsi';
+                const quantity = o.quantity || 1;
+                const status = o.status || 'Gözləyir';
+
+                return `
+                <tr class="hover:bg-slate-800/30 transition border-b border-slate-800/40">
+                    <td class="p-4 font-mono font-bold text-xs text-amber-500">#${o.id}</td>
                     <td class="p-4">
-                        <span class="${
-                            o.status === 'completed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 
-                            o.status === 'shipping' ? 'bg-sky-500/10 text-sky-400 border-sky-500/20' : 
-                            'bg-amber-500/10 text-amber-400 border-amber-500/20'
-                        } border text-xs px-2.5 py-1 rounded-full font-bold">
-                            ${o.status === 'completed' ? 'Tamamlandı' : o.status === 'shipping' ? 'Çatdırılmada' : 'Gözləyir'}
+                        <div class="font-bold text-white text-sm">${buyerName}</div>
+                        ${buyerPhone ? `<div class="text-xs text-slate-400">${buyerPhone}</div>` : ''}
+                    </td>
+                    <td class="p-4">
+                        <div class="font-bold text-slate-100 text-sm">${productName}</div>
+                        ${oemDisplay}
+                    </td>
+                    <td class="p-4 text-center font-extrabold text-amber-500 text-sm">${quantity} əd.</td>
+                    <td class="p-4 font-mono font-extrabold text-emerald-400 text-sm">${parseFloat(totalAmount || 0).toFixed(2)} AZN</td>
+                    <td class="p-4 text-slate-300 text-xs max-w-xs truncate" title="${buyerAddress}">${buyerAddress}</td>
+                    <td class="p-4 text-center">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold ${
+                            status === 'Təsdiqləndi' || status === 'completed' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 
+                            status === 'Ləğv edildi' ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 
+                            'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                        }">
+                            ${status}
                         </span>
                     </td>
-                    <td class="p-4 text-right space-x-1">
-                        ${o.status === 'pending' ? `
-                            <button onclick="updateOrderStatus(${o.id}, 'shipping')" class="bg-sky-500 hover:bg-sky-600 text-slate-950 font-bold px-3 py-1 rounded-lg text-xs transition cursor-pointer">Kuryerə Ver</button>
-                        ` : ''}
-                        ${o.status === 'shipping' ? `
-                            <button onclick="updateOrderStatus(${o.id}, 'completed')" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-3 py-1 rounded-lg text-xs transition cursor-pointer">Tamamla</button>
-                        ` : ''}
+                    <td class="p-4 text-center">
+                        <div class="flex items-center justify-center gap-1.5">
+                            <button onclick="updateOrderStatus(${o.id}, 'Təsdiqləndi')" class="p-1.5 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-slate-950 rounded-lg transition" title="Təsdiqlə">
+                                <i data-lucide="check" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="updateOrderStatus(${o.id}, 'Ləğv edildi')" class="p-1.5 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white rounded-lg transition" title="Ləğv et">
+                                <i data-lucide="x" class="w-4 h-4"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>
-            `).join('');
+            `;
+            }).join('');
         }
 
         async function updateOrderStatus(id, newStatus) {
@@ -643,8 +667,11 @@
 
         function updateStats() {
             document.getElementById('stat-total-products').innerText = products.length;
-            const completedOrders = orders.filter(o => o.status === 'completed');
-            const totalRev = completedOrders.reduce((sum, item) => sum + (parseFloat(item.total) || 0), 0);
+            const completedOrders = orders.filter(o => o.status === 'Təsdiqləndi' || o.status === 'completed');
+            const totalRev = completedOrders.reduce((sum, item) => {
+                const amt = item.total_price || item.total || (parseFloat(item.price || 0) * (parseInt(item.quantity) || 1));
+                return sum + (parseFloat(amt) || 0);
+            }, 0);
             document.getElementById('stat-total-revenue').innerText = `${totalRev.toFixed(2)} AZN`;
         }
 
