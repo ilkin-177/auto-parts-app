@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="az" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mağaza Səhifəsi - AutoParts</title>
+    <link rel="icon" type="image/png" href="e385bd9e-97fe-4c25-8a09-1f17f2a942b6.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: { brand: '#f59e0b' } } }
+        }
+    </script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col">
+
+    <!-- NAV BAR -->
+    <nav class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2">
+                <img src="auto_parts_logo_160x40.png" alt="AutoParts Logo" class="h-10 w-auto">
+            </a>
+            <a href="index.html" class="flex items-center gap-2 text-sm text-slate-400 hover:text-amber-500 font-bold transition">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                <span>Ana Səhifəyə Qayıt</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- MAĞAZA HEADER / BANNER -->
+    <section class="bg-slate-900 border-b border-slate-800 py-10 px-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center md:items-start gap-6">
+            <div id="storeLogo" class="w-24 h-24 bg-slate-800 rounded-2xl border border-slate-700 flex items-center justify-center overflow-hidden flex-shrink-0">
+                <i data-lucide="store" class="w-12 h-12 text-amber-500"></i>
+            </div>
+            <div class="space-y-2 text-center md:text-left">
+                <h1 id="storeTitle" class="text-3xl font-extrabold text-white">Yüklənir...</h1>
+                <p id="storeLoc" class="text-sm text-slate-400 flex items-center justify-center md:justify-start gap-2">
+                    <i data-lucide="map-pin" class="text-amber-500 w-4 h-4"></i> ---
+                </p>
+                <p id="storePhone" class="text-sm text-slate-400 flex items-center justify-center md:justify-start gap-2">
+                    <i data-lucide="phone" class="text-amber-500 w-4 h-4"></i> ---
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAĞAZANIN MƏHSULLARI -->
+    <main class="max-w-7xl mx-auto px-4 py-10 flex-grow w-full">
+        <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+            <i data-lucide="package" class="text-amber-500 w-5 h-5"></i>
+            Mağazanın Bütün Məhsulları (<span id="storeProductCount">0</span>)
+        </h2>
+
+        <div id="storeProductsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- Məhsullar bura dolacaq -->
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        const SUPABASE_URL = "https://nfessouynmrhqkppbdbg.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5mZXNzb3V5bm1yaHFrcHBiZGJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzMzk1MzgsImV4cCI6MjEwMzkxNTUzOH0.zQ0la4lh4tlZtufUhJVwXokSKcrN7A8dSLoFn7VX2YI";
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // URL-dən storeId parametrini alırıq
+        const urlParams = new URLSearchParams(window.location.search);
+        const storeId = urlParams.get('id');
+
+        document.addEventListener("DOMContentLoaded", () => {
+            if (storeId) {
+                loadStoreData();
+            } else {
+                alert("Mağaza tapılmadı!");
+                window.location.href = "index.html";
+            }
+        });
+
+        async function loadStoreData() {
+            // 1. Mağaza məlumatı
+            const { data: store, error: sErr } = await _supabase.from('stores').select('*').eq('id', storeId).single();
+            if (sErr || !store) {
+                alert("Mağaza məlumatları oxunarkən xəta yarandı!");
+                return;
+            }
+
+            const storeName = store.store_name || store.store || store.person || 'Mağaza';
+            document.getElementById('storeTitle').innerText = storeName;
+            document.getElementById('storeLoc').innerHTML = `<i data-lucide="map-pin" class="text-amber-500 w-4 h-4"></i> ${store.location || store.store_location || store.address || 'Ünvan daxil edilməyib'}`;
+            document.getElementById('storePhone').innerHTML = `<i data-lucide="phone" class="text-amber-500 w-4 h-4"></i> ${store.phone || store.store_phone || 'Əlaqə daxil edilməyib'}`;
+
+            if (store.logo || store.image) {
+                document.getElementById('storeLogo').innerHTML = `<img src="${store.logo || store.image}" class="w-full h-full object-cover">`;
+            }
+
+            // 2. Mağazanın Məhsulları
+            const { data: products, error: pErr } = await _supabase.from('products').select('*').eq('store_id', storeId);
+            const grid = document.getElementById('storeProductsGrid');
+            const countEl = document.getElementById('storeProductCount');
+
+            if (pErr || !products || products.length === 0) {
+                countEl.innerText = '0';
+                grid.innerHTML = `<p class="col-span-full text-center text-slate-500 py-10">Bu mağazada aktiv məhsul tapılmadı.</p>`;
+                return;
+            }
+
+            countEl.innerText = products.length;
+            grid.innerHTML = '';
+
+            products.forEach(p => {
+                const title = p.name || p.title || 'Adsız Məhsul';
+                const card = document.createElement('div');
+                card.className = "bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden flex flex-col justify-between";
+                card.innerHTML = `
+                    <div>
+                        <div class="h-44 bg-slate-900 flex items-center justify-center overflow-hidden">
+                            ${p.image ? `<img src="${p.image}" class="h-full w-full object-cover">` : `<i data-lucide="disc" class="w-16 h-16 text-slate-700"></i>`}
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-bold text-white text-base mb-1 line-clamp-1">${title}</h3>
+                            <p class="text-slate-400 text-xs">${p.brand || ''} ${p.model || ''}</p>
+                        </div>
+                    </div>
+                    <div class="p-4 pt-0 flex items-center justify-between border-t border-slate-700/50 mt-2">
+                        <span class="text-lg font-black text-amber-500">${p.price || 0} AZN</span>
+                        <button onclick="addToCartDirect('${p.id}', '${title}', ${p.price || 0})" class="bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold px-3 py-2 rounded-xl transition">
+                            + Səbətə
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        function addToCartDirect(id, name, price) {
+            let cart = JSON.parse(localStorage.getItem('userCart')) || [];
+            const existing = cart.find(i => String(i.id) === String(id));
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ id, name, price, quantity: 1, store_id: storeId });
+            }
+            localStorage.setItem('userCart', JSON.stringify(cart));
+            alert("Məhsul səbətə əlavə olundu!");
+        }
+    </script>
+</body>
+</html>

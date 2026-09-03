@@ -41,6 +41,12 @@
                     <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
                     <span>İdarə Paneli</span>
                 </button>
+                
+                <button onclick="switchTab('statistics')" id="nav-statistics" class="nav-btn w-full flex items-center gap-3 text-slate-400 hover:text-white hover:bg-slate-800 px-4 py-3 rounded-xl transition cursor-pointer">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                    <span>Statistika</span>
+                </button>
+
                 <button onclick="switchTab('inventory')" id="nav-inventory" class="nav-btn w-full flex items-center gap-3 text-slate-400 hover:text-white hover:bg-slate-800 px-4 py-3 rounded-xl transition cursor-pointer">
                     <i data-lucide="package" class="w-5 h-5"></i>
                     <span>Ehtiyat Hissələri (Stok)</span>
@@ -69,7 +75,6 @@
                 </div>
             </div>
 
-            <!-- ÇIXIŞ İŞARƏSİ VƏ DÜYMƏSİ -->
             <button onclick="logoutStore()" class="w-full flex items-center justify-center gap-2 text-rose-400 hover:text-white hover:bg-rose-500/20 border border-rose-500/20 px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer">
                 <i data-lucide="log-out" class="w-4 h-4"></i>
                 <span>Hesabdan Çıxış</span>
@@ -85,64 +90,297 @@
             <div class="flex items-center gap-3">
                 <h1 id="page-title" class="text-xl font-bold text-white">Mağaza İdarə Paneli</h1>
             </div>
-            <button onclick="openProductModal()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-sm flex items-center gap-2 transition cursor-pointer shadow-lg shadow-amber-500/10">
-                <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                <span>Yeni Hissə Əlavə Et</span>
-            </button>
+
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <button onclick="toggleNotifications()" class="relative p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl border border-slate-700/60 transition cursor-pointer">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        <span id="notif-badge" class="absolute -top-1 -right-1 bg-amber-500 text-slate-950 font-black text-[10px] w-5 h-5 flex items-center justify-center rounded-full border-2 border-slate-900 hidden">0</span>
+                    </button>
+
+                    <div id="notif-dropdown" class="hidden absolute right-0 mt-3 w-80 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl z-50 overflow-hidden">
+                        <div class="p-3.5 border-b border-slate-800 flex items-center justify-between bg-slate-950/50">
+                            <span class="text-xs font-bold text-white flex items-center gap-2">
+                                <i data-lucide="bell" class="w-4 h-4 text-amber-500"></i> Bildirişlər
+                            </span>
+                            <span id="notif-count-text" class="text-[10px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-full font-semibold">0 yeni</span>
+                        </div>
+                        <div id="notif-list" class="max-h-64 overflow-y-auto divide-y divide-slate-800/60 text-xs">
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="openProductModal()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-sm flex items-center gap-2 transition cursor-pointer shadow-lg shadow-amber-500/10">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                    <span>Yeni Hissə Əlavə Et</span>
+                </button>
+            </div>
         </header>
 
         <!-- Məzmun Body -->
         <div class="p-6 space-y-6 flex-1 overflow-y-auto">
 
-            <!-- STATİSTİKA KARTLARI -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-slate-400 font-medium">Stokdakı Məhsullar</p>
-                        <h3 id="stat-total-products" class="text-2xl font-black text-white mt-1">0</h3>
+            <!-- SEKSİYA 1: İDARƏ PANELİ HOME -->
+            <div id="section-dashboard" class="tab-content space-y-6">
+                <!-- Banner Header -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="space-y-2 max-w-xl z-10">
+                        <h2 id="welcome-heading" class="text-2xl font-black text-white">Avto Store 122 panelinə xoş gəldiniz! 👋</h2>
+                        <p class="text-slate-400 text-xs leading-relaxed">Buradan mağazanıza yeni ehtiyat hissələri (şəkil, Marka, Model, İllər, Rəng və OEM kodları ilə) əlavə edə, gələn sifarişlərin statusunu dəyişə və stok səviyyələrinizə nəzarət edə bilərsiniz.</p>
                     </div>
-                    <div class="p-3 bg-amber-500/10 text-amber-500 rounded-xl border border-amber-500/20">
-                        <i data-lucide="package" class="w-6 h-6"></i>
-                    </div>
-                </div>
-
-                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-slate-400 font-medium">Gözləyən Sifarişlər</p>
-                        <h3 id="stat-pending-orders" class="text-2xl font-black text-sky-400 mt-1">0</h3>
-                    </div>
-                    <div class="p-3 bg-sky-500/10 text-sky-400 rounded-xl border border-sky-500/20">
-                        <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+                    <div class="relative z-10 hidden lg:block text-right">
+                        <div class="bg-amber-500/10 border border-amber-500/20 text-amber-400 font-black px-4 py-2 rounded-xl text-xs uppercase tracking-wider">
+                            KEYFİYYƏTLİ EHTİYAT HİSSƏLƏRİ DAİM YOLUNUZDA!
+                        </div>
                     </div>
                 </div>
 
-                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-slate-400 font-medium">Ümumi Satış Gəliri</p>
-                        <h3 id="stat-total-revenue" class="text-2xl font-black text-emerald-400 mt-1">0 AZN</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-slate-400 font-medium">Stokdakı Məhsullar</p>
+                            <h3 id="dash-stat-total-products" class="text-2xl font-black text-white mt-1">0</h3>
+                        </div>
+                        <div class="p-3 bg-amber-500/10 text-amber-500 rounded-xl border border-amber-500/20">
+                            <i data-lucide="package" class="w-6 h-6"></i>
+                        </div>
                     </div>
-                    <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
-                        <i data-lucide="trending-up" class="w-6 h-6"></i>
-                    </div>
-                </div>
 
-                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-slate-400 font-medium">Abunəlik Statusu</p>
-                        <h3 id="stat-subscription-status" class="text-lg font-black text-emerald-400 mt-1">AKTİV</h3>
+                    <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-slate-400 font-medium">Gözləyən Sifarişlər</p>
+                            <h3 id="dash-stat-pending-orders" class="text-2xl font-black text-sky-400 mt-1">0</h3>
+                        </div>
+                        <div class="p-3 bg-sky-500/10 text-sky-400 rounded-xl border border-sky-500/20">
+                            <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+                        </div>
                     </div>
-                    <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
-                        <i data-lucide="shield-check" class="w-6 h-6"></i>
+
+                    <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-slate-400 font-medium">Ümumi Satış Gəliri</p>
+                            <h3 id="dash-stat-total-revenue" class="text-2xl font-black text-emerald-400 mt-1">0 AZN</h3>
+                        </div>
+                        <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
+                            <i data-lucide="trending-up" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-slate-400 font-medium">Abunəlik Statusu</p>
+                            <h3 id="dash-stat-subscription-status" class="text-lg font-black text-emerald-400 mt-1">AKTİV</h3>
+                        </div>
+                        <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
+                            <i data-lucide="shield-check" class="w-6 h-6"></i>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- SEKSİYA 1: İDARƏ PANELİ HOME -->
-            <div id="section-dashboard" class="tab-content space-y-6">
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-                    <h2 id="welcome-heading" class="text-lg font-bold text-white mb-2">Mağazanıza xoş gəldiniz! 👋</h2>
-                    <p class="text-slate-400 text-sm">Buradan mağazanıza yeni ehtiyat hissələri (şəkil, Marka, Model, İllər, Rəng və OEM kodları ilə) əlavə edə, gələn sifarişlərin statusunu dəyişə və stok səviyyələrinizə nəzarət edə bilərsiniz.</p>
+            <!-- SEKSİYA STATİSTİKA (REAL MƏLUMATLAR İLƏ) -->
+            <div id="section-statistics" class="tab-content hidden space-y-6">
+                
+                <!-- Banner Header -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="space-y-2 max-w-xl z-10">
+                        <h2 id="welcome-heading-stat" class="text-2xl font-black text-white">Avto Store 122 panelinə xoş gəldiniz! 👋</h2>
+                        <p class="text-slate-400 text-xs leading-relaxed">Buradan mağazanıza yeni ehtiyat hissələri (şəkil, Marka, Model, İllər, Rəng və OEM kodları ilə) əlavə edə, gələn sifarişlərin statusunu dəyişə və stok səviyyələrinizə nəzarət edə bilərsiniz.</p>
+                    </div>
+                    <div class="relative z-10 hidden lg:block text-right">
+                        <div class="bg-amber-500/10 border border-amber-500/20 text-amber-400 font-black px-4 py-2 rounded-xl text-xs uppercase tracking-wider">
+                            KEYFİYYƏTLİ EHTİYAT HİSSƏLƏRİ DAİM YOLUNUZDA!
+                        </div>
+                    </div>
                 </div>
+
+                <!-- 4 İNDİKATOR KARTI -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Ümumi Gəlir -->
+                    <div class="bg-emerald-950/20 border border-emerald-900/40 p-5 rounded-2xl flex items-center justify-between">
+                        <div class="space-y-1">
+                            <p class="text-xs text-slate-400 font-medium">Ümumi Gəlir</p>
+                            <h3 id="stat-card-revenue" class="text-2xl font-black text-emerald-400">0.00 AZN</h3>
+                            <p class="text-[11px] text-emerald-500/80 font-medium flex items-center gap-1">
+                                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> Real vaxt hesabı
+                            </p>
+                        </div>
+                        <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-2xl border border-emerald-500/20">
+                            <i data-lucide="banknote" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+
+                    <!-- Ümumi Xərc -->
+                    <div class="bg-rose-950/20 border border-rose-900/40 p-5 rounded-2xl flex items-center justify-between">
+                        <div class="space-y-1">
+                            <p class="text-xs text-slate-400 font-medium">Ümumi Xərc</p>
+                            <h3 id="stat-card-expense" class="text-2xl font-black text-rose-400">0.00 AZN</h3>
+                            <p class="text-[11px] text-rose-500/80 font-medium flex items-center gap-1">
+                                <i data-lucide="wallet" class="w-3.5 h-3.5"></i> Aylıq Abunəlik
+                            </p>
+                        </div>
+                        <div class="p-3 bg-rose-500/10 text-rose-400 rounded-2xl border border-rose-500/20">
+                            <i data-lucide="wallet" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+
+                    <!-- Satılan Məhsul -->
+                    <div class="bg-sky-950/20 border border-sky-900/40 p-5 rounded-2xl flex items-center justify-between">
+                        <div class="space-y-1">
+                            <p class="text-xs text-slate-400 font-medium">Satılan Məhsul</p>
+                            <h3 id="stat-card-sold-count" class="text-2xl font-black text-sky-400">0</h3>
+                            <p class="text-[11px] text-sky-500/80 font-medium flex items-center gap-1">
+                                <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i> Tamamlanan sifariş
+                            </p>
+                        </div>
+                        <div class="p-3 bg-sky-500/10 text-sky-400 rounded-2xl border border-sky-500/20">
+                            <i data-lucide="shopping-cart" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+
+                    <!-- Stokdakı Məhsullar -->
+                    <div class="bg-purple-950/20 border border-purple-900/40 p-5 rounded-2xl flex items-center justify-between">
+                        <div class="space-y-1">
+                            <p class="text-xs text-slate-400 font-medium">Stokdakı Məhsullar</p>
+                            <h3 id="stat-card-stock-count" class="text-2xl font-black text-purple-400">0</h3>
+                            <p class="text-[11px] text-slate-400 font-medium">Aktiv ehtiyat hissəsi</p>
+                        </div>
+                        <div class="p-3 bg-purple-500/10 text-purple-400 rounded-2xl border border-purple-500/20">
+                            <i data-lucide="package" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TARİX ARALIĞI SEÇİMİ VƏ AKTİV FİLTER -->
+                <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2.5 bg-slate-800 text-slate-300 rounded-xl border border-slate-700">
+                            <i data-lucide="calendar" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-white">Tarix Aralığı Seçin</h4>
+                            <p class="text-xs text-slate-400">İstədiyiniz dövr üçün statistikanı göstərin</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <div class="flex items-center gap-2 bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-xl text-xs">
+                            <span class="text-slate-400">Başlanğıc Tarixi</span>
+                            <input type="date" id="filter-start-date" class="bg-transparent text-white font-bold outline-none cursor-pointer">
+                        </div>
+                        <div class="flex items-center gap-2 bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-xl text-xs">
+                            <span class="text-slate-400">Bitmə Tarixi</span>
+                            <input type="date" id="filter-end-date" class="bg-transparent text-white font-bold outline-none cursor-pointer">
+                        </div>
+                        <button onclick="applyDateFilter()" class="bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition cursor-pointer shadow-lg shadow-amber-500/10">
+                            <i data-lucide="search" class="w-4 h-4"></i>
+                            <span>Statistikanı Göstər</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- QRAFİKLƏR VƏ PAYLANMALAR (REAL MƏLUMATLA RENDER OLUNAN) -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Real Gəlir və Xərc Qrafiki -->
+                    <div class="lg:col-span-2 bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                                <i data-lucide="bar-chart-2" class="w-4 h-4 text-amber-500"></i> Gəlir və Xərc Qrafiki
+                            </h3>
+                            <div class="flex items-center gap-4 text-xs">
+                                <div class="flex items-center gap-1.5"><span class="w-3 h-3 bg-emerald-500 rounded-sm"></span><span class="text-slate-300">Gəlir (AZN)</span></div>
+                                <div class="flex items-center gap-1.5"><span class="w-3 h-3 bg-rose-500 rounded-sm"></span><span class="text-slate-300">Xərc (AZN)</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Dinamik Bar Chart Sahəsi -->
+                        <div class="h-48 flex items-end justify-between gap-2 pt-6 px-2 border-b border-slate-800 relative" id="chart-bars-container">
+                            <div class="w-full text-center text-slate-500 text-xs my-auto">Qrafik məlumatı yüklənir...</div>
+                        </div>
+                        <div class="flex justify-between text-[10px] text-slate-500 px-2" id="chart-labels-container">
+                        </div>
+                    </div>
+
+                    <!-- Satışların Paylanması (Real Donut Vizuallığı) -->
+                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4">
+                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                            <i data-lucide="pie-chart" class="w-4 h-4 text-amber-500"></i> Satışların Paylanması
+                        </h3>
+
+                        <div class="flex items-center justify-between gap-4">
+                            <!-- Donut Dairəsi -->
+                            <div id="stat-donut-circle" class="relative w-28 h-28 shrink-0 flex items-center justify-center rounded-full border-8 border-slate-700 transition-all duration-500">
+                                <div class="text-center">
+                                    <span id="stat-donut-total" class="block font-black text-white text-base">0</span>
+                                    <span class="text-[9px] text-slate-400">Ümumi Satış</span>
+                                </div>
+                            </div>
+
+                            <div id="stat-distribution-list" class="space-y-1.5 text-xs flex-1">
+                                <div class="text-slate-500 text-center">Məlumat yoxdur</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AŞAĞI CƏDVƏLLƏR -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Real Son Sifarişlər -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+                        <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+                            <h3 class="text-xs font-bold text-white flex items-center gap-2">
+                                <i data-lucide="clock" class="w-4 h-4 text-amber-500"></i> Son Sifarişlər
+                            </h3>
+                            <button onclick="switchTab('orders')" class="text-xs text-amber-500 hover:underline flex items-center gap-1 font-semibold">
+                                Hamısına Bax &rarr;
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs text-slate-300">
+                                <thead class="bg-slate-950 text-slate-500 border-b border-slate-800 uppercase">
+                                    <tr>
+                                        <th class="p-3">#</th>
+                                        <th class="p-3">Müştəri</th>
+                                        <th class="p-3">Məhsul</th>
+                                        <th class="p-3">Məbləğ</th>
+                                        <th class="p-3">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="stat-recent-orders-body" class="divide-y divide-slate-800/60">
+                                    <tr><td colspan="5" class="p-4 text-center text-slate-500">Məlumat yüklənir...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Real Ən Çox Satılan Məhsullar -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+                        <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+                            <h3 class="text-xs font-bold text-white flex items-center gap-2">
+                                <i data-lucide="trophy" class="w-4 h-4 text-amber-500"></i> Ən Çox Satılan Məhsullar
+                            </h3>
+                            <button onclick="switchTab('inventory')" class="text-xs text-amber-500 hover:underline flex items-center gap-1 font-semibold">
+                                Hamısına Bax &rarr;
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs text-slate-300">
+                                <thead class="bg-slate-950 text-slate-500 border-b border-slate-800 uppercase">
+                                    <tr>
+                                        <th class="p-3">#</th>
+                                        <th class="p-3">Məhsul</th>
+                                        <th class="p-3">Satış Sayı</th>
+                                        <th class="p-3">Gəlir (AZN)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="stat-top-products-body" class="divide-y divide-slate-800/60">
+                                    <tr><td colspan="4" class="p-4 text-center text-slate-500">Məlumat yüklənir...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <!-- SEKSİYA 2: EHTİYAT HİSSƏLƏRİ (STOK) -->
@@ -171,7 +409,6 @@
                                 </tr>
                             </thead>
                             <tbody id="products-table-body" class="divide-y divide-slate-800">
-                                <!-- Supabase məlumatları ilə dolacaq -->
                             </tbody>
                         </table>
                     </div>
@@ -203,7 +440,6 @@
                                 </tr>
                             </thead>
                             <tbody id="orders-table-body" class="divide-y divide-slate-800">
-                                <!-- Supabase məlumatları ilə dolacaq -->
                             </tbody>
                         </table>
                     </div>
@@ -365,11 +601,26 @@
         };
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Standart tarix filteri göstəricisi (son 30 gün)
+            const today = new Date();
+            const past30 = new Date();
+            past30.setDate(today.getDate() - 30);
+
+            document.getElementById('filter-end-date').value = today.toISOString().split('T')[0];
+            document.getElementById('filter-start-date').value = past30.toISOString().split('T')[0];
+
             initStoreSession();
             lucide.createIcons();
+            
+            document.addEventListener('click', (e) => {
+                const notifArea = document.getElementById('notif-dropdown');
+                const notifBtn = e.target.closest('button[onclick="toggleNotifications()"]');
+                if (notifArea && !notifArea.contains(e.target) && !notifBtn) {
+                    notifArea.classList.add('hidden');
+                }
+            });
         });
 
-        // 1. DÜZƏLDİLMİŞ SESSİYA FUNKSİYASI
         async function initStoreSession() {
             try {
                 let activeStoreId = sessionStorage.getItem('activeVendorStoreId') || localStorage.getItem('activeVendorStoreId');
@@ -446,31 +697,33 @@
             document.getElementById('sidebar-store-name').innerText = storeName;
             document.getElementById('sidebar-store-email').innerText = storeEmail;
             document.getElementById('store-avatar').innerText = storeName.substring(0, 2).toUpperCase();
-            document.getElementById('welcome-heading').innerText = `${storeName} paneline xoş gəldiniz! 👋`;
+            document.getElementById('welcome-heading').innerText = `${storeName} panelinə xoş gəldiniz! 👋`;
+            document.getElementById('welcome-heading-stat').innerText = `${storeName} panelinə xoş gəldiniz! 👋`;
 
             document.getElementById('finance-fee').innerText = `${currentStore.fee || 40} AZN / ay`;
             document.getElementById('finance-last-payment').innerText = currentStore.last_payment || 'YENİ';
+            document.getElementById('stat-card-expense').innerText = `${currentStore.fee || 40}.00 AZN`;
             
             const isStoreActive = currentStore.status === 'active';
             const statusBadge = document.getElementById('finance-status-badge');
-            const statSubStatus = document.getElementById('stat-subscription-status');
+            const dashStatSub = document.getElementById('dash-stat-subscription-status');
 
             if (isStoreActive) {
                 statusBadge.className = "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs px-2.5 py-0.5 rounded-full font-bold";
                 statusBadge.innerText = "Ödənilib (Aktiv)";
-                statSubStatus.className = "text-lg font-black text-emerald-400 mt-1";
-                statSubStatus.innerText = "AKTİV";
+                dashStatSub.className = "text-lg font-black text-emerald-400 mt-1";
+                dashStatSub.innerText = "AKTİV";
             } else {
                 statusBadge.className = "bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xs px-2.5 py-0.5 rounded-full font-bold";
                 statusBadge.innerText = "Deaktiv (Borclu)";
-                statSubStatus.className = "text-lg font-black text-rose-400 mt-1";
-                statSubStatus.innerText = "DEAKTİV";
+                dashStatSub.className = "text-lg font-black text-rose-400 mt-1";
+                dashStatSub.innerText = "DEAKTİV";
             }
 
             try {
                 const [productsRes, ordersRes] = await Promise.all([
                     _supabase.from('products').select('*').eq('store_id', currentStore.id).order('id', { ascending: false }),
-                    _supabase.from('orders').select('*, products(oem)').eq('store_id', currentStore.id).order('id', { ascending: false })
+                    _supabase.from('orders').select('*, products(oem, brand)').eq('store_id', currentStore.id).order('id', { ascending: false })
                 ]);
 
                 products = productsRes.data || [];
@@ -487,7 +740,254 @@
             renderProducts();
             renderOrders();
             updateStats();
+            renderStatistics();
+            renderNotifications();
             lucide.createIcons();
+        }
+
+        /* DÜYMƏ İLƏ TARİX FİLETRİNİN AKTİVLƏŞDİRİLMƏSİ */
+        function applyDateFilter() {
+            renderStatistics();
+        }
+
+        /* REAL MƏLUMATLAR VƏ TARİX FİLTERİ İLƏ STATİSTİKA VİZUALİSASİYASI */
+        function renderStatistics() {
+            const startDateVal = document.getElementById('filter-start-date').value;
+            const endDateVal = document.getElementById('filter-end-date').value;
+
+            const startObj = startDateVal ? new Date(startDateVal) : null;
+            const endObj = endDateVal ? new Date(endDateVal) : null;
+            if (endObj) endObj.setHours(23, 59, 59, 999);
+
+            // Tarixə görə filterlənmiş sifarişlər
+            const filteredOrders = orders.filter(o => {
+                if (!o.created_at) return true;
+                const orderDate = new Date(o.created_at);
+                if (startObj && orderDate < startObj) return false;
+                if (endObj && orderDate > endObj) return false;
+                return true;
+            });
+
+            const completedOrders = filteredOrders.filter(o => o.status === 'Təsdiqləndi' || o.status === 'completed' || o.status === 'Tamamlandı');
+            
+            const totalRev = completedOrders.reduce((sum, item) => {
+                const amt = item.total_price || item.total || (parseFloat(item.price || 0) * (parseInt(item.quantity) || 1));
+                return sum + (parseFloat(amt) || 0);
+            }, 0);
+
+            // Kart Göstəriciləri
+            document.getElementById('stat-card-revenue').innerText = `${totalRev.toFixed(2)} AZN`;
+            document.getElementById('stat-card-sold-count').innerText = completedOrders.length;
+            document.getElementById('stat-card-stock-count').innerText = products.length;
+            document.getElementById('stat-donut-total').innerText = filteredOrders.length;
+
+            // 1. REAL GƏLİR VƏ XƏRC QRAFİKİ RENDERİ
+            renderRealChart(completedOrders);
+
+            // 2. REAL SATIŞLARIN PAYLANMASI (DONUT CHART VƏ FAİZLƏR)
+            renderRealDistribution(filteredOrders);
+
+            // 3. Son Sifarişlər Cədvəli
+            const recentOrdersBody = document.getElementById('stat-recent-orders-body');
+            const recentThree = filteredOrders.slice(0, 3);
+
+            if (recentThree.length === 0) {
+                recentOrdersBody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-slate-500">Sifariş tapılmadı</td></tr>`;
+            } else {
+                recentOrdersBody.innerHTML = recentThree.map((o, idx) => {
+                    const statusClass = (o.status === 'Təsdiqləndi' || o.status === 'completed' || o.status === 'Tamamlandı') ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : (o.status === 'Ləğv edildi' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20');
+                    const amt = o.total_price || o.total || (parseFloat(o.price || 0) * (parseInt(o.quantity) || 1));
+
+                    return `
+                        <tr class="hover:bg-slate-800/40">
+                            <td class="p-3 font-mono text-amber-500">${idx + 1}</td>
+                            <td class="p-3 font-bold text-white">${o.buyer_name || o.customer || 'Müştəri'}</td>
+                            <td class="p-3 text-slate-300">${o.product_name || o.item || 'Məhsul'}</td>
+                            <td class="p-3 font-mono font-bold text-emerald-400">${parseFloat(amt || 0).toFixed(2)} AZN</td>
+                            <td class="p-3">
+                                <span class="px-2 py-0.5 text-[10px] rounded-full font-bold border ${statusClass}">
+                                    ${o.status || 'Gözləyir'}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            // 4. Ən Çox Satılan Məhsullar
+            const topProductsBody = document.getElementById('stat-top-products-body');
+            const prodStats = {};
+
+            filteredOrders.forEach(o => {
+                const name = o.product_name || o.item || 'Naməlum Məhsul';
+                const amt = parseFloat(o.total_price || o.total || (parseFloat(o.price || 0) * (parseInt(o.quantity) || 1))) || 0;
+                const qty = parseInt(o.quantity) || 1;
+
+                if (!prodStats[name]) {
+                    prodStats[name] = { count: 0, revenue: 0 };
+                }
+                prodStats[name].count += qty;
+                prodStats[name].revenue += amt;
+            });
+
+            const sortedTop = Object.entries(prodStats)
+                .map(([name, data]) => ({ name, ...data }))
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 5);
+
+            if (sortedTop.length === 0) {
+                topProductsBody.innerHTML = `<tr><td colspan="4" class="p-3 text-center text-slate-500">Məlumat tapılmadı</td></tr>`;
+            } else {
+                topProductsBody.innerHTML = sortedTop.map((item, idx) => `
+                    <tr class="hover:bg-slate-800/40">
+                        <td class="p-3 font-mono text-amber-500">${idx + 1}</td>
+                        <td class="p-3 font-bold text-white">${item.name}</td>
+                        <td class="p-3 font-bold text-slate-300">${item.count}</td>
+                        <td class="p-3 font-mono font-bold text-emerald-400">${item.revenue.toFixed(2)}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // REAL QRAFİK (BARS) QURULMASI
+        function renderRealChart(completedOrders) {
+            const barsContainer = document.getElementById('chart-bars-container');
+            const labelsContainer = document.getElementById('chart-labels-container');
+
+            // Sifarişləri tarixlər üzrə gruplaşdıraq
+            const dailyRevenue = {};
+            
+            // Son 7 günün tarixlərini yaradaq
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const dateKey = d.toISOString().split('T')[0];
+                dailyRevenue[dateKey] = 0;
+            }
+
+            completedOrders.forEach(o => {
+                if (o.created_at) {
+                    const dateKey = o.created_at.split('T')[0];
+                    if (dailyRevenue[dateKey] !== undefined) {
+                        const amt = o.total_price || o.total || (parseFloat(o.price || 0) * (parseInt(o.quantity) || 1));
+                        dailyRevenue[dateKey] += parseFloat(amt) || 0;
+                    }
+                }
+            });
+
+            const dateEntries = Object.entries(dailyRevenue);
+            const maxRev = Math.max(...Object.values(dailyRevenue), 100);
+
+            barsContainer.innerHTML = dateEntries.map(([date, amount]) => {
+                const heightPercent = Math.min(Math.round((amount / maxRev) * 100), 100);
+                const displayHeight = heightPercent < 5 && amount > 0 ? 5 : heightPercent;
+
+                return `
+                    <div class="flex-1 flex flex-col items-center justify-end h-full group relative">
+                        <!-- Tooltip -->
+                        <div class="absolute -top-8 bg-slate-800 text-emerald-400 font-mono text-[10px] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition border border-slate-700 pointer-events-none z-20">
+                            ${amount.toFixed(2)} AZN
+                        </div>
+                        <div class="w-full max-w-[28px] bg-emerald-500 hover:bg-emerald-400 rounded-t transition-all duration-300" style="height: ${displayHeight}%;"></div>
+                    </div>
+                `;
+            }).join('');
+
+            labelsContainer.innerHTML = dateEntries.map(([date]) => {
+                const d = new Date(date);
+                const formatted = `${d.getDate()} ${d.toLocaleString('az-AZ', { month: 'short' })}`;
+                return `<span class="flex-1 text-center truncate px-0.5">${formatted}</span>`;
+            }).join('');
+        }
+
+        // REAL SATIŞLARIN PAYLANMASI (DONUT CHART)
+        function renderRealDistribution(allOrders) {
+            const listContainer = document.getElementById('stat-distribution-list');
+            const donutCircle = document.getElementById('stat-donut-circle');
+
+            if (allOrders.length === 0) {
+                listContainer.innerHTML = `<div class="text-slate-500 text-center text-xs py-2">Sifariş tapılmadı</div>`;
+                donutCircle.style.borderImage = 'none';
+                donutCircle.style.borderColor = '#334155';
+                return;
+            }
+
+            const brandCounts = {};
+            let totalItems = 0;
+
+            allOrders.forEach(o => {
+                const brand = o.products?.brand || o.brand || 'Digər';
+                const qty = parseInt(o.quantity) || 1;
+                brandCounts[brand] = (brandCounts[brand] || 0) + qty;
+                totalItems += qty;
+            });
+
+            const colors = ['#0ea5e9', '#10b981', '#f59e0b', '#a855f7', '#f43f5e'];
+            const entries = Object.entries(brandCounts).sort((a,b) => b[1] - a[1]);
+
+            let cumulativePercent = 0;
+            const gradientParts = [];
+
+            listContainer.innerHTML = entries.map(([brand, count], idx) => {
+                const percent = Math.round((count / totalItems) * 100);
+                const color = colors[idx % colors.length];
+
+                const nextPercent = cumulativePercent + percent;
+                gradientParts.push(`${color} ${cumulativePercent}% ${nextPercent}%`);
+                cumulativePercent = nextPercent;
+
+                return `
+                    <div class="flex justify-between items-center">
+                        <span class="flex items-center gap-1.5 truncate max-w-[110px]">
+                            <span class="w-2.5 h-2.5 rounded-sm shrink-0" style="background-color: ${color}"></span>
+                            <span class="truncate">${brand}</span>
+                        </span>
+                        <span class="font-bold text-white ml-2">${percent}%</span>
+                    </div>
+                `;
+            }).join('');
+
+            // CSS Conic-gradient ilə real donut görünüşü
+            if (gradientParts.length > 0) {
+                donutCircle.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+                donutCircle.style.borderRadius = '50%';
+                donutCircle.style.padding = '8px';
+            }
+        }
+
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notif-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        function renderNotifications() {
+            const pendingOrders = orders.filter(o => o.status === 'Gözləyir' || o.status === 'pending');
+            const badge = document.getElementById('notif-badge');
+            const notifList = document.getElementById('notif-list');
+            const notifCountText = document.getElementById('notif-count-text');
+
+            if (pendingOrders.length > 0) {
+                badge.innerText = pendingOrders.length;
+                badge.classList.remove('hidden');
+                notifCountText.innerText = `${pendingOrders.length} yeni sifariş`;
+                
+                notifList.innerHTML = pendingOrders.map(o => `
+                    <div onclick="switchTab('orders')" class="p-3 hover:bg-slate-800/60 cursor-pointer transition flex items-start gap-3">
+                        <div class="p-2 bg-amber-500/10 text-amber-500 rounded-lg border border-amber-500/20 mt-0.5">
+                            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-white text-xs">Yeni Sifariş #${o.id}</p>
+                            <p class="text-[11px] text-slate-400">${o.product_name || o.item || 'Məhsul'} - <span class="text-emerald-400 font-bold">${o.total_price || o.price || 0} AZN</span></p>
+                            <p class="text-[10px] text-slate-500 mt-0.5">${o.buyer_name || 'Müştəri'}</p>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                badge.classList.add('hidden');
+                notifCountText.innerText = `0 yeni`;
+                notifList.innerHTML = `<div class="p-6 text-center text-slate-500 text-xs">Yeni bildirişiniz yoxdur.</div>`;
+            }
         }
 
         function renderProducts() {
@@ -586,7 +1086,7 @@
             const pendingOrdersCount = orders.filter(o => o.status === 'Gözləyir' || o.status === 'pending').length;
             
             document.getElementById('orders-badge').innerText = pendingOrdersCount;
-            document.getElementById('stat-pending-orders').innerText = pendingOrdersCount;
+            document.getElementById('dash-stat-pending-orders').innerText = pendingOrdersCount;
 
             if (orders.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-500">Sifariş tapılmadı.</td></tr>`;
@@ -666,13 +1166,13 @@
         }
 
         function updateStats() {
-            document.getElementById('stat-total-products').innerText = products.length;
+            document.getElementById('dash-stat-total-products').innerText = products.length;
             const completedOrders = orders.filter(o => o.status === 'Təsdiqləndi' || o.status === 'completed');
             const totalRev = completedOrders.reduce((sum, item) => {
                 const amt = item.total_price || item.total || (parseFloat(item.price || 0) * (parseInt(item.quantity) || 1));
                 return sum + (parseFloat(amt) || 0);
             }, 0);
-            document.getElementById('stat-total-revenue').innerText = `${totalRev.toFixed(2)} AZN`;
+            document.getElementById('dash-stat-total-revenue').innerText = `${totalRev.toFixed(2)} AZN`;
         }
 
         function previewImage(event) {
@@ -684,7 +1184,7 @@
                 }
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    uploadedBase64Image = e.target.result;
+                    uploadedBase64Image = e.result;
                     document.getElementById('image-preview').src = uploadedBase64Image;
                     document.getElementById('upload-placeholder').classList.add('hidden');
                     document.getElementById('image-preview-container').classList.remove('hidden');
@@ -718,9 +1218,10 @@
         }
 
         function switchTab(tabName) {
-            const tabs = ['dashboard', 'inventory', 'orders', 'finance'];
+            const tabs = ['dashboard', 'statistics', 'inventory', 'orders', 'finance'];
             const titles = {
                 'dashboard': 'Mağaza İdarə Paneli',
+                'statistics': 'Mağaza Analitikası və Statistika',
                 'inventory': 'Ehtiyat Hissələri Stoku',
                 'orders': 'Gələn Sifarişlər',
                 'finance': 'Maliyyə və Abunəlik'
@@ -729,16 +1230,18 @@
             tabs.forEach(tab => {
                 const section = document.getElementById(`section-${tab}`);
                 const btn = document.getElementById(`nav-${tab}`);
-                if (tab === tabName) {
-                    section.classList.remove('hidden');
-                    btn.className = "nav-btn w-full flex items-center gap-3 bg-amber-500 text-slate-950 font-bold px-4 py-3 rounded-xl transition cursor-pointer";
-                } else {
-                    section.classList.add('hidden');
-                    btn.className = "nav-btn w-full flex items-center gap-3 text-slate-400 hover:text-white hover:bg-slate-800 px-4 py-3 rounded-xl transition cursor-pointer";
+                if (section && btn) {
+                    if (tab === tabName) {
+                        section.classList.remove('hidden');
+                        btn.className = "nav-btn w-full flex items-center gap-3 bg-amber-500 text-slate-950 font-bold px-4 py-3 rounded-xl transition cursor-pointer";
+                    } else {
+                        section.classList.add('hidden');
+                        btn.className = "nav-btn w-full flex items-center gap-3 text-slate-400 hover:text-white hover:bg-slate-800 px-4 py-3 rounded-xl transition cursor-pointer";
+                    }
                 }
             });
 
-            document.getElementById('page-title').innerText = titles[tabName];
+            document.getElementById('page-title').innerText = titles[tabName] || 'Mağaza İdarə Paneli';
         }
 
         function openProductModal() {
