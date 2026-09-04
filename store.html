@@ -629,6 +629,14 @@
             const firstProduct = cart[0]?.product || {};
             const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
 
+            // Tələb olunan formatda məhsul stringini hazırlayırıq: "Məhsulun adı (OEM) (n ədəd)"
+            const formattedProductString = cart.map(i => {
+                const name = i.product.name || i.product.title || 'Məhsul';
+                const oem = i.product.oem ? ` (${i.product.oem})` : '';
+                const qty = i.quantity || 1;
+                return `${name}${oem} (${qty} ədəd)`;
+            }).join(', ');
+
             // Baza tərəfindən dəstəklənən standart sütunlar
             const orderPayload = {
                 store_id: parseInt(currentStoreId) || currentStoreId,
@@ -637,13 +645,14 @@
                 customer_phone: customerPhone,
                 customer_address: customerAddress,
                 
-                product_name: cart.map(i => i.product.name || i.product.title).join(', '),
+                product_name: formattedProductString,
                 product_id: firstProduct.id || null,
                 quantity: totalQuantity,
                 
                 items: cart.map(i => ({
                     id: i.product.id,
                     name: i.product.name || i.product.title,
+                    oem: i.product.oem || '',
                     price: i.product.price,
                     quantity: i.quantity,
                     image: i.product.image

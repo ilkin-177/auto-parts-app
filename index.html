@@ -736,7 +736,7 @@
         }
     }
 
-    // SİFARİŞİN SATICIYA (SUPABASE 'orders' CƏDVƏLİNƏ) GÖNDƏRİLMƏSİ
+    // SİFARİŞİN SATICIYA (SUPABASE 'orders' CƏDVƏLİNƏ) GÖNDƏRİLMƏSİ (GROUPLU/TOPLU FORMAT)
     async function submitOrderToVendor() {
         const activeUser = JSON.parse(localStorage.getItem('activeUser'));
         const fullName = document.getElementById('order-fullname').value.trim();
@@ -751,21 +751,47 @@
         const checkoutBtn = document.getElementById('checkoutBtn');
         checkoutBtn.disabled = true;
 
-        // Bütün səbət məhsullarını hazırlayırıq
-        const ordersToInsert = cart.map(item => ({
-            product_id: item.id ? parseInt(item.id) : null,
-            store_id: item.store_id ? parseInt(item.store_id) : null,
-            product_name: item.name || item.title,
-            price: parseFloat(item.price) || 0,
-            quantity: parseInt(item.quantity) || 1,
-            total_price: (parseFloat(item.price) || 0) * (parseInt(item.quantity) || 1),
-            buyer_id: activeUser && activeUser.id ? parseInt(activeUser.id) : null,
-            buyer_name: fullName,
-            buyer_phone: phone,
-            buyer_address: address,
-            status: 'Gözləyir',
-            created_at: new Date()
-        }));
+        // 1. Səbətdəki məhsulları store_id-yə görə qruplaşdırırıq
+        const groupedCart = cart.reduce((acc, item) => {
+            const storeId = item.store_id ? parseInt(item.store_id) : 'no_store';
+            if (!acc[storeId]) {
+                acc[storeId] = [];
+            }
+            acc[storeId].push(item);
+            return acc;
+        }, {});
+
+        // 2. Hər mağaza üçün tək bir sifariş sətri hazırlayırıq
+        const ordersToInsert = Object.keys(groupedCart).map(storeId => {
+            const items = groupedCart[storeId];
+            
+            // Məhsulları "Ad (OEM/Kod) (X ədəd)" formatında birləşdiririk
+            const productName = items
+                .map(item => {
+                    const oemPart = item.oem ? ` (${item.oem})` : '';
+                    return `${item.name || item.title}${oemPart} (${item.quantity} ədəd)`;
+                })
+                .join(', ');
+
+            // Mağaza üzrə ümumi məbləğ və ümumi miqdar
+            const totalPrice = items.reduce((sum, item) => sum + ((parseFloat(item.price) || 0) * item.quantity), 0);
+            const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
+
+            return {
+                product_id: null,
+                store_id: storeId === 'no_store' ? null : parseInt(storeId),
+                product_name: productName,
+                price: totalPrice,
+                quantity: totalQuantity,
+                total_price: totalPrice,
+                buyer_id: activeUser && activeUser.id ? parseInt(activeUser.id) : null,
+                buyer_name: fullName,
+                buyer_phone: phone,
+                buyer_address: address,
+                status: 'Gözləyir',
+                created_at: new Date()
+            };
+        });
 
         const { data, error } = await _supabase.from('orders').insert(ordersToInsert);
 
@@ -939,7 +965,8 @@
                 name: title,
                 price: p.price || 0,
                 store_id: storeId,
-                store_name: storeName
+                store_name: storeName,
+                oem: p.oem || '' 
             };
 
             card.innerHTML = `
