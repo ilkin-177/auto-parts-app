@@ -138,7 +138,7 @@
                             type="text" 
                             id="searchInput"
                             oninput="fetchProducts()"
-                            placeholder="Ehtiyat hissəsinin adı və ya OEM kodu (məs: 34116794301)"
+                            placeholder="Ehtiyat hissəsinin adı, OEM kodu və ya Mağaza adı (məs: Avto Store)"
                             class="w-full bg-slate-800 border border-slate-700 text-slate-200 pl-11 pr-4 py-3 rounded-xl text-sm outline-none focus:border-amber-500"
                         />
                         <i data-lucide="wrench" class="absolute left-4 top-3.5 text-slate-500 w-4 h-4"></i>
@@ -177,16 +177,16 @@
             <!-- Sosial Media İkonları (Tam Mərkəzdə) -->
             <div class="order-1 md:order-2 flex items-center justify-center gap-5">
                 <!-- WhatsApp -->
-                <a href="https://wa.me/YOUR_PHONE_NUMBER" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-900 border border-slate-800 rounded-full hover:bg-emerald-500/10 hover:border-emerald-500/30 hover:text-emerald-400 transition flex items-center justify-center w-10 h-10" title="WhatsApp">
+                <a href="https://wa.me/+994104140217" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-900 border border-slate-800 rounded-full hover:bg-emerald-500/10 hover:border-emerald-500/30 hover:text-emerald-400 transition flex items-center justify-center w-10 h-10" title="WhatsApp">
                 <i class="fa-brands fa-whatsapp text-lg"></i>
                 </a>
                 <!-- Instagram -->
-                <a href="https://instagram.com/YOUR_PROFILE" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-900 border border-slate-800 rounded-full hover:bg-pink-500/10 hover:border-pink-500/30 hover:text-pink-400 transition flex items-center justify-center w-10 h-10" title="Instagram">
+                <a href="https://instagram.com/autoparts1.az" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-900 border border-slate-800 rounded-full hover:bg-pink-500/10 hover:border-pink-500/30 hover:text-pink-400 transition flex items-center justify-center w-10 h-10" title="Instagram">
                 <i class="fa-brands fa-instagram text-lg"></i>
                 </a>
-                <!-- Facebook -->
-                <a href="https://facebook.com/YOUR_PROFILE" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-900 border border-slate-800 rounded-full hover:bg-blue-500/10 hover:border-blue-500/30 hover:text-blue-400 transition flex items-center justify-center w-10 h-10" title="Facebook">
-                <i class="fa-brands fa-facebook-f text-lg"></i>
+                <!-- Telegram -->
+                <a href="https://telegram.com/autoparts1.az" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-900 border border-slate-800 rounded-full hover:bg-blue-500/10 hover:border-blue-500/30 hover:text-blue-400 transition flex items-center justify-center w-10 h-10" title="Telegram">
+                <i class="fa-brands fa-telegram text-lg"></i>
                 </a>
             </div>
 
@@ -407,6 +407,22 @@
 
     // SƏBƏT DƏYİŞƏNİ
     let cart = JSON.parse(localStorage.getItem('userCart')) || [];
+
+    // MAĞAZAYA KEÇİD YOXLANISI (GİRİŞ EDİLMƏYİBSƏ MODAL AÇIR)
+    function goToStore(event, storeId) {
+        event.preventDefault();
+        const activeUser = localStorage.getItem('activeUser');
+        const activeVendor = localStorage.getItem('activeVendor');
+        const activeAdmin = localStorage.getItem('activeAdmin');
+
+        if (!activeUser && !activeVendor && !activeAdmin) {
+            alert("Mağazaya baxmaq üçün zəhmət olmasa hesabınıza daxil olun!");
+            openLoginModal();
+            return;
+        }
+
+        window.location.href = `store.html?id=${storeId}`;
+    }
 
     // Modal İdarəsi
     function openVendorModal() { document.getElementById('vendorModal').classList.remove('hidden'); }
@@ -863,6 +879,7 @@
 
         const filtered = products.filter(item => {
             const storeLoc = item.stores?.location || item.stores?.store_location || item.stores?.address || '';
+            const storeName = item.stores?.store_name || item.stores?.store || item.stores?.person || '';
 
             if (brand && item.brand !== brand) return false;
             if (model && item.model !== model) return false;
@@ -885,11 +902,14 @@
 
             if (region && !storeLoc.toLowerCase().includes(region)) return false;
 
+            // AXTARIŞ: Məhsul Adı, OEM Kodu, Təsvir VƏ MAĞAZA ADI üzrə süzülür
             if (search) {
                 const nameMatch = (item.name || item.title || '').toLowerCase().includes(search);
                 const oemMatch = (item.oem || '').toLowerCase().includes(search);
                 const descMatch = (item.description || '').toLowerCase().includes(search);
-                if (!nameMatch && !oemMatch && !descMatch) return false;
+                const storeMatch = storeName.toLowerCase().includes(search);
+                
+                if (!nameMatch && !oemMatch && !descMatch && !storeMatch) return false;
             }
 
             return true;
@@ -901,6 +921,7 @@
         }
 
         filtered.forEach(p => {
+            const storeId = p.store_id || p.stores?.id;
             const storeName = p.stores?.store_name || p.stores?.store || p.stores?.person || 'Mağaza';
             const storeLoc = p.stores?.location || p.stores?.store_location || p.stores?.address || 'Ünvan qeyd olunmayıb';
             
@@ -917,7 +938,7 @@
                 id: p.id,
                 name: title,
                 price: p.price || 0,
-                store_id: p.store_id || p.stores?.id,
+                store_id: storeId,
                 store_name: storeName
             };
 
@@ -931,13 +952,16 @@
                         <h3 class="font-bold text-white text-base mb-1 line-clamp-1">${title}</h3>
                         <p class="text-slate-400 text-xs mb-3">${p.brand || ''} ${p.model || ''} ${p.year ? `(${p.year})` : ''}</p>
                         
-                        <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-700/50 space-y-1.5 text-xs">
-                            <div class="flex items-center gap-2 text-slate-200 font-medium">
-                                <i data-lucide="store" class="w-4 h-4 text-amber-500"></i>
-                                <span class="truncate">${storeName}</span>
+                        <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-700/50 space-y-2 text-xs">
+                            <div class="flex items-center justify-between gap-2 text-slate-200 font-medium">
+                                <div class="flex items-center gap-2 truncate">
+                                    <i data-lucide="store" class="w-4 h-4 text-amber-500 shrink-0"></i>
+                                    <span class="truncate">${storeName}</span>
+                                </div>
+                                ${storeId ? `<a href="javascript:void(0)" onclick="goToStore(event, '${storeId}')" class="bg-amber-500/10 hover:bg-amber-500 hover:text-slate-950 text-amber-500 font-bold px-2.5 py-1 rounded-lg border border-amber-500/20 text-[11px] transition shrink-0">Mağazaya get &rarr;</a>` : ''}
                             </div>
                             <div class="flex items-center gap-2 text-slate-400">
-                                <i data-lucide="map-pin" class="w-4 h-4 text-slate-500"></i>
+                                <i data-lucide="map-pin" class="w-4 h-4 text-slate-500 shrink-0"></i>
                                 <span class="truncate">${storeLoc}</span>
                             </div>
                         </div>
@@ -968,29 +992,75 @@ const infoData = {
         title: '<i class="fa-solid fa-circle-info text-amber-500"></i> Haqqımızda',
         content: `
             <p class="font-semibold text-white">AutoParts Marketplace-ə xoş gəldiniz!</p>
-            <p>Platformamız avtomobil ehtiyat hissələrinin alışı və satışı üçün ixtisaslaşmış müasir online bazardır.</p>
-            <p>Məqsədimiz satıcılar və alıcılar arasında dürüst, şəffaf və sürətli əlaqə yaradaraq avto-stok idarəetməsini və ehtiyat hissəsi axtarışını maksimum rahatlaşdırmaqdır.</p>
+            <p>AutoParts – Azərbaycanın avtomobil ehtiyat hissələri sektorunu tək bir raqamsal platformada birləşdirən müasir onlayn bazarlıq platformasıdır.</p>
+            <p>Axtardığınız ehtiyat hissəsini tapmaq üçün onlarca mağazanı tək-tək gəzmək məcburiyyətinə son qoyuruq. Platformamız ölkə üzrə fəaliyyət göstərən etibarlı ehtiyat hissəsi mağazalarını və satıcılarını vahid məkanda toplayaraq, alıcılara geniş seçim imkanı və şaffaf qiymətləndirmə təqdim edir.</p>
+            <p class="text-xl font-bold">Bizim Məqsədimiz</p>
+            <p>AutoParts Marketplace-in əsas məqsədi, avtomobil sahiblərinə və təmirçilərə ehtiyat hissələrini daha sürətli, rahat və etibarlı şəkildə əldə etmələrini təmin etməkdir. Platformamız vasitəsilə istifadəçilər, ehtiyac duyduqları məhsulları asanlıqla taparaq, müxtəlif mağazalardan qiymətləri müqayisə edə və ən uyğun təklifləri seçə bilərlər.</p>
+            <p class="text-xl font-bold">Biz Nə Təklif Edirik?</p>
+            <ul class="list-disc list-inside space-y-2">
+                <li>Geniş məhsul çeşidi və müxtəlif markalar.</li>
+                <li>Mağaza və satıcıların etibarlılığını göstərən reytinq sistemi.</li>
+                <li>Ən son qiymətləri və stok məlumatlarını real vaxtda təqdim edən sistem.</li>
+                <li>Sadə və intuitiv istifadəçi interfeysi ilə rahat alış-veriş təcrübəsi.</li>
         `
     },
     terms: {
         title: '<i class="fa-solid fa-file-contract text-amber-500"></i> Satıcı Şərtləri',
         content: `
+            <p class="text-xl font-bold">1. Ümumi Müddəalar</p>
             <ul class="list-disc list-inside space-y-2">
-                <li>Satıcı platformaya daxil etdiyi məhsulların (OEM kod, marka, qiymət və vəziyyət) dəqiqliyinə cavabdehdir.</li>
-                <li>Gələn sifarişlər 24 saat ərzində təsdiqlənməli və ya ləğv edilməlidir.</li>
-                <li>Aylıq abunəlik haqqı vaxtında ödənilmədiyi halda mağaza statusu deaktiv edilə bilər.</li>
-                <li>Saxta və ya aldadıcı məhsul yerləşdirən satıcıların hesabı dərhal dondurulur.</li>
-            </ul>
+                <li>Bu qaydalar AutoParts üzərində mağaza açaraq məhsul satışı həyata keçirən bütün fiziki və hüquqi şəxslərə şamil olunur.</li>
+                <li>Platformada qeydiyyatdan keçən və mağaza yaradan hər bir Satıcı bu şərtləri tam və qeyd-şərtsiz qəbul etmiş sayılır.</li>
+            
+            <p class="text-xl font-bold">2. Mağaza Hesabı və Təhlükəsizlik</p>
+            <ul class="list-disc list-inside space-y-2">
+                <li>Satıcı qeydiyyat zamanı tələb olunan məlumatları (şirkət/mağaza adı, VÖEN (varsa), əlaqə nömrələri, ünvan) dəqiq və doğru daxil etməyə borcludur.</li>
+                <li>Hesab məlumatlarının (login/parol) məxfiliyinin qorunmasına görə cavabdehliyi birbaşa Satıcı daşıyır.</li>
+
+            <p class="text-xl font-bold">3. Məhsul Yerləşdirilməsi və Qaydalar</p>
+            <ul class="list-disc list-inside space-y-2">
+                <li><b>Məhsul Dəqiqliyi:</b> Satıcı təklif etdiyi ehtiyat hissəsinin vəziyyəti (yeni, işlənmiş, orijinal, analoq), qiyməti və stokda olub-olmaması barədə düzgün məlumat daxil etməlidir.</li>
+                <li><b>Qadağan olunmuş Məhsullar:</b> Mənşəyi məlum olmayan, oğurluq, qanunsuz yolla əldə edilmiş və ya platformanın siyasətinə zidd olan məhsulların yerləşdirilməsi qəti qadağandır.</li>
+                <li><b>Şəkillər:</b> Məhsul şəkilləri real olmalı və ya məhsulu tam əks etdirməlidir. Başqa brendlərin müəllif hüquqlarını pozan vizuallardan istifadə olunmamalıdır.</li>
+           
+            <p class="text-xl font-bold">4. Xidmət Haqqı və Abunəlik</p>
+            <ul class="list-disc list-inside space-y-2">
+                <li>Satıcı Platformanın təqdim etdiyi abunə paketlərindən birini seçərək müəyyən edilmiş aylıq və ya illik xidmət haqqını vaxtında ödəməlidir.</li>
+                <li>Abunə haqqı ödənilmədiyi halda, Platforma Satıcının mağazasını və məhsullarını axtarış sistemində müvəqqəti gizlətmək və ya hesabı məhdudlaşdırmaq hüququnu özündə saxlayır.</li>
+                <li>Ödənilmiş abunə haqları geri qaytarılmır (qanunvericilikdə nəzərdə tutulmuş müstəsna hallar istisna olmaqla).</li>
+            
+            <p class="text-xl font-bold">5. Sifarişlərin İcrası və Çatdırılma</p>
+            <ul class="list-disc list-inside space-y-2">
+                <li>Mağazadan Təhvil (Pick-up): Alıcı məhsulu özü götürmək istədikdə, Satıcı məhsulun elanda göstərilən ünvanda və hazır vəziyyətdə olmasını təmin etməlidir.</li>
+                <li>Onlayn Çatdırılma: Çatdırılmalı sifarişlərdə Satıcı məhsulu təyin olunmuş kuryerə və ya alıcıya vaxtında təhvil verməyə borcludur.</li>
+                <li>Məhsulun səhv və ya qüsurlu göndərilməsi nəticəsində yaranan zərərə və dəyişdirilmə xərclərinə Satıcı cavabdehdir.</li>
+            
+            <p class="text-xl font-bold">6. Məsuliyyətin Məhdudlaşdırılması</p>
+            <ul class="list-disc list-inside space-y-2">
+                <li>Platforma alıcı və satıcı arasında vasitəçi proqram təminatıdır. Məhsulun keyfiyyətinə, zəmanətinə və satıcının təqdim etdiyi məlumatların doğruluğuna görə birbaşa Satıcı cavabdehlik daşıyır.</li>
+                <li>Satıcı alıcılara qarşı istehlakçı hüquqlarının qorunması haqqında qanunvericiliyin tələblərinə riayət etməyi öhdəsinə götürür.</li>
+
+            <p class="text-xl font-bold">7. Xitam və Dəyişikliklər</p>
+            <ul class="list-disc list-inside space-y-2">
+                <li>Platforma qaydaları pozan, saxta məhsul satan və ya alıcılardan davamlı olaraq mənfi rəylər alan Satıcının hesabını xəbərdarlıq etmədən dayandırmaq hüququna malikdir.</li>
+                <li>Platforma bu şərtləri öncədən bildirməklə dəyişdirmək hüququnu özündə saxlayır.</li>
+
+            <p class="text-xl font-bold">8. Məhsulun Geri Qaytarılması və Dəyişdirilməsi Siyasəti</p>
+            <ul class="list-disc list-inside space-y-2">
+                <li><b>Məsuliyyətin Sərhədi:</b> Platforma alıcılar və satıcılar arasında kuryer və proqram təminatı vasitəçisi rolunu oynayır. Məhsulun qaytarılması, dəyişdirilməsi və ya zəmanət öhdəlikləri üzrə bütün hüquqi və maliyyə məsuliyyəti birbaşa Satıcı və Alıcı arasında tənzimlənir. Platforma bu prosesdə tərəf qismində çıxış etmir və maddi cavabdehlik daşımır.</li>
+                <li><b>24 Saatlıq Xüsusi Qaydalar (İstisna Hal):</b> Alıcı məhsulu təhvil aldığı andan etibarən 24 saat ərzində məhsulda zavod defekti, zədələnmə və ya elana uyğun olmayan qüsur aşkar edərsə, geri qaytarma və ya dəyişdirmə hüququna malikdir.</li>
+                <li><b>Şərtlər və Yoxlanış:</b> 24 saatlıq müddət ərzində geri qaytarmanın qəbul edilməsi üçün sözügedən qüsurun Alıcının istifadəsi, yanlış montajı və ya diqqətsizliyi səbəbindən yaranmadığı aydın şəkildə sübut olunmalıdır.</li>
+                <li><b>İcra Proseduru:</b> Qüsur təsdiqləndiyi təqdirdə, Satıcı məhsulu geri götürmək, ödənişi tam qaytarmaq və ya məhsulu qüsursuz yenisi ilə əvəz etmək öhdəliyi daşıyır. 24 saatlıq müddət bitdikdən sonra yaranan iddialar tərəflər arasında fərdi qaydada vƏ İstehlakçıların Hüquqlarının Qorunması haqqında QanunvericiliyƏ uyğun olaraq hƏll edilir.</li>
         `
     },
     contact: {
         title: '<i class="fa-solid fa-headset text-amber-500"></i> Əlaqə & Dəstək',
         content: `
-            <p class="mb-3">Bizimlə istənilən vaxt əlaqə saxlayaraq suallarınızı ünvanlaya bilərsiniz:</p>
+            <p class="mb-3"><b>Bizimlə istənilən vaxt əlaqə saxlayaraq suallarınızı ünvanlaya bilərsiniz:</b></p>
             <div class="space-y-2 border-t border-slate-800 pt-3">
-                <p><strong class="text-white">Telefon / WhatsApp:</strong> +994 (50) 123-45-67</p>
+                <p><strong class="text-white">Telefon / WhatsApp:</strong> +994 (10) 414-02-17</p>
                 <p><strong class="text-white">E-poçt:</strong> support@autoparts.az</p>
-                <p><strong class="text-white">Ünvan:</strong> Bakı şəhəri, Nərimanov r-nu, Əhməd Rəcəbli küç.</p>
+                <!-- <p><strong class="text-white">Ünvan:</strong> Bakı şəhəri, Nərimanov r-nu, Əhməd Rəcəbli küç.</p> -->
                 <p><strong class="text-white">İş saatları:</strong> B.e - Ş. 09:00 - 18:00</p>
             </div>
         `
