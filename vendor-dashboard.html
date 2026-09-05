@@ -25,7 +25,7 @@
         }
     </script>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex">
+<body class="bg-slate-950 text-slate-100 font-sans h-screen overflow-hidden flex">
 
     <!-- 1. SOL SIDEBAR NAVİQASİYA -->
     <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0 hidden md:flex">
@@ -54,7 +54,7 @@
                         <span>Ehtiyat Hissələri (Stok)</span>
                     </button>
 
-                    <!-- Məhsullar düyməsinin altında Sosial Şəbəkə Hesabları (Satıcı panelində görünməməsi üçün !hidden sinifi əlavə olundu) -->
+                    <!-- Məhsullar düyməsinin altında Sosial Şəbəkə Hesabları -->
                     <div id="sidebar-social-links" class="ml-8 mt-1 space-y-1 hidden !hidden">
                         <a id="sidebar-link-instagram" href="#" target="_blank" class="hidden items-center gap-2 text-xs text-pink-400 hover:text-pink-300 py-1 transition">
                             <i data-lucide="instagram" class="w-3.5 h-3.5"></i>
@@ -112,7 +112,7 @@
     </aside>
 
     <!-- 2. ƏSAS MƏZMUN SAHƏSİ -->
-    <main class="flex-1 flex flex-col min-w-0">
+    <main class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         
         <!-- Top Bar -->
         <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between sticky top-0 z-40">
@@ -207,9 +207,8 @@
                 </div>
             </div>
 
-            <!-- SEKSİYA STATİSTİKA (REAL MƏLUMATLAR İLƏ) -->
+            <!-- SEKSİYA STATİSTİKA -->
             <div id="section-statistics" class="tab-content hidden space-y-6">
-                
                 <!-- Banner Header -->
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-4">
                     <div class="space-y-2 max-w-xl z-10">
@@ -225,7 +224,6 @@
 
                 <!-- 4 İNDİKATOR KARTI -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <!-- Ümumi Gəlir -->
                     <div class="bg-emerald-950/20 border border-emerald-900/40 p-5 rounded-2xl flex items-center justify-between">
                         <div class="space-y-1">
                             <p class="text-xs text-slate-400 font-medium">Ümumi Gəlir</p>
@@ -239,7 +237,6 @@
                         </div>
                     </div>
 
-                    <!-- Ümumi Xərc -->
                     <div class="bg-rose-950/20 border border-rose-900/40 p-5 rounded-2xl flex items-center justify-between">
                         <div class="space-y-1">
                             <p class="text-xs text-slate-400 font-medium">Ümumi Xərc</p>
@@ -253,7 +250,6 @@
                         </div>
                     </div>
 
-                    <!-- Satılan Məhsul -->
                     <div class="bg-sky-950/20 border border-sky-900/40 p-5 rounded-2xl flex items-center justify-between">
                         <div class="space-y-1">
                             <p class="text-xs text-slate-400 font-medium">Satılan Məhsul</p>
@@ -267,7 +263,6 @@
                         </div>
                     </div>
 
-                    <!-- Stokdakı Məhsullar -->
                     <div class="bg-purple-950/20 border border-purple-900/40 p-5 rounded-2xl flex items-center justify-between">
                         <div class="space-y-1">
                             <p class="text-xs text-slate-400 font-medium">Stokdakı Məhsullar</p>
@@ -280,7 +275,7 @@
                     </div>
                 </div>
 
-                <!-- TARİX ARALIĞI SEÇİMİ VƏ AKTİV FİLTER -->
+                <!-- TARİX ARALIĞI SEÇİMİ -->
                 <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex flex-wrap items-center justify-between gap-4">
                     <div class="flex items-center gap-3">
                         <div class="p-2.5 bg-slate-800 text-slate-300 rounded-xl border border-slate-700">
@@ -308,9 +303,8 @@
                     </div>
                 </div>
 
-                <!-- QRAFİKLƏR VƏ PAYLANMALAR (REAL MƏLUMATLA RENDER OLUNAN) -->
+                <!-- QRAFİKLƏR -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Real Gəlir və Xərc Qrafiki -->
                     <div class="lg:col-span-2 bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4">
                         <div class="flex items-center justify-between">
                             <h3 class="text-sm font-bold text-white flex items-center gap-2">
@@ -322,7 +316,6 @@
                             </div>
                         </div>
 
-                        <!-- Dinamik Bar Chart Sahəsi -->
                         <div class="h-48 flex items-end justify-between gap-2 pt-6 px-2 border-b border-slate-800 relative" id="chart-bars-container">
                             <div class="w-full text-center text-slate-500 text-xs my-auto">Qrafik məlumatı yüklənir...</div>
                         </div>
@@ -330,14 +323,12 @@
                         </div>
                     </div>
 
-                    <!-- Satışların Paylanması (Real Donut Vizuallığı) -->
                     <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4">
                         <h3 class="text-sm font-bold text-white flex items-center gap-2">
                             <i data-lucide="pie-chart" class="w-4 h-4 text-amber-500"></i> Satışların Paylanması
                         </h3>
 
                         <div class="flex items-center justify-between gap-4">
-                            <!-- Donut Dairəsi -->
                             <div id="stat-donut-circle" class="relative w-28 h-28 shrink-0 flex items-center justify-center rounded-full border-8 border-slate-700 transition-all duration-500">
                                 <div class="text-center">
                                     <span id="stat-donut-total" class="block font-black text-white text-base">0</span>
@@ -354,7 +345,6 @@
 
                 <!-- AŞAĞI CƏDVƏLLƏR -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- Real Son Sifarişlər -->
                     <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
                         <div class="p-4 border-b border-slate-800 flex items-center justify-between">
                             <h3 class="text-xs font-bold text-white flex items-center gap-2">
@@ -382,7 +372,6 @@
                         </div>
                     </div>
 
-                    <!-- Real Ən Çox Satılan Məhsullar -->
                     <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
                         <div class="p-4 border-b border-slate-800 flex items-center justify-between">
                             <h3 class="text-xs font-bold text-white flex items-center gap-2">
@@ -423,9 +412,9 @@
                         <input type="text" id="productSearchInput" onkeyup="filterProducts()" placeholder="OEM kod, Marka, Model və ya ad ilə axtar..." class="bg-slate-800 border border-slate-700 text-xs text-white px-3 py-2 rounded-lg outline-none focus:border-amber-500 w-72">
                     </div>
 
-                    <div class="overflow-x-auto">
+                    <div class="overflow-x-auto max-h-[calc(100vh-220px)] overflow-y-auto">
                         <table class="w-full text-left text-sm text-slate-300">
-                            <thead class="bg-slate-950 text-slate-400 text-xs uppercase font-semibold border-b border-slate-800">
+                            <thead class="bg-slate-950 text-slate-400 text-xs uppercase font-semibold border-b border-slate-800 sticky top-0 z-10">
                                 <tr>
                                     <th class="p-4">Şəkil</th>
                                     <th class="p-4">Hissə Adı</th>
@@ -454,9 +443,9 @@
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto">
+                    <div class="overflow-x-auto max-h-[calc(100vh-220px)] overflow-y-auto">
                         <table class="w-full text-left text-sm text-slate-300">
-                            <thead class="bg-slate-950 text-slate-400 text-xs uppercase font-semibold border-b border-slate-800">
+                            <thead class="bg-slate-950 text-slate-400 text-xs uppercase font-semibold border-b border-slate-800 sticky top-0 z-10">
                                 <tr>
                                     <th class="p-4">Sifariş ID</th>
                                     <th class="p-4">Müştəri</th>
@@ -503,7 +492,6 @@
             <div id="section-settings" class="tab-content hidden space-y-6">
                 <form onsubmit="handleSaveSettings(event)">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <!-- Left Card: Store Details -->
                         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
                             <h2 class="text-lg font-bold text-white flex items-center gap-2">
                                 <i data-lucide="settings" class="w-5 h-5 text-amber-500"></i>
@@ -511,7 +499,6 @@
                             </h2>
 
                             <div class="space-y-4">
-                                <!-- Logo və Adı -->
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                                     <div>
                                         <label class="block text-xs font-semibold text-slate-300 mb-1">Mağaza Loqosu</label>
@@ -532,7 +519,6 @@
 
                                 <hr class="border-slate-800 my-4">
 
-                                <!-- Unvan Məlumatları -->
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label class="block text-xs font-semibold text-slate-300 mb-1">Şəhər *</label>
@@ -549,7 +535,6 @@
                                     <input type="text" id="setting-store-detail" required placeholder="Azadlıq prospekti 123, AF Mall yakınlığı" class="w-full bg-slate-800 border border-slate-700 text-white p-2.5 rounded-xl text-sm outline-none focus:border-amber-500">
                                 </div>
 
-                                <!-- Əlaqə Və İş Saatları -->
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label class="block text-xs font-semibold text-slate-300 mb-1">Əlaqə Nömrəsi *</label>
@@ -563,7 +548,6 @@
                             </div>
                         </div>
 
-                        <!-- Right Card: Social Media Window -->
                         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 flex flex-col justify-between">
                             <div class="space-y-4">
                                 <h2 class="text-lg font-bold text-white flex items-center gap-2">
@@ -605,11 +589,11 @@
         </div>
     </main>
 
-    <!-- 3. EHTİYAT HİSSƏSİ MODALI -->
+    <!-- 3. EHTİYAT HİSSƏSİ MODALI (YENİ / REDAKTƏ) -->
     <div id="productModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden overflow-y-auto">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl relative my-8">
             <div class="p-5 border-b border-slate-800 flex items-center justify-between">
-                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <h3 id="modal-title" class="text-lg font-bold text-white flex items-center gap-2">
                     <i data-lucide="plus-circle" class="text-amber-500 w-5 h-5"></i>
                     Yeni Ehtiyat Hissəsi Əlavə Et
                 </h3>
@@ -619,6 +603,7 @@
             </div>
 
             <form onsubmit="handleCreateProduct(event)" class="p-6 space-y-4">
+                <input type="hidden" id="edit-product-id" value="">
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Hissənin Şəkli *</label>
                     <div id="image-upload-box" onclick="document.getElementById('modal-image-input').click()" class="border-2 border-dashed border-slate-700 hover:border-amber-500/50 bg-slate-800/50 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer transition relative min-h-[130px]">
@@ -706,7 +691,7 @@
 
                 <button type="submit" id="submit-prod-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition cursor-pointer mt-2 shadow-lg shadow-amber-500/10">
                     <i data-lucide="check" class="w-4 h-4"></i>
-                    <span>Stoka Əlavə Et</span>
+                    <span id="submit-btn-text">Stoka Əlavə Et</span>
                 </button>
             </form>
         </div>
@@ -716,7 +701,11 @@
     <script>
         const SUPABASE_URL = "https://nfessouynmrhqkppbdbg.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5mZXNzb3V5bm1yaHFrcHBiZGJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzMzk1MzgsImV4cCI6MjEwMzkxNTUzOH0.zQ0la4lh4tlZtufUhJVwXokSKcrN7A8dSLoFn7VX2YI";
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        let _supabase;
+        if (typeof supabase !== 'undefined') {
+            _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
 
         let currentStore = null;
         let uploadedBase64Image = "";
@@ -733,16 +722,45 @@
             'Nissan': ['Sunny', 'X-Trail', 'Qashqai', 'Patrol']
         };
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const today = new Date();
-            const past30 = new Date();
-            past30.setDate(today.getDate() - 30);
+        function openProductModal() {
+            const modal = document.getElementById('productModal');
+            if (modal) modal.classList.remove('hidden');
+        }
 
-            document.getElementById('filter-end-date').value = today.toISOString().split('T')[0];
-            document.getElementById('filter-start-date').value = past30.toISOString().split('T')[0];
+        function closeProductModal() {
+            const form = document.querySelector('#productModal form');
+            if (form) form.reset();
+
+            const editId = document.getElementById('edit-product-id');
+            if (editId) editId.value = "";
+            
+            const modalTitle = document.getElementById('modal-title');
+            if (modalTitle) modalTitle.innerHTML = `<i data-lucide="plus-circle" class="text-amber-500 w-5 h-5"></i> Yeni Ehtiyat Hissəsi Əlavə Et`;
+            
+            const submitText = document.getElementById('submit-btn-text');
+            if (submitText) submitText.innerText = "Stoka Əlavə Et";
+            
+            removeImage();
+            const modal = document.getElementById('productModal');
+            if (modal) modal.classList.add('hidden');
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const endDateEl = document.getElementById('filter-end-date');
+            const startDateEl = document.getElementById('filter-start-date');
+
+            if (endDateEl && startDateEl) {
+                const today = new Date();
+                const past30 = new Date();
+                past30.setDate(today.getDate() - 30);
+
+                endDateEl.value = today.toISOString().split('T')[0];
+                startDateEl.value = past30.toISOString().split('T')[0];
+            }
 
             initStoreSession();
-            lucide.createIcons();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
             
             document.addEventListener('click', (e) => {
                 const notifArea = document.getElementById('notif-dropdown');
@@ -774,6 +792,8 @@
                     window.location.href = "index.html";
                     return;
                 }
+
+                if (!_supabase) return;
 
                 const { data, error } = await _supabase
                     .from('stores')
@@ -808,7 +828,7 @@
         async function logoutStore() {
             if (confirm("Satıcı hesabından çıxmaq istədiyinizdən əminsiniz?")) {
                 try {
-                    await _supabase.auth.signOut();
+                    if (_supabase) await _supabase.auth.signOut();
                 } catch (e) {
                     console.log("Supabase auth çıxış istisnası", e);
                 }
@@ -827,40 +847,65 @@
             const storeName = currentStore.store_name || currentStore.name || 'Mağaza';
             const storeEmail = currentStore.store_email || currentStore.email || '-';
 
-            document.getElementById('sidebar-store-name').innerText = storeName;
-            document.getElementById('sidebar-store-email').innerText = storeEmail;
+            const nameEl = document.getElementById('sidebar-store-name');
+            const emailEl = document.getElementById('sidebar-store-email');
+            if (nameEl) nameEl.innerText = storeName;
+            if (emailEl) emailEl.innerText = storeEmail;
             
             const avatarContainer = document.getElementById('store-avatar');
-            if (currentStore.logo) {
-                avatarContainer.innerHTML = `<img src="${currentStore.logo}" alt="Logo" class="w-full h-full object-cover">`;
-                uploadedLogoBase64 = currentStore.logo;
-                document.getElementById('settings-logo-preview').src = currentStore.logo;
-                document.getElementById('settings-logo-preview').classList.remove('hidden');
-                document.getElementById('settings-logo-placeholder').classList.add('hidden');
-            } else {
-                avatarContainer.innerText = storeName.substring(0, 2).toUpperCase();
+            if (avatarContainer) {
+                if (currentStore.logo) {
+                    avatarContainer.innerHTML = `<img src="${currentStore.logo}" alt="Logo" class="w-full h-full object-cover">`;
+                    uploadedLogoBase64 = currentStore.logo;
+                    const preview = document.getElementById('settings-logo-preview');
+                    const placeholder = document.getElementById('settings-logo-placeholder');
+                    if (preview) {
+                        preview.src = currentStore.logo;
+                        preview.classList.remove('hidden');
+                    }
+                    if (placeholder) placeholder.classList.add('hidden');
+                } else {
+                    avatarContainer.innerText = storeName.substring(0, 2).toUpperCase();
+                }
             }
 
-            document.getElementById('welcome-heading').innerText = `${storeName} panelinə xoş gəldiniz! 👋`;
-            document.getElementById('welcome-heading-stat').innerText = `${storeName} panelinə xoş gəldiniz! 👋`;
+            const welcomeHeading = document.getElementById('welcome-heading');
+            if (welcomeHeading) welcomeHeading.innerText = `${storeName} panelinə xoş gəldiniz! 👋`;
+            
+            const welcomeHeadingStat = document.getElementById('welcome-heading-stat');
+            if (welcomeHeadingStat) {
+                welcomeHeadingStat.innerText = `${storeName} panelinə xoş gəldiniz! 👋`;
+            }
 
-            document.getElementById('finance-fee').innerText = `${currentStore.fee || 40} AZN / ay`;
-            document.getElementById('finance-last-payment').innerText = currentStore.last_payment || 'YENİ';
-            document.getElementById('stat-card-expense').innerText = `${currentStore.fee || 40}.00 AZN`;
+            const financeFee = document.getElementById('finance-fee');
+            const financeLastPayment = document.getElementById('finance-last-payment');
+            const statCardExpense = document.getElementById('stat-card-expense');
+            if (financeFee) financeFee.innerText = `${currentStore.fee || 40} AZN / ay`;
+            if (financeLastPayment) financeLastPayment.innerText = currentStore.last_payment || 'YENİ';
+            if (statCardExpense) statCardExpense.innerText = `${currentStore.fee || 40}.00 AZN`;
 
-            document.getElementById('setting-store-name').value = storeName;
-            document.getElementById('setting-store-city').value = currentStore.city || 'Bakı şəhəri';
-            document.getElementById('setting-store-region').value = currentStore.region || 'Nəsimi rayonu';
-            document.getElementById('setting-store-detail').value = currentStore.address || currentStore.location_detail || 'Azadlıq prospekti 123, AF Mall yakınlığı';
-            document.getElementById('setting-store-phone').value = currentStore.phone || '+994 50 123 45 67';
-            document.getElementById('setting-store-hours').value = currentStore.hours || 'Hər gün 09:00 - 20:00';
+            const setStoreName = document.getElementById('setting-store-name');
+            const setStoreCity = document.getElementById('setting-store-city');
+            const setStoreRegion = document.getElementById('setting-store-region');
+            const setStoreDetail = document.getElementById('setting-store-detail');
+            const setStorePhone = document.getElementById('setting-store-phone');
+            const setStoreHours = document.getElementById('setting-store-hours');
 
-            // Sosial Şəbəkə Sahələrinin Yüklənməsi
-            document.getElementById('setting-store-whatsapp').value = currentStore.whatsapp || '';
-            document.getElementById('setting-store-instagram').value = currentStore.instagram || '';
-            document.getElementById('setting-store-tiktok').value = currentStore.tiktok || '';
+            if (setStoreName) setStoreName.value = storeName;
+            if (setStoreCity) setStoreCity.value = currentStore.city || 'Bakı şəhəri';
+            if (setStoreRegion) setStoreRegion.value = currentStore.region || 'Nəsimi rayonu';
+            if (setStoreDetail) setStoreDetail.value = currentStore.address || currentStore.location_detail || 'Azadlıq prospekti 123, AF Mall yakınlığı';
+            if (setStorePhone) setStorePhone.value = currentStore.phone || '+994 50 123 45 67';
+            if (setStoreHours) setStoreHours.value = currentStore.hours || 'Hər gün 09:00 - 20:00';
 
-            // Sidebar-dakı Sosial Şəbəkə Linklərinin Tənzimlənməsi
+            const setWhatsapp = document.getElementById('setting-store-whatsapp');
+            const setInstagram = document.getElementById('setting-store-instagram');
+            const setTiktok = document.getElementById('setting-store-tiktok');
+
+            if (setWhatsapp) setWhatsapp.value = currentStore.whatsapp || '';
+            if (setInstagram) setInstagram.value = currentStore.instagram || '';
+            if (setTiktok) setTiktok.value = currentStore.tiktok || '';
+
             const socialContainer = document.getElementById('sidebar-social-links');
             const linkInstagram = document.getElementById('sidebar-link-instagram');
             const linkTiktok = document.getElementById('sidebar-link-tiktok');
@@ -868,70 +913,82 @@
 
             let hasSocial = false;
 
-            if (currentStore.instagram) {
-                linkInstagram.href = currentStore.instagram;
-                linkInstagram.classList.remove('hidden');
-                linkInstagram.classList.add('flex');
-                hasSocial = true;
-            } else {
-                linkInstagram.classList.add('hidden');
-                linkInstagram.classList.remove('flex');
+            if (linkInstagram) {
+                if (currentStore.instagram) {
+                    linkInstagram.href = currentStore.instagram;
+                    linkInstagram.classList.remove('hidden');
+                    linkInstagram.classList.add('flex');
+                    hasSocial = true;
+                } else {
+                    linkInstagram.classList.add('hidden');
+                    linkInstagram.classList.remove('flex');
+                }
             }
 
-            if (currentStore.tiktok) {
-                linkTiktok.href = currentStore.tiktok;
-                linkTiktok.classList.remove('hidden');
-                linkTiktok.classList.add('flex');
-                hasSocial = true;
-            } else {
-                linkTiktok.classList.add('hidden');
-                linkTiktok.classList.remove('flex');
+            if (linkTiktok) {
+                if (currentStore.tiktok) {
+                    linkTiktok.href = currentStore.tiktok;
+                    linkTiktok.classList.remove('hidden');
+                    linkTiktok.classList.add('flex');
+                    hasSocial = true;
+                } else {
+                    linkTiktok.classList.add('hidden');
+                    linkTiktok.classList.remove('flex');
+                }
             }
 
-            if (currentStore.whatsapp) {
-                const cleanPhone = currentStore.whatsapp.replace(/[^0-9]/g, '');
-                linkWhatsapp.href = `https://wa.me/${cleanPhone}`;
-                linkWhatsapp.classList.remove('hidden');
-                linkWhatsapp.classList.add('flex');
-                hasSocial = true;
-            } else {
-                linkWhatsapp.classList.add('hidden');
-                linkWhatsapp.classList.remove('flex');
+            if (linkWhatsapp) {
+                if (currentStore.whatsapp) {
+                    const cleanPhone = currentStore.whatsapp.replace(/[^0-9]/g, '');
+                    linkWhatsapp.href = `https://wa.me/${cleanPhone}`;
+                    linkWhatsapp.classList.remove('hidden');
+                    linkWhatsapp.classList.add('flex');
+                    hasSocial = true;
+                } else {
+                    linkWhatsapp.classList.add('hidden');
+                    linkWhatsapp.classList.remove('flex');
+                }
             }
 
-            if (hasSocial) {
-                socialContainer.classList.remove('hidden');
-            } else {
-                socialContainer.classList.add('hidden');
+            if (socialContainer) {
+                if (hasSocial) {
+                    socialContainer.classList.remove('hidden');
+                } else {
+                    socialContainer.classList.add('hidden');
+                }
             }
 
             const storeBtn = document.getElementById('btn-go-to-store');
-            storeBtn.href = `store.html?id=${currentStore.id}`;
+            if (storeBtn) storeBtn.href = `store.html?id=${currentStore.id}`;
             
             const isStoreActive = currentStore.status === 'active';
             const statusBadge = document.getElementById('finance-status-badge');
             const dashStatSub = document.getElementById('dash-stat-subscription-status');
 
-            if (isStoreActive) {
-                statusBadge.className = "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs px-2.5 py-0.5 rounded-full font-bold";
-                statusBadge.innerText = "Ödənilib (Aktiv)";
-                dashStatSub.className = "text-lg font-black text-emerald-400 mt-1";
-                dashStatSub.innerText = "AKTİV";
-            } else {
-                statusBadge.className = "bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xs px-2.5 py-0.5 rounded-full font-bold";
-                statusBadge.innerText = "Deaktiv (Borclu)";
-                dashStatSub.className = "text-lg font-black text-rose-400 mt-1";
-                dashStatSub.innerText = "DEAKTİV";
+            if (statusBadge && dashStatSub) {
+                if (isStoreActive) {
+                    statusBadge.className = "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs px-2.5 py-0.5 rounded-full font-bold";
+                    statusBadge.innerText = "Ödənilib (Aktiv)";
+                    dashStatSub.className = "text-lg font-black text-emerald-400 mt-1";
+                    dashStatSub.innerText = "AKTİV";
+                } else {
+                    statusBadge.className = "bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xs px-2.5 py-0.5 rounded-full font-bold";
+                    statusBadge.innerText = "Deaktiv (Borclu)";
+                    dashStatSub.className = "text-lg font-black text-rose-400 mt-1";
+                    dashStatSub.innerText = "DEAKTİV";
+                }
             }
 
             try {
-                const [productsRes, ordersRes] = await Promise.all([
-                    _supabase.from('products').select('*').eq('store_id', currentStore.id).order('id', { ascending: false }),
-                    _supabase.from('orders').select('*, products(oem, brand)').eq('store_id', currentStore.id).order('id', { ascending: false })
-                ]);
+                if (_supabase) {
+                    const [productsRes, ordersRes] = await Promise.all([
+                        _supabase.from('products').select('*').eq('store_id', currentStore.id).order('id', { ascending: false }),
+                        _supabase.from('orders').select('*, products(oem, brand)').eq('store_id', currentStore.id).order('id', { ascending: false })
+                    ]);
 
-                products = productsRes.data || [];
-                orders = ordersRes.data || [];
+                    products = productsRes.data || [];
+                    orders = ordersRes.data || [];
+                }
 
             } catch (err) {
                 console.error("Məlumatlar yüklənərkən xəta oluşdu:", err);
@@ -940,7 +997,6 @@
             }
         }
 
-        /* 🖼️ Avto-ölçüləndirmə və Önizləmə Logikası (CANVAS İLƏ) */
         function resizeAndCompressImage(file, maxWidth, maxHeight, quality, callback) {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -985,9 +1041,12 @@
                 resizeAndCompressImage(file, 300, 300, 0.85, function(base64Data) {
                     uploadedLogoBase64 = base64Data;
                     const logoPreview = document.getElementById('settings-logo-preview');
-                    logoPreview.src = uploadedLogoBase64;
-                    logoPreview.classList.remove('hidden');
-                    document.getElementById('settings-logo-placeholder').classList.add('hidden');
+                    if (logoPreview) {
+                        logoPreview.src = uploadedLogoBase64;
+                        logoPreview.classList.remove('hidden');
+                    }
+                    const placeholder = document.getElementById('settings-logo-placeholder');
+                    if (placeholder) placeholder.classList.add('hidden');
                 });
             }
         }
@@ -998,9 +1057,11 @@
                 resizeAndCompressImage(file, 800, 800, 0.8, function(base64Data) {
                     uploadedBase64Image = base64Data;
                     const previewImg = document.getElementById('image-preview');
-                    previewImg.src = uploadedBase64Image;
-                    document.getElementById('upload-placeholder').classList.add('hidden');
-                    document.getElementById('image-preview-container').classList.remove('hidden');
+                    if (previewImg) previewImg.src = uploadedBase64Image;
+                    const placeholder = document.getElementById('upload-placeholder');
+                    if (placeholder) placeholder.classList.add('hidden');
+                    const previewContainer = document.getElementById('image-preview-container');
+                    if (previewContainer) previewContainer.classList.remove('hidden');
                 });
             }
         }
@@ -1009,8 +1070,10 @@
             e.preventDefault();
 
             const saveBtn = document.getElementById('save-settings-btn');
-            saveBtn.disabled = true;
-            saveBtn.innerText = "Yadda saxlanılır...";
+            if (saveBtn) {
+                saveBtn.disabled = true;
+                saveBtn.innerText = "Yadda saxlanılır...";
+            }
 
             const updatedData = {
                 store_name: document.getElementById('setting-store-name').value.trim(),
@@ -1028,12 +1091,14 @@
             };
 
             try {
-                const { error } = await _supabase
-                    .from('stores')
-                    .update(updatedData)
-                    .eq('id', currentStore.id);
+                if (_supabase) {
+                    const { error } = await _supabase
+                        .from('stores')
+                        .update(updatedData)
+                        .eq('id', currentStore.id);
 
-                if (error) throw error;
+                    if (error) throw error;
+                }
 
                 alert("Mağaza parametrləri və sosial media məlumatları uğurla yeniləndi!");
                 currentStore = { ...currentStore, ...updatedData };
@@ -1041,9 +1106,11 @@
             } catch (err) {
                 alert("Xəta baş verdi: " + err.message);
             } finally {
-                saveBtn.disabled = false;
-                saveBtn.innerHTML = `<i data-lucide="save" class="w-4 h-4"></i><span>Dəyişiklikləri Yadda Saxla</span>`;
-                lucide.createIcons();
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = `<i data-lucide="save" class="w-4 h-4"></i><span>Dəyişiklikləri Yadda Saxla</span>`;
+                }
+                if (typeof lucide !== 'undefined') lucide.createIcons();
             }
         }
 
@@ -1053,7 +1120,7 @@
             updateStats();
             renderStatistics();
             renderNotifications();
-            lucide.createIcons();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
         function applyDateFilter() {
@@ -1061,8 +1128,11 @@
         }
 
         function renderStatistics() {
-            const startDateVal = document.getElementById('filter-start-date').value;
-            const endDateVal = document.getElementById('filter-end-date').value;
+            const startDateInput = document.getElementById('filter-start-date');
+            const endDateInput = document.getElementById('filter-end-date');
+
+            const startDateVal = startDateInput ? startDateInput.value : '';
+            const endDateVal = endDateInput ? endDateInput.value : '';
 
             const startObj = startDateVal ? new Date(startDateVal) : null;
             const endObj = endDateVal ? new Date(endDateVal) : null;
@@ -1083,10 +1153,15 @@
                 return sum + (parseFloat(amt) || 0);
             }, 0);
 
-            document.getElementById('stat-card-revenue').innerText = `${totalRev.toFixed(2)} AZN`;
-            document.getElementById('stat-card-sold-count').innerText = completedOrders.length;
-            document.getElementById('stat-card-stock-count').innerText = products.length;
-            document.getElementById('stat-donut-total').innerText = filteredOrders.length;
+            const revEl = document.getElementById('stat-card-revenue');
+            const soldEl = document.getElementById('stat-card-sold-count');
+            const stockEl = document.getElementById('stat-card-stock-count');
+            const donutTotalEl = document.getElementById('stat-donut-total');
+
+            if (revEl) revEl.innerText = `${totalRev.toFixed(2)} AZN`;
+            if (soldEl) soldEl.innerText = completedOrders.length;
+            if (stockEl) stockEl.innerText = products.length;
+            if (donutTotalEl) donutTotalEl.innerText = filteredOrders.length;
 
             renderRealChart(completedOrders);
             renderRealDistribution(filteredOrders);
@@ -1094,27 +1169,29 @@
             const recentOrdersBody = document.getElementById('stat-recent-orders-body');
             const recentThree = filteredOrders.slice(0, 3);
 
-            if (recentThree.length === 0) {
-                recentOrdersBody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-slate-500">Sifariş tapılmadı</td></tr>`;
-            } else {
-                recentOrdersBody.innerHTML = recentThree.map((o, idx) => {
-                    const statusClass = (o.status === 'Təsdiqləndi' || o.status === 'completed' || o.status === 'Tamamlandı') ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : (o.status === 'Ləğv edildi' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20');
-                    const amt = o.total_price || o.total || (parseFloat(o.price || 0) * (parseInt(o.quantity) || 1));
+            if (recentOrdersBody) {
+                if (recentThree.length === 0) {
+                    recentOrdersBody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-slate-500">Sifariş tapılmadı</td></tr>`;
+                } else {
+                    recentOrdersBody.innerHTML = recentThree.map((o, idx) => {
+                        const statusClass = (o.status === 'Təsdiqləndi' || o.status === 'completed' || o.status === 'Tamamlandı') ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : (o.status === 'Ləğv edildi' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20');
+                        const amt = o.total_price || o.total || (parseFloat(o.price || 0) * (parseInt(o.quantity) || 1));
 
-                    return `
-                        <tr class="hover:bg-slate-800/40">
-                            <td class="p-3 font-mono text-amber-500">${idx + 1}</td>
-                            <td class="p-3 font-bold text-white">${o.customer_name || o.buyer_name || o.customer || 'Müştəri'}</td>
-                            <td class="p-3 text-slate-300">${o.product_name || o.item || 'Məhsul'}</td>
-                            <td class="p-3 font-mono font-bold text-emerald-400">${parseFloat(amt || 0).toFixed(2)} AZN</td>
-                            <td class="p-3">
-                                <span class="px-2 py-0.5 text-[10px] rounded-full font-bold border ${statusClass}">
-                                    ${o.status || 'Gözləyir'}
-                                </span>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
+                        return `
+                            <tr class="hover:bg-slate-800/40">
+                                <td class="p-3 font-mono text-amber-500">${idx + 1}</td>
+                                <td class="p-3 font-bold text-white">${o.customer_name || o.buyer_name || o.customer || 'Müştəri'}</td>
+                                <td class="p-3 text-slate-300">${o.product_name || o.item || 'Məhsul'}</td>
+                                <td class="p-3 font-mono font-bold text-emerald-400">${parseFloat(amt || 0).toFixed(2)} AZN</td>
+                                <td class="p-3">
+                                    <span class="px-2 py-0.5 text-[10px] rounded-full font-bold border ${statusClass}">
+                                        ${o.status || 'Gözləyir'}
+                                    </span>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
             }
 
             const topProductsBody = document.getElementById('stat-top-products-body');
@@ -1137,23 +1214,27 @@
                 .sort((a, b) => b.count - a.count)
                 .slice(0, 5);
 
-            if (sortedTop.length === 0) {
-                topProductsBody.innerHTML = `<tr><td colspan="4" class="p-3 text-center text-slate-500">Məlumat tapılmadı</td></tr>`;
-            } else {
-                topProductsBody.innerHTML = sortedTop.map((item, idx) => `
-                    <tr class="hover:bg-slate-800/40">
-                        <td class="p-3 font-mono text-amber-500">${idx + 1}</td>
-                        <td class="p-3 font-bold text-white">${item.name}</td>
-                        <td class="p-3 font-bold text-slate-300">${item.count}</td>
-                        <td class="p-3 font-mono font-bold text-emerald-400">${item.revenue.toFixed(2)}</td>
-                    </tr>
-                `).join('');
+            if (topProductsBody) {
+                if (sortedTop.length === 0) {
+                    topProductsBody.innerHTML = `<tr><td colspan="4" class="p-3 text-center text-slate-500">Məlumat tapılmadı</td></tr>`;
+                } else {
+                    topProductsBody.innerHTML = sortedTop.map((item, idx) => `
+                        <tr class="hover:bg-slate-800/40">
+                            <td class="p-3 font-mono text-amber-500">${idx + 1}</td>
+                            <td class="p-3 font-bold text-white">${item.name}</td>
+                            <td class="p-3 font-bold text-slate-300">${item.count}</td>
+                            <td class="p-3 font-mono font-bold text-emerald-400">${item.revenue.toFixed(2)}</td>
+                        </tr>
+                    `).join('');
+                }
             }
         }
 
         function renderRealChart(completedOrders) {
             const barsContainer = document.getElementById('chart-bars-container');
             const labelsContainer = document.getElementById('chart-labels-container');
+
+            if (!barsContainer || !labelsContainer) return;
 
             const dailyRevenue = {};
             
@@ -1201,6 +1282,8 @@
         function renderRealDistribution(allOrders) {
             const listContainer = document.getElementById('stat-distribution-list');
             const donutCircle = document.getElementById('stat-donut-circle');
+
+            if (!listContainer || !donutCircle) return;
 
             if (allOrders.length === 0) {
                 listContainer.innerHTML = `<div class="text-slate-500 text-center text-xs py-2">Sifariş tapılmadı</div>`;
@@ -1253,32 +1336,72 @@
 
         function toggleNotifications() {
             const dropdown = document.getElementById('notif-dropdown');
-            dropdown.classList.toggle('hidden');
+            if (dropdown) dropdown.classList.toggle('hidden');
         }
 
         function renderNotifications() {
             const pendingOrders = orders.filter(o => o.status === 'Gözləyir' || o.status === 'pending');
+            const lowStockProducts = products.filter(p => parseInt(p.stock) <= 3);
+
+            const totalNotificationsCount = pendingOrders.length + lowStockProducts.length;
+
             const badge = document.getElementById('notif-badge');
             const notifList = document.getElementById('notif-list');
             const notifCountText = document.getElementById('notif-count-text');
 
-            if (pendingOrders.length > 0) {
-                badge.innerText = pendingOrders.length;
+            if (!badge || !notifList || !notifCountText) return;
+
+            if (totalNotificationsCount > 0) {
+                badge.innerText = totalNotificationsCount;
                 badge.classList.remove('hidden');
-                notifCountText.innerText = `${pendingOrders.length} yeni sifariş`;
+                notifCountText.innerText = `${totalNotificationsCount} yeni`;
                 
-                notifList.innerHTML = pendingOrders.map(o => `
-                    <div onclick="switchTab('orders')" class="p-3 hover:bg-slate-800/60 cursor-pointer transition flex items-start gap-3">
-                        <div class="p-2 bg-amber-500/10 text-amber-500 rounded-lg border border-amber-500/20 mt-0.5">
-                            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                let notifHtml = '';
+
+                // Gözləyən sifarişlərin bildirişləri
+                pendingOrders.forEach(o => {
+                    notifHtml += `
+                        <div onclick="switchTab('orders')" class="p-3 hover:bg-slate-800/60 cursor-pointer transition flex items-start gap-3">
+                            <div class="p-2 bg-amber-500/10 text-amber-500 rounded-lg border border-amber-500/20 mt-0.5">
+                                <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold text-white text-xs">Yeni Sifariş #${o.id}</p>
+                                <p class="text-[11px] text-slate-400">${o.product_name || o.item || 'Məhsul'} - <span class="text-emerald-400 font-bold">${o.total_price || o.price || 0} AZN</span></p>
+                                <p class="text-[10px] text-slate-500 mt-0.5">${o.buyer_name || 'Müştəri'}</p>
+                            </div>
                         </div>
-                        <div>
-                            <p class="font-bold text-white text-xs">Yeni Sifariş #${o.id}</p>
-                            <p class="text-[11px] text-slate-400">${o.product_name || o.item || 'Məhsul'} - <span class="text-emerald-400 font-bold">${o.total_price || o.price || 0} AZN</span></p>
-                            <p class="text-[10px] text-slate-500 mt-0.5">${o.buyer_name || 'Müştəri'}</p>
+                    `;
+                });
+
+                // Stok azlığı bildirişləri (3 və ya daha az qaldıqda)
+                lowStockProducts.forEach(p => {
+                    const imgUrl = p.image || 'https://via.placeholder.com/50';
+                    const partName = p.name || p.title || 'Məhsul';
+                    const oemCode = p.oem || '-';
+                    const brandModelYear = `${p.brand || ''} ${p.model || ''} ${p.year ? '(' + p.year + ')' : ''}`.trim() || '-';
+                    const condColor = `${p.condition || ''} ${p.color ? '/ ' + p.color : ''}`.trim() || '-';
+                    const price = p.price ? `${p.price} AZN` : '-';
+                    const stockCount = p.stock;
+
+                    notifHtml += `
+                        <div onclick="switchTab('inventory')" class="p-3 hover:bg-slate-800/60 cursor-pointer transition flex items-start gap-3 bg-amber-500/5">
+                            <img src="${imgUrl}" alt="${partName}" class="w-10 h-10 object-cover rounded-lg border border-slate-700 shrink-0 mt-0.5">
+                            <div class="flex-1 min-w-0 space-y-0.5">
+                                <div class="flex items-center justify-between">
+                                    <p class="font-bold text-amber-400 text-xs truncate">${partName}</p>
+                                    <span class="text-[10px] bg-amber-500/20 text-amber-300 font-bold px-1.5 py-0.2 rounded border border-amber-500/30 shrink-0 ml-1">Stok: ${stockCount}</span>
+                                </div>
+                                <p class="text-[11px] font-mono text-slate-300">OEM: <span class="text-amber-500 font-bold">${oemCode}</span></p>
+                                <p class="text-[10px] text-slate-400 truncate">${brandModelYear}</p>
+                                <p class="text-[10px] text-slate-400 truncate">${condColor} | <span class="text-emerald-400 font-bold">${price}</span></p>
+                                <p class="text-[10px] text-amber-500 font-bold pt-0.5">Stok ${stockCount} ədəd qaldı</p>
+                            </div>
                         </div>
-                    </div>
-                `).join('');
+                    `;
+                });
+
+                notifList.innerHTML = notifHtml;
             } else {
                 badge.classList.add('hidden');
                 notifCountText.innerText = `0 yeni`;
@@ -1288,6 +1411,8 @@
 
         function renderProducts() {
             const tbody = document.getElementById('products-table-body');
+            if (!tbody) return;
+
             if (products.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-500">Stokda ehtiyat hissəsi yoxdur.</td></tr>`;
                 return;
@@ -1296,9 +1421,9 @@
             tbody.innerHTML = products.map(p => `
                 <tr>
                     <td class="p-4">
-                        <img src="${p.image || 'https://via.placeholder.com/50'}" alt="${p.name}" class="w-12 h-12 object-cover rounded-lg border border-slate-800">
+                        <img src="${p.image || 'https://via.placeholder.com/50'}" alt="${p.name || p.title}" class="w-12 h-12 object-cover rounded-lg border border-slate-800">
                     </td>
-                    <td class="p-4 font-bold text-white">${p.name}</td>
+                    <td class="p-4 font-bold text-white">${p.name || p.title || ''}</td>
                     <td class="p-4 font-mono text-xs text-amber-400 font-bold">${p.oem || '-'}</td>
                     <td class="p-4 text-xs">
                         <span class="font-semibold text-slate-200">${p.brand || ''} ${p.model || ''}</span>
@@ -1309,14 +1434,55 @@
                         ${p.color ? `<div class="text-[11px] text-slate-400 mt-1">Rəng: ${p.color}</div>` : ''}
                     </td>
                     <td class="p-4 font-mono font-bold text-emerald-400">${p.price} AZN</td>
-                    <td class="p-4 font-bold ${p.stock < 10 ? 'text-amber-500' : 'text-slate-300'}">${p.stock} ədəd</td>
+                    <td class="p-4 font-bold ${p.stock <= 3 ? 'text-amber-500' : 'text-slate-300'}">${p.stock} ədəd</td>
                     <td class="p-4 text-right space-x-2">
+                        <button onclick="editProduct(${p.id})" class="bg-amber-500/10 hover:bg-amber-500 hover:text-slate-950 text-amber-400 border border-amber-500/30 px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer">
+                            Düzəliş et
+                        </button>
                         <button onclick="deleteProduct(${p.id})" class="bg-rose-500/10 hover:bg-rose-500 hover:text-white text-rose-400 border border-rose-500/30 px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer">
                             Sil
                         </button>
                     </td>
                 </tr>
             `).join('');
+        }
+
+        function editProduct(id) {
+            const prod = products.find(p => p.id === id);
+            if (!prod) return;
+
+            document.getElementById('edit-product-id').value = prod.id;
+            document.getElementById('modal-part-name').value = prod.name || prod.title || '';
+            document.getElementById('modal-oem-code').value = prod.oem || '';
+            document.getElementById('modal-brand').value = prod.brand || '';
+            updateModelDropdown();
+            document.getElementById('modal-model').value = prod.model || '';
+            document.getElementById('modal-year').value = prod.year || '';
+            document.getElementById('modal-price').value = prod.price || '';
+            document.getElementById('modal-stock').value = prod.stock || '';
+            document.getElementById('modal-color').value = prod.color || '';
+            document.getElementById('modal-condition').value = prod.condition || 'Yeni (Təzə)';
+            document.getElementById('modal-description').value = prod.description || '';
+
+            if (prod.image) {
+                uploadedBase64Image = prod.image;
+                const previewImg = document.getElementById('image-preview');
+                if (previewImg) previewImg.src = prod.image;
+                const placeholder = document.getElementById('upload-placeholder');
+                if (placeholder) placeholder.classList.add('hidden');
+                const previewContainer = document.getElementById('image-preview-container');
+                if (previewContainer) previewContainer.classList.remove('hidden');
+            } else {
+                removeImage();
+            }
+
+            const modalTitle = document.getElementById('modal-title');
+            if (modalTitle) modalTitle.innerHTML = `<i data-lucide="edit" class="text-amber-500 w-5 h-5"></i> Məhsulu Redaktə Et`;
+            const submitText = document.getElementById('submit-btn-text');
+            if (submitText) submitText.innerText = "Dəyişiklikləri Yadda Saxla";
+
+            openProductModal();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
         async function handleCreateProduct(e) {
@@ -1327,11 +1493,14 @@
                 return;
             }
 
+            const editId = document.getElementById('edit-product-id').value;
             const submitBtn = document.getElementById('submit-prod-btn');
-            submitBtn.disabled = true;
-            submitBtn.innerText = "Yadda saxlanılır...";
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerText = "Yadda saxlanılır...";
+            }
 
-            const newProduct = {
+            const productPayload = {
                 store_id: currentStore.id,
                 image: uploadedBase64Image,
                 name: document.getElementById('modal-part-name').value.trim(),
@@ -1348,19 +1517,34 @@
             };
 
             try {
-                const { error } = await _supabase.from('products').insert([newProduct]);
-                if (error) throw error;
+                if (_supabase) {
+                    if (editId) {
+                        const { error } = await _supabase
+                            .from('products')
+                            .update(productPayload)
+                            .eq('id', editId);
 
-                alert(`"${newProduct.name}" ehtiyat hissəsi uğurla əlavə edildi!`);
+                        if (error) throw error;
+                        alert(`"${productPayload.name}" ehtiyat hissəsi uğurla yeniləndi!`);
+                    } else {
+                        const { error } = await _supabase.from('products').insert([productPayload]);
+                        if (error) throw error;
+                        alert(`"${productPayload.name}" ehtiyat hissəsi uğurla əlavə edildi!`);
+                    }
+                }
+
                 closeProductModal();
                 e.target.reset();
                 await fetchStoreData();
             } catch (err) {
                 alert("Xəta baş verdi: " + err.message);
             } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i><span>Stoka Əlavə Et</span>`;
-                lucide.createIcons();
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    const isEdit = !!document.getElementById('edit-product-id').value;
+                    submitBtn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i><span>${isEdit ? 'Dəyişiklikləri Yadda Saxla' : 'Stoka Əlavə Et'}</span>`;
+                }
+                if (typeof lucide !== 'undefined') lucide.createIcons();
             }
         }
 
@@ -1368,8 +1552,10 @@
             if (!confirm("Bu hissəni stokdan silmək istədiyinizdən əminsiniz?")) return;
 
             try {
-                const { error } = await _supabase.from('products').delete().eq('id', id);
-                if (error) throw error;
+                if (_supabase) {
+                    const { error } = await _supabase.from('products').delete().eq('id', id);
+                    if (error) throw error;
+                }
 
                 await fetchStoreData();
             } catch (err) {
@@ -1381,8 +1567,13 @@
             const tbody = document.getElementById('orders-table-body');
             const pendingOrdersCount = orders.filter(o => o.status === 'Gözləyir' || o.status === 'pending').length;
             
-            document.getElementById('orders-badge').innerText = pendingOrdersCount;
-            document.getElementById('dash-stat-pending-orders').innerText = pendingOrdersCount;
+            const badge = document.getElementById('orders-badge');
+            const pendingStat = document.getElementById('dash-stat-pending-orders');
+
+            if (badge) badge.innerText = pendingOrdersCount;
+            if (pendingStat) pendingStat.innerText = pendingOrdersCount;
+
+            if (!tbody) return;
 
             if (orders.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-500">Sifariş tapılmadı.</td></tr>`;
@@ -1440,12 +1631,84 @@
 
         async function updateOrderStatus(id, newStatus) {
             try {
-                const { error } = await _supabase
-                    .from('orders')
-                    .update({ status: newStatus })
-                    .eq('id', id);
+                if (_supabase) {
+                    // Sifariş təsdiqləndikdə stokdan düşmə məntiqi
+                    if (newStatus === 'Təsdiqləndi' || newStatus === 'completed') {
+                        // 1. Sifariş məlumatlarını və varsa əlaqəli məhsul maddələrini bazadan çəkirik
+                        const { data: orderData, error: orderErr } = await _supabase
+                            .from('orders')
+                            .select('*, order_items(*)')
+                            .eq('id', id)
+                            .single();
 
-                if (error) throw error;
+                        const currentOrder = orderData || orders.find(o => o.id === id);
+
+                        if (currentOrder) {
+                            // Məhsul siyahısını (massivini) müəyyən edirik
+                            let itemsToUpdate = [];
+
+                            // Əgər sifarişin daxilində çoxlu məhsullar siyahısı (order_items) varsa:
+                            if (currentOrder.order_items && Array.isArray(currentOrder.order_items) && currentOrder.order_items.length > 0) {
+                                itemsToUpdate = currentOrder.order_items.map(item => ({
+                                    productId: item.product_id || item.productId,
+                                    qty: parseInt(item.quantity || item.qty) || 1
+                                }));
+                            } 
+                            // Əgər sifariş JSON/Array formatında `items` və ya `products` sahəsində saxlanılıbsa:
+                            else if (currentOrder.items && Array.isArray(currentOrder.items) && currentOrder.items.length > 0) {
+                                itemsToUpdate = currentOrder.items.map(item => ({
+                                    productId: item.product_id || item.id,
+                                    qty: parseInt(item.quantity || item.qty) || 1
+                                }));
+                            }
+                            // Əgər tək məhsul sifarişidirsə:
+                            else {
+                                const singleProductId = currentOrder.product_id || currentOrder.product_id_fk || (currentOrder.products && currentOrder.products.id);
+                                if (singleProductId) {
+                                    itemsToUpdate.push({
+                                        productId: singleProductId,
+                                        qty: parseInt(currentOrder.quantity) || 1
+                                    });
+                                }
+                            }
+
+                            // Hər bir məhsul üçün ayrı-ayrılıqda öz stokunu azaldırıq
+                            for (const item of itemsToUpdate) {
+                                if (!item.productId) continue;
+
+                                const { data: prodData, error: prodFetchError } = await _supabase
+                                    .from('products')
+                                    .select('stock')
+                                    .eq('id', item.productId)
+                                    .single();
+
+                                if (!prodFetchError && prodData) {
+                                    const currentStock = parseInt(prodData.stock) || 0;
+                                    const newStock = Math.max(0, currentStock - item.qty);
+
+                                    const { error: stockError } = await _supabase
+                                        .from('products')
+                                        .update({ stock: newStock })
+                                        .eq('id', item.productId);
+
+                                    if (stockError) {
+                                        console.error(`Məhsul ID #${item.productId} stok yenilənərkən xəta:`, stockError);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Sifarişin statusunu yeniləyirik
+                    const { error } = await _supabase
+                        .from('orders')
+                        .update({ status: newStatus })
+                        .eq('id', id);
+
+                    if (error) throw error;
+                }
+
+                // Bütün paneli və stok cədvəlini real vaxtda yeniləyirik
                 await fetchStoreData();
             } catch (err) {
                 alert("Xəta baş verdi: " + err.message);
@@ -1453,7 +1716,9 @@
         }
 
         function filterProducts() {
-            const query = document.getElementById('productSearchInput').value.toLowerCase();
+            const input = document.getElementById('productSearchInput');
+            if (!input) return;
+            const query = input.value.toLowerCase();
             const rows = document.querySelectorAll('#products-table-body tr');
             rows.forEach(row => {
                 const text = row.innerText.toLowerCase();
@@ -1462,27 +1727,38 @@
         }
 
         function updateStats() {
-            document.getElementById('dash-stat-total-products').innerText = products.length;
+            const dashProducts = document.getElementById('dash-stat-total-products');
+            const dashRevenue = document.getElementById('dash-stat-total-revenue');
+
+            if (dashProducts) dashProducts.innerText = products.length;
             const completedOrders = orders.filter(o => o.status === 'Təsdiqləndi' || o.status === 'completed');
             const totalRev = completedOrders.reduce((sum, item) => {
                 const amt = item.total_price || item.total || (parseFloat(item.price || 0) * (parseInt(item.quantity) || 1));
                 return sum + (parseFloat(amt) || 0);
             }, 0);
-            document.getElementById('dash-stat-total-revenue').innerText = `${totalRev.toFixed(2)} AZN`;
+            if (dashRevenue) dashRevenue.innerText = `${totalRev.toFixed(2)} AZN`;
         }
 
         function removeImage(e) {
             if(e) e.stopPropagation();
             uploadedBase64Image = "";
-            document.getElementById('modal-image-input').value = "";
-            document.getElementById('image-preview').src = "";
-            document.getElementById('image-preview-container').classList.add('hidden');
-            document.getElementById('upload-placeholder').classList.remove('hidden');
+            const fileInput = document.getElementById('modal-image-input');
+            const previewImg = document.getElementById('image-preview');
+            const previewContainer = document.getElementById('image-preview-container');
+            const placeholder = document.getElementById('upload-placeholder');
+
+            if (fileInput) fileInput.value = "";
+            if (previewImg) previewImg.src = "";
+            if (previewContainer) previewContainer.classList.add('hidden');
+            if (placeholder) placeholder.classList.remove('hidden');
         }
 
         function updateModelDropdown() {
-            const brandVal = document.getElementById('modal-brand').value.trim();
+            const brandInput = document.getElementById('modal-brand');
             const modelsList = document.getElementById('models-list');
+
+            if (!brandInput || !modelsList) return;
+            const brandVal = brandInput.value.trim();
 
             modelsList.innerHTML = '';
 
@@ -1520,16 +1796,8 @@
                 }
             });
 
-            document.getElementById('page-title').innerText = titles[tabName] || 'Mağaza İdarə Paneli';
-        }
-
-        function openProductModal() {
-            document.getElementById('productModal').classList.remove('hidden');
-        }
-
-        function closeProductModal() {
-            removeImage();
-            document.getElementById('productModal').classList.add('hidden');
+            const pageTitle = document.getElementById('page-title');
+            if (pageTitle) pageTitle.innerText = titles[tabName] || 'Mağaza İdarə Paneli';
         }
     </script>
 </body>
