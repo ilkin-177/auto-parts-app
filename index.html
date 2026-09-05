@@ -397,108 +397,7 @@
         </div>
     </div>
 
-    <!-- AI CHATBOT WIDGET -->
-<div id="ai-chat-widget" class="fixed bottom-5 right-5 z-50">
-    <!-- Chat Açılış Düyməsi -->
-    <button onclick="toggleChat()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 p-4 rounded-full shadow-2xl flex items-center justify-center transition-all cursor-pointer">
-        <i data-lucide="bot" class="w-6 h-6"></i>
-    </button>
-
-    <!-- Chat Pəncərəsi -->
-    <div id="chat-box" class="hidden absolute bottom-16 right-0 w-80 sm:w-96 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[500px]">
-        <!-- Header -->
-        <div class="bg-slate-950 p-4 border-b border-slate-800 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <div class="p-2 bg-amber-500/10 text-amber-500 rounded-lg">
-                    <i data-lucide="bot" class="w-5 h-5"></i>
-                </div>
-                <div>
-                    <h3 class="text-sm font-bold text-white">AutoParts AI Köməkçi</h3>
-                    <p class="text-[10px] text-emerald-400 font-medium">● Onlayn</p>
-                </div>
-            </div>
-            <button onclick="toggleChat()" class="text-slate-400 hover:text-white">
-                <i data-lucide="x" class="w-5 h-5"></i>
-            </button>
-        </div>
-
-        <!-- Məsajlar Sahəsi -->
-        <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs">
-            <div class="bg-slate-800 text-slate-200 p-3 rounded-2xl max-w-[85%] border border-slate-700/50">
-                Salam! 👋 Sizə avtomobiliniz üçün doğru ehtiyat hissəsini tapmaqda kömək edə bilərəm. Hansı hissə lazımdır?
-            </div>
-        </div>
-
-        <!-- Daxiletmə Sahəsi -->
-        <div class="p-3 border-t border-slate-800 bg-slate-950 flex gap-2">
-            <input type="text" id="chat-input" onkeypress="handleKeyPress(event)" placeholder="Məs: BMW F30 2015 tormoz bəndi..." class="flex-1 bg-slate-900 border border-slate-800 text-white text-xs px-3 py-2 rounded-xl outline-none focus:border-amber-500">
-            <button onclick="sendMessage()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 p-2 rounded-xl transition">
-                <i data-lucide="send" class="w-4 h-4"></i>
-            </button>
-        </div>
-    </div>
-</div>
-
-<script>
-    function toggleChat() {
-        document.getElementById('chat-box').classList.toggle('hidden');
-    }
-
-    function handleKeyPress(e) {
-        if (e.key === 'Enter') sendMessage();
-    }
-
-    async function sendMessage() {
-        const input = document.getElementById('chat-input');
-        const text = input.value.trim();
-        if (!text) return;
-
-        const messagesContainer = document.getElementById('chat-messages');
-
-        // Müştərinin mesajını əlavə et
-        messagesContainer.innerHTML += `
-            <div class="bg-amber-500 text-slate-950 font-medium p-3 rounded-2xl max-w-[85%] ml-auto">
-                ${text}
-            </div>
-        `;
-        input.value = '';
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-        // Gözləmə indikatoru
-        const loadingId = 'loading-' + Date.now();
-        messagesContainer.innerHTML += `
-            <div id="${loadingId}" class="bg-slate-800 text-slate-400 p-3 rounded-2xl max-w-[85%] border border-slate-700/50 italic">
-                Axtarılır və cavab hazırlanır...
-            </div>
-        `;
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-        try {
-            // Backend API-ə sorğu göndərilməsi (Serverless Function və ya Node.js server)
-            const response = await fetch('/api/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: text })
-            });
-            const data = await response.json();
-
-            document.getElementById(loadingId).remove();
-            messagesContainer.innerHTML += `
-                <div class="bg-slate-800 text-slate-200 p-3 rounded-2xl max-w-[85%] border border-slate-700/50 leading-relaxed">
-                    ${data.reply}
-                </div>
-            `;
-        } catch (err) {
-            document.getElementById(loadingId).remove();
-            messagesContainer.innerHTML += `
-                <div class="bg-rose-950/50 text-rose-300 p-3 rounded-2xl max-w-[85%] border border-rose-800">
-                    Xəta baş verdi. Zəhmət olmasa bir az sonra yenidən cəhd edin.
-                </div>
-            `;
-        }
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
-</script>
+    <!-- 9. SCRIPTLƏR -->
 
     <script>
     lucide.createIcons();
@@ -1132,6 +1031,7 @@ const infoData = {
                 <li>Mağaza və satıcıların etibarlılığını göstərən reytinq sistemi.</li>
                 <li>Ən son qiymətləri və stok məlumatlarını real vaxtda təqdim edən sistem.</li>
                 <li>Sadə və intuitiv istifadəçi interfeysi ilə rahat alış-veriş təcrübəsi.</li>
+            </ul>
         `
     },
     terms: {
@@ -1141,39 +1041,46 @@ const infoData = {
             <ul class="list-disc list-inside space-y-2">
                 <li>Bu qaydalar AutoParts üzərində mağaza açaraq məhsul satışı həyata keçirən bütün fiziki və hüquqi şəxslərə şamil olunur.</li>
                 <li>Platformada qeydiyyatdan keçən və mağaza yaradan hər bir Satıcı bu şərtləri tam və qeyd-şərtsiz qəbul etmiş sayılır.</li>
+            </ul>
             
             <p class="text-xl font-bold">2. Mağaza Hesabı və Təhlükəsizlik</p>
             <ul class="list-disc list-inside space-y-2">
                 <li>Satıcı qeydiyyat zamanı tələb olunan məlumatları (şirkət/mağaza adı, VÖEN (varsa), əlaqə nömrələri, ünvan) dəqiq və doğru daxil etməyə borcludur.</li>
                 <li>Hesab məlumatlarının (login/parol) məxfiliyinin qorunmasına görə cavabdehliyi birbaşa Satıcı daşıyır.</li>
+            </ul>
 
             <p class="text-xl font-bold">3. Məhsul Yerləşdirilməsi və Qaydalar</p>
             <ul class="list-disc list-inside space-y-2">
                 <li><b>Məhsul Dəqiqliyi:</b> Satıcı təklif etdiyi ehtiyat hissəsinin vəziyyəti (yeni, işlənmiş, orijinal, analoq), qiyməti və stokda olub-olmaması barədə düzgün məlumat daxil etməlidir.</li>
                 <li><b>Qadağan olunmuş Məhsullar:</b> Mənşəyi məlum olmayan, oğurluq, qanunsuz yolla əldə edilmiş və ya platformanın siyasətinə zidd olan məhsulların yerləşdirilməsi qəti qadağandır.</li>
                 <li><b>Şəkillər:</b> Məhsul şəkilləri real olmalı və ya məhsulu tam əks etdirməlidir. Başqa brendlərin müəllif hüquqlarını pozan vizuallardan istifadə olunmamalıdır.</li>
+            </ul>
            
             <p class="text-xl font-bold">4. Xidmət Haqqı və Abunəlik</p>
             <ul class="list-disc list-inside space-y-2">
                 <li>Satıcı Platformanın təqdim etdiyi abunə paketlərindən birini seçərək müəyyən edilmiş aylıq və ya illik xidmət haqqını vaxtında ödəməlidir.</li>
                 <li>Abunə haqqı ödənilmədiyi halda, Platforma Satıcının mağazasını və məhsullarını axtarış sistemində müvəqqəti gizlətmək və ya hesabı məhdudlaşdırmaq hüququnu özündə saxlayır.</li>
                 <li>Ödənilmiş abunə haqları geri qaytarılmır (qanunvericilikdə nəzərdə tutulmuş müstəsna hallar istisna olmaqla).</li>
+            </ul>
             
             <p class="text-xl font-bold">5. Sifarişlərin İcrası və Çatdırılma</p>
             <ul class="list-disc list-inside space-y-2">
                 <li>Mağazadan Təhvil (Pick-up): Alıcı məhsulu özü götürmək istədikdə, Satıcı məhsulun elanda göstərilən ünvanda və hazır vəziyyətdə olmasını təmin etməlidir.</li>
                 <li>Onlayn Çatdırılma: Çatdırılmalı sifarişlərdə Satıcı məhsulu təyin olunmuş kuryerə və ya alıcıya vaxtında təhvil verməyə borcludur.</li>
                 <li>Məhsulun səhv və ya qüsurlu göndərilməsi nəticəsində yaranan zərərə və dəyişdirilmə xərclərinə Satıcı cavabdehdir.</li>
+            </ul>
             
             <p class="text-xl font-bold">6. Məsuliyyətin Məhdudlaşdırılması</p>
             <ul class="list-disc list-inside space-y-2">
                 <li>Platforma alıcı və satıcı arasında vasitəçi proqram təminatıdır. Məhsulun keyfiyyətinə, zəmanətinə və satıcının təqdim etdiyi məlumatların doğruluğuna görə birbaşa Satıcı cavabdehlik daşıyır.</li>
                 <li>Satıcı alıcılara qarşı istehlakçı hüquqlarının qorunması haqqında qanunvericiliyin tələblərinə riayət etməyi öhdəsinə götürür.</li>
+            </ul>
 
             <p class="text-xl font-bold">7. Xitam və Dəyişikliklər</p>
             <ul class="list-disc list-inside space-y-2">
                 <li>Platforma qaydaları pozan, saxta məhsul satan və ya alıcılardan davamlı olaraq mənfi rəylər alan Satıcının hesabını xəbərdarlıq etmədən dayandırmaq hüququna malikdir.</li>
                 <li>Platforma bu şərtləri öncədən bildirməklə dəyişdirmək hüququnu özündə saxlayır.</li>
+            </ul>
 
             <p class="text-xl font-bold">8. Məhsulun Geri Qaytarılması və Dəyişdirilməsi Siyasəti</p>
             <ul class="list-disc list-inside space-y-2">
@@ -1181,6 +1088,7 @@ const infoData = {
                 <li><b>24 Saatlıq Xüsusi Qaydalar (İstisna Hal):</b> Alıcı məhsulu təhvil aldığı andan etibarən 24 saat ərzində məhsulda zavod defekti, zədələnmə və ya elana uyğun olmayan qüsur aşkar edərsə, geri qaytarma və ya dəyişdirmə hüququna malikdir.</li>
                 <li><b>Şərtlər və Yoxlanış:</b> 24 saatlıq müddət ərzində geri qaytarmanın qəbul edilməsi üçün sözügedən qüsurun Alıcının istifadəsi, yanlış montajı və ya diqqətsizliyi səbəbindən yaranmadığı aydın şəkildə sübut olunmalıdır.</li>
                 <li><b>İcra Proseduru:</b> Qüsur təsdiqləndiyi təqdirdə, Satıcı məhsulu geri götürmək, ödənişi tam qaytarmaq və ya məhsulu qüsursuz yenisi ilə əvəz etmək öhdəliyi daşıyır. 24 saatlıq müddət bitdikdən sonra yaranan iddialar tərəflər arasında fərdi qaydada vƏ İstehlakçıların Hüquqlarının Qorunması haqqında QanunvericiliyƏ uyğun olaraq hƏll edilir.</li>
+            </ul>
         `
     },
     contact: {
