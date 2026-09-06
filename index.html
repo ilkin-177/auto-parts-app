@@ -823,32 +823,34 @@
         } catch (err) { console.error(err); }
     }
 
-    // BAZADAN ŞƏHƏR VƏ RAYON MƏLUMATLARININ DİNAMİK YÜKLƏNMƏSİ
-    async function loadLocations() {
-        try {
-            const { data: stores, error } = await _supabase
-                .from('stores')
-                .select('location, store_location, address');
+    // DİNAMİK MƏKAN DOLDURULMASI (Xətasız Variant)
+async function loadLocations() {
+    try {
+        // Bütün sütunları təhlükəsiz şəkildə çəkirik (*)
+        const { data: stores, error } = await _supabase
+            .from('stores')
+            .select('*');
 
-            if (error || !stores) return;
+        if (error || !stores) return;
 
-            const rawLocations = stores
-                .map(s => s.location || s.store_location || s.address)
-                .filter(Boolean);
-            
-            const uniqueLocations = [...new Set(rawLocations)];
+        // Bazada olan hansı sütun mövcuddursa, onu götürürük
+        const rawLocations = stores
+            .map(s => s.location || s.store_location || s.address || s.city)
+            .filter(Boolean);
+        
+        const uniqueLocations = [...new Set(rawLocations)];
 
-            const datalist = document.getElementById("locationsList");
-            if (datalist) {
-                datalist.innerHTML = '';
-                uniqueLocations.forEach(loc => {
-                    datalist.innerHTML += `<option value="${loc}">`;
-                });
-            }
-        } catch (err) {
-            console.error("Məkanlar yüklənərkən xəta:", err);
+        const datalist = document.getElementById("locationsList");
+        if (datalist) {
+            datalist.innerHTML = '';
+            uniqueLocations.forEach(loc => {
+                datalist.innerHTML += `<option value="${loc}">`;
+            });
         }
+    } catch (err) {
+        console.error("Məkanlar yüklənərkən xəta:", err);
     }
+}
 
     async function onBrandChange() {
         const brand = document.getElementById("brandSelect").value;
