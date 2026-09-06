@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="az" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client POS - AutoParts</title>
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" href="logo2.png">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#f59e0b',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #020617; /* bg-slate-950 */
+            color: #f1f5f9; /* text-slate-100 */
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans h-screen flex overflow-hidden">
+
+    <!-- SIDEBAR (SOL PANEL) -->
+    <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0">
+        <div>
+            <!-- LOGO SƏTİRİ -->
+            <div class="p-5 border-b border-slate-800 flex items-center gap-3">
+                <img src="logo2.png" alt="AutoParts Logo" class="h-15 w-auto">
+                <span class="font-bold text-lg text-white tracking-wide"></span>
+            </div>
+
+            <!-- TABLAR (NAVIQASIYA) -->
+            <nav class="p-4 space-y-1.5" id="sidebar-tabs">
+                <!-- STATİSTİKALAR ƏSAS TAB VƏ ALT MENYU KONTEYNERİ -->
+                <div class="space-y-1">
+                    <button onclick="selectMainTab(this, 'statistikalar'); toggleSubmenu('statistikalar-sub', 'statistikalar-chevron')" class="tab-btn w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition bg-amber-500 text-slate-950 font-bold">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                            <span>Statistikalar</span>
+                        </div>
+                        <i id="statistikalar-chevron" data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-200"></i>
+                    </button>
+
+                    <div id="statistikalar-sub" class="hidden pl-9 pr-2 py-1 space-y-1">
+                        <button onclick="selectSubTab(this, 'kohne-lovhe')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Lövhə
+                        </button>
+                        <button onclick="selectSubTab(this, 'satislar')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Satışlar
+                        </button>
+                        <button onclick="selectSubTab(this, 'hesabatlar')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Hesabatlar
+                        </button>
+                        <button onclick="selectSubTab(this, 'tarixce')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Tarixçə
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SATIŞ ƏSAS TAB VƏ ALT MENYU KONTEYNERİ -->
+                <div class="space-y-1">
+                    <button onclick="selectMainTab(this, 'satis'); toggleSubmenu('satis-sub', 'satis-chevron')" class="tab-btn w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition text-slate-400 hover:bg-slate-800/60 hover:text-white">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                            <span>Satış</span>
+                        </div>
+                        <i id="satis-chevron" data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-200"></i>
+                    </button>
+
+                    <div id="satis-sub" class="hidden pl-9 pr-2 py-1 space-y-1">
+                        <button onclick="selectSubTab(this, 'cekler')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Çeklər
+                        </button>
+                        <button onclick="selectSubTab(this, 'sifaris-bildirisleri')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Sifariş bildirişləri
+                        </button>
+                        <button onclick="selectSubTab(this, 'geri-qaytarilma')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Geri qaytarılma
+                        </button>
+                        <button onclick="selectSubTab(this, 'odeme-usullari')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Ödəmə üsulları
+                        </button>
+                        <button onclick="selectSubTab(this, 'satis-usullari')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Satış üsulları
+                        </button>
+                    </div>
+                </div>
+
+                <!-- MALİYYƏ ƏSAS TAB VƏ ALT MENYU KONTEYNERİ -->
+                <div class="space-y-1">
+                    <button onclick="selectMainTab(this, 'maliyye'); toggleSubmenu('maliyye-sub', 'maliyye-chevron')" class="tab-btn w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition text-slate-400 hover:bg-slate-800/60 hover:text-white">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="wallet" class="w-5 h-5"></i>
+                            <span>Maliyyə</span>
+                        </div>
+                        <i id="maliyye-chevron" data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-200"></i>
+                    </button>
+
+                    <div id="maliyye-sub" class="hidden pl-9 pr-2 py-1 space-y-1">
+                        <button onclick="selectSubTab(this, 'hesablar')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Hesablar
+                        </button>
+                        <button onclick="selectSubTab(this, 'emeliyyatlar')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Əməliyyatlar
+                        </button>
+                        <button onclick="selectSubTab(this, 'emekhaqqi')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Əməkhaqqı
+                        </button>
+                    </div>
+                </div>
+
+                <!-- MARKETİNQ ƏSAS TAB VƏ ALT MENYU KONTEYNERİ -->
+                <div class="space-y-1">
+                    <button onclick="selectMainTab(this, 'marketinq'); toggleSubmenu('marketinq-sub', 'marketinq-chevron')" class="tab-btn w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition text-slate-400 hover:bg-slate-800/60 hover:text-white">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="megaphone" class="w-5 h-5"></i>
+                            <span>Marketinq</span>
+                        </div>
+                        <i id="marketinq-chevron" data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-200"></i>
+                    </button>
+
+                    <div id="marketinq-sub" class="hidden pl-9 pr-2 py-1 space-y-1">
+                        <button onclick="selectSubTab(this, 'musteriler')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Müştərilər
+                        </button>
+                        <button onclick="selectSubTab(this, 'musteri-qrupu')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Müştəri qrupu
+                        </button>
+                        <button onclick="selectSubTab(this, 'deyerlendirmeler')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Dəyərləndirmələr
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ANBAR ƏSAS TAB VƏ ALT MENYU KONTEYNERİ -->
+                <div class="space-y-1">
+                    <button onclick="selectMainTab(this, 'anbar'); toggleSubmenu('anbar-sub', 'anbar-chevron')" class="tab-btn w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition text-slate-400 hover:bg-slate-800/60 hover:text-white">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="boxes" class="w-5 h-5"></i>
+                            <span>Anbar</span>
+                        </div>
+                        <i id="anbar-chevron" data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-200"></i>
+                    </button>
+
+                    <div id="anbar-sub" class="hidden pl-9 pr-2 py-1 space-y-1">
+                        <button onclick="selectSubTab(this, 'ehtiyat')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Ehtiyat
+                        </button>
+                        <button onclick="selectSubTab(this, 'tedarukler')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Tədarüklər
+                        </button>
+                        <button onclick="selectSubTab(this, 'tedaruklerin-geri-qaytarilmasi')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Tədarüklərin geri qaytarılması
+                        </button>
+                        <button onclick="selectSubTab(this, 'kocurmeler')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Köçürmələr
+                        </button>
+                        <button onclick="selectSubTab(this, 'tullanti-israf')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Tullantı (İsraf)
+                        </button>
+                        <button onclick="selectSubTab(this, 'hereket-hesabatlari')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Hərəkət hesabatları
+                        </button>
+                        <button onclick="selectSubTab(this, 'mehsul-hereketleri')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Məhsul hərəkətləri
+                        </button>
+                        <button onclick="selectSubTab(this, 'anbar-siyahisi')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Anbar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ƏMƏKDAŞ ƏSAS TAB VƏ ALT MENYU KONTEYNERİ -->
+                <div class="space-y-1">
+                    <button onclick="selectMainTab(this, 'emekdas'); toggleSubmenu('emekdas-sub', 'emekdas-chevron')" class="tab-btn w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition text-slate-400 hover:bg-slate-800/60 hover:text-white">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="users" class="w-5 h-5"></i>
+                            <span>Əməkdaş</span>
+                        </div>
+                        <i id="emekdas-chevron" data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-200"></i>
+                    </button>
+
+                    <div id="emekdas-sub" class="hidden pl-9 pr-2 py-1 space-y-1">
+                        <button onclick="selectSubTab(this, 'istifadəçiler')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            İstifadəçilər
+                        </button>
+                        <button onclick="selectSubTab(this, 'vezifeler')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Vəzifələr
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TƏNZİMLƏMƏLƏR ƏSAS TAB VƏ ALT MENYU KONTEYNERİ -->
+                <div class="space-y-1">
+                    <button onclick="selectMainTab(this, 'tenzimlemeler'); toggleSubmenu('tenzimlemeler-sub', 'tenzimlemeler-chevron')" class="tab-btn w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition text-slate-400 hover:bg-slate-800/60 hover:text-white">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="settings" class="w-5 h-5"></i>
+                            <span>Tənzimləmələr</span>
+                        </div>
+                        <i id="tenzimlemeler-chevron" data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-200"></i>
+                    </button>
+
+                    <div id="tenzimlemeler-sub" class="hidden pl-9 pr-2 py-1 space-y-1">
+                        <button onclick="selectSubTab(this, 'umumi')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Ümumi
+                        </button>
+                        <button onclick="selectSubTab(this, 'cekler-tenzimleme')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Çeklər
+                        </button>
+                        <button onclick="selectSubTab(this, 'abunelik')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                            Abunəlik
+                        </button>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <div class="p-4 border-t border-slate-800">
+            <a href="vendor-dashboard.html" class="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white py-2.5 rounded-xl text-xs font-semibold border border-slate-700 transition">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                <span>Satıcı Panelinə Qayıt</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- ƏSAS MƏZMUN SAHƏSİ -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        
+        <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+            <div class="flex items-center gap-3">
+                <h1 id="active-tab-title" class="text-lg font-bold text-white">Statistikalar</h1>
+                <span class="bg-amber-500/10 text-amber-500 text-[10px] font-bold px-2 py-0.5 rounded border border-amber-500/20">POS KASSA</span>
+            </div>
+
+            <div class="flex items-center gap-6">
+                <div id="pos-clock" class="text-xs font-mono text-slate-400 bg-slate-800/60 px-3 py-1.5 rounded-lg border border-slate-700/50">--:--:--</div>
+                
+                <div class="relative">
+                    <button onclick="toggleAdminMenu()" class="flex items-center gap-3 bg-slate-800 hover:bg-slate-700/80 p-1.5 pr-3 rounded-xl border border-slate-700 transition cursor-pointer">
+                        <div class="w-8 h-8 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-sm">
+                            A
+                        </div>
+                        <div class="text-left hidden sm:block">
+                            <p class="text-xs font-bold text-white leading-tight">Admin</p>
+                            <p class="text-[10px] text-slate-400">Mağaza Sahibi</p>
+                        </div>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
+                    </button>
+
+                    <div id="admin-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl p-2 z-50">
+                        <div class="px-3 py-2 border-b border-slate-800 mb-1">
+                            <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">İstifadəçi Adı</p>
+                            <p class="text-xs font-bold text-amber-400 truncate">magaza_sahibi_01</p>
+                        </div>
+                        <a href="#profile" class="flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                            <i data-lucide="user" class="w-4 h-4"></i> Profil Məlumatları
+                        </a>
+                        <a href="#logout" class="flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-rose-400 hover:bg-rose-500/10 transition mt-1">
+                            <i data-lucide="log-out" class="w-4 h-4"></i> Çıxış Et
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 p-6 overflow-y-auto bg-slate-950">
+            
+            <div id="content-statistikalar" class="tab-content">
+                <div id="lovhe-tab-content" class="p-2 space-y-8">
+                    <h1 class="text-2xl font-bold text-white">Dashboard</h1>
+
+                    <!-- 1. SEKSİYA: Satışlar -->
+                    <div class="space-y-4">
+                        <h2 class="text-xl font-semibold text-slate-200">Satışlar</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                            <div class="bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-800 flex flex-col justify-between">
+                                <span class="text-xs font-medium text-slate-400 text-center block">Satış</span>
+                                <div class="text-center my-3">
+                                    <span id="stat-satis" class="text-lg font-bold text-slate-400">0.00 ₼</span>
+                                </div>
+                                <div class="flex justify-between items-center text-xs text-slate-500 border-t border-slate-800 pt-2">
+                                    <span>0.00 ₼</span>
+                                    <span class="text-emerald-500 font-semibold flex items-center gap-0.5">▲ 100%</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-800 flex flex-col justify-between">
+                                <span class="text-xs font-medium text-slate-400 text-center block">Ümumi mənfəət</span>
+                                <div class="text-center my-3">
+                                    <span id="stat-menfeet" class="text-lg font-bold text-slate-400">0.00 ₼</span>
+                                </div>
+                                <div class="flex justify-between items-center text-xs text-slate-500 border-t border-slate-800 pt-2">
+                                    <span>0.00 ₼</span>
+                                    <span class="text-emerald-500 font-semibold flex items-center gap-0.5">▲ 100%</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-800 flex flex-col justify-between">
+                                <span class="text-xs font-medium text-slate-400 text-center block">Orta çek məbləği</span>
+                                <div class="text-center my-3">
+                                    <span id="stat-orta-cek" class="text-lg font-bold text-slate-400">0.00 ₼</span>
+                                </div>
+                                <div class="flex justify-between items-center text-xs text-slate-500 border-t border-slate-800 pt-2">
+                                    <span>0.00 ₼</span>
+                                    <span class="text-emerald-500 font-semibold flex items-center gap-0.5">▲ 100%</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-800 flex flex-col justify-between">
+                                <span class="text-xs font-medium text-slate-400 text-center block">Çeklər</span>
+                                <div class="text-center my-3">
+                                    <span id="stat-cek-sayi" class="text-xl font-bold text-white">0</span>
+                                </div>
+                                <div class="flex justify-between items-center text-xs text-slate-500 border-t border-slate-800 pt-2">
+                                    <span>0</span>
+                                    <span class="text-emerald-500 font-semibold flex items-center gap-0.5">▲ 100%</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-800 flex flex-col justify-between">
+                                <span class="text-xs font-medium text-slate-400 text-center block">Qonaqlar</span>
+                                <div class="text-center my-3">
+                                    <span id="stat-qonaqlar" class="text-xl font-bold text-white">0</span>
+                                </div>
+                                <div class="flex justify-between items-center text-xs text-slate-500 border-t border-slate-800 pt-2">
+                                    <span>0</span>
+                                    <span class="text-emerald-500 font-semibold flex items-center gap-0.5">▲ 100%</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-800 flex flex-col justify-between">
+                                <span class="text-xs font-medium text-slate-400 text-center block">Qaytarılan ümumi məbləğ</span>
+                                <div class="text-center my-3">
+                                    <span id="stat-qaytarilan" class="text-lg font-bold text-slate-400">0.00 ₼</span>
+                                </div>
+                                <div class="flex justify-between items-center text-xs text-slate-500 border-t border-slate-800 pt-2">
+                                    <span>0.00 ₼</span>
+                                    <span class="text-emerald-500 font-semibold flex items-center gap-0.5">▲ 100%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                            <div class="bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-800 flex flex-col justify-between">
+                                <span class="text-xs font-medium text-slate-400 text-center block">Orta vaxt</span>
+                                <div class="text-center my-3">
+                                    <span id="stat-orta-vaxt" class="text-base font-bold text-white">0d 0h 0m</span>
+                                </div>
+                                <div class="flex justify-between items-center text-xs text-slate-500 border-t border-slate-800 pt-2">
+                                    <span>0d 0h 0m</span>
+                                    <span class="text-emerald-500 font-semibold flex items-center gap-0.5">▲ 100%</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-800 flex flex-col justify-between">
+                                <span class="text-xs font-medium text-slate-400 text-center block">Xidmət haqqı</span>
+                                <div class="text-center my-3"><span id="stat-xidmet" class="text-lg font-bold text-slate-400">0.00 ₼</span></div>
+                                <div class="flex justify-between items-center text-xs text-slate-500 border-t border-slate-800 pt-2"><span>0.00 ₼</span><span class="text-emerald-500 font-semibold">▲ 100%</span></div>
+                            </div>
+
+                            <div class="bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-800 flex flex-col justify-between">
+                                <span class="text-xs font-medium text-slate-400 text-center block">Cəm endirim</span>
+                                <div class="text-center my-3"><span id="stat-endirim" class="text-lg font-bold text-slate-400">0.00 ₼</span></div>
+                                <div class="flex justify-between items-center text-xs text-slate-500 border-t border-slate-800 pt-2"><span>0.00 ₼</span><span class="text-emerald-500 font-semibold">▲ 100%</span></div>
+                            </div>
+
+                            <div class="bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-800 flex flex-col justify-between">
+                                <span class="text-xs font-medium text-slate-400 text-center block">Vergi</span>
+                                <div class="text-center my-3"><span id="stat-vergi" class="text-lg font-bold text-slate-400">0.00 ₼</span></div>
+                                <div class="flex justify-between items-center text-xs text-slate-500 border-t border-slate-800 pt-2"><span>0.00 ₼</span><span class="text-emerald-500 font-semibold">▲ 100%</span></div>
+                            </div>
+
+                            <div class="bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-800 flex flex-col justify-between">
+                                <span class="text-xs font-medium text-slate-400 text-center block">Ödənilməmiş çeklərin miqdarı</span>
+                                <div class="text-center my-3"><span id="stat-odenilmemis" class="text-lg font-bold text-slate-400">0.00 ₼</span></div>
+                                <div class="flex justify-between items-center text-xs text-slate-500 border-t border-slate-800 pt-2"><span>0.00 ₼</span><span class="text-emerald-500 font-semibold">▲ 100%</span></div>
+                            </div>
+
+                            <div class="bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-800 flex flex-col justify-between">
+                                <span class="text-xs font-medium text-slate-400 text-center block">Çatdırılma haqqı</span>
+                                <div class="text-center my-3"><span id="stat-catdirilma" class="text-lg font-bold text-slate-400">0.00 ₼</span></div>
+                                <div class="flex justify-between items-center text-xs text-slate-500 border-t border-slate-800 pt-2"><span>0.00 ₼</span><span class="text-emerald-500 font-semibold">▲ 100%</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. SEKSİYA: Maliyyə Qrafikləri -->
+                    <div class="space-y-4">
+                        <h2 class="text-xl font-semibold text-slate-200">Maliyyə</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Qrafik 1 -->
+                            <div class="bg-slate-900 p-5 rounded-xl shadow-sm border border-slate-800 h-64 flex flex-col justify-between">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-medium text-slate-300 text-sm">Ödəniş üsuluna görə gəlir</span>
+                                    <div class="flex items-center gap-1 bg-slate-800 p-1 rounded-lg">
+                                        <button id="btn-chart-odenis-bar" onclick="switchChartType('odenisChart', 'bar')" class="bg-amber-500 text-slate-950 p-1 rounded"><i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i></button>
+                                        <button id="btn-chart-odenis-pie" onclick="switchChartType('odenisChart', 'pie')" class="text-slate-400 p-1 hover:text-white"><i data-lucide="pie-chart" class="w-3.5 h-3.5"></i></button>
+                                    </div>
+                                </div>
+                                <div class="flex-1 relative w-full h-full">
+                                    <canvas id="odenisChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Qrafik 2 -->
+                            <div class="bg-slate-900 p-5 rounded-xl shadow-sm border border-slate-800 h-64 flex flex-col justify-between">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-medium text-slate-300 text-sm">Kateqoriya növünə görə məxaric</span>
+                                    <div class="flex items-center gap-1 bg-slate-800 p-1 rounded-lg">
+                                        <button id="btn-chart-mexaric-bar" onclick="switchChartType('mexaricChart', 'bar')" class="bg-amber-500 text-slate-950 p-1 rounded"><i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i></button>
+                                        <button id="btn-chart-mexaric-pie" onclick="switchChartType('mexaricChart', 'pie')" class="text-slate-400 p-1 hover:text-white"><i data-lucide="pie-chart" class="w-3.5 h-3.5"></i></button>
+                                    </div>
+                                </div>
+                                <div class="flex-1 relative w-full h-full">
+                                    <canvas id="mexaricChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Qrafik 3 (Hesablar) -->
+                            <div class="bg-slate-900 p-5 rounded-xl shadow-sm border border-slate-800 h-64 flex flex-col justify-between">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-medium text-slate-300 text-sm">Hesablar</span>
+                                    <div class="flex items-center gap-1 bg-slate-800 p-1 rounded-lg">
+                                        <button id="btn-chart-hesab-bar" onclick="switchChartType('hesabChart', 'bar')" class="bg-amber-500 text-slate-950 p-1 rounded"><i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i></button>
+                                        <button id="btn-chart-hesab-pie" onclick="switchChartType('hesabChart', 'pie')" class="text-slate-400 p-1 hover:text-white"><i data-lucide="pie-chart" class="w-3.5 h-3.5"></i></button>
+                                    </div>
+                                </div>
+                                <div class="flex-1 relative w-full h-full">
+                                    <canvas id="hesabChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. SEKSİYA: Ən yüksək satış performansı -->
+                    <div class="space-y-4">
+                        <h2 class="text-xl font-semibold text-slate-200">Ən yüksək satış performansı</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="bg-slate-900 p-5 rounded-xl shadow-sm border border-slate-800 h-64 flex flex-col justify-between">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-medium text-slate-300 text-sm">Ən çox satılan kateqoriyalar</span>
+                                    <div class="flex items-center gap-1 bg-slate-800 p-1 rounded-lg">
+                                        <button id="btn-chart-kateqoriya-bar" onclick="switchChartType('kateqoriyaChart', 'bar')" class="bg-amber-500 text-slate-950 p-1 rounded"><i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i></button>
+                                        <button id="btn-chart-kateqoriya-pie" onclick="switchChartType('kateqoriyaChart', 'pie')" class="text-slate-400 p-1 hover:text-white"><i data-lucide="pie-chart" class="w-3.5 h-3.5"></i></button>
+                                    </div>
+                                </div>
+                                <div class="flex-1 relative w-full h-full">
+                                    <canvas id="kateqoriyaChart"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-900 p-5 rounded-xl shadow-sm border border-slate-800 h-64 flex flex-col justify-between">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-medium text-slate-300 text-sm">Ən çox satılan məhsullar</span>
+                                    <div class="flex items-center gap-1 bg-slate-800 p-1 rounded-lg">
+                                        <button id="btn-chart-mehsul-bar" onclick="switchChartType('mehsulChart', 'bar')" class="bg-amber-500 text-slate-950 p-1 rounded"><i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i></button>
+                                        <button id="btn-chart-mehsul-pie" onclick="switchChartType('mehsulChart', 'pie')" class="text-slate-400 p-1 hover:text-white"><i data-lucide="pie-chart" class="w-3.5 h-3.5"></i></button>
+                                    </div>
+                                </div>
+                                <div class="flex-1 relative w-full h-full">
+                                    <canvas id="mehsulChart"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-900 p-5 rounded-xl shadow-sm border border-slate-800 h-64 flex flex-col justify-between">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-medium text-slate-300 text-sm">Ən çox satış edən işçilər</span>
+                                    <div class="flex items-center gap-1 bg-slate-800 p-1 rounded-lg">
+                                        <button id="btn-chart-isci-bar" onclick="switchChartType('isciChart', 'bar')" class="bg-amber-500 text-slate-950 p-1 rounded"><i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i></button>
+                                        <button id="btn-chart-isci-pie" onclick="switchChartType('isciChart', 'pie')" class="text-slate-400 p-1 hover:text-white"><i data-lucide="pie-chart" class="w-3.5 h-3.5"></i></button>
+                                    </div>
+                                </div>
+                                <div class="flex-1 relative w-full h-full">
+                                    <canvas id="isciChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STATİSTİKALAR -> SATIŞLAR ALTABI (YENİ ƏLAVƏ EDİLDİ) -->
+                <div id="satislar-tab-content" class="p-2 space-y-6 hidden">
+                    
+                    <!-- YUXARI PANEL: Başlıq, Tarix Aralığı Seçimi və Yeniləmə Butonu -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
+                        <div>
+                            <h1 class="text-2xl font-bold text-white">Satışlar</h1>
+                            <p class="text-xs text-slate-400">Real zamanlı satış hesabatları və analitika</p>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <!-- Tarix Aralığı Seçimi -->
+                            <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 shadow-sm">
+                                <i data-lucide="calendar" class="w-4 h-4 text-amber-500"></i>
+                                <input type="date" id="sales-start-date" onchange="fetchSalesAnalytics()" class="bg-transparent text-xs text-slate-200 outline-none cursor-pointer">
+                                <span class="text-xs text-slate-500">—</span>
+                                <input type="date" id="sales-end-date" onchange="fetchSalesAnalytics()" class="bg-transparent text-xs text-slate-200 outline-none cursor-pointer">
+                            </div>
+
+                            <!-- Yeniləmə Butonu -->
+                            <button onclick="fetchSalesAnalytics()" title="Yenilə" class="p-2 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 rounded-xl transition shadow-sm flex items-center justify-center">
+                                <i data-lucide="rotate-cw" id="refresh-icon" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 1. KARTLAR SEKSİYASI (Ümumi Göstəricilər) -->
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                        <!-- Satış -->
+                        <div class="bg-slate-900 p-4 rounded-xl border border-amber-500/30 bg-amber-500/5 flex flex-col justify-between shadow-sm">
+                            <span class="text-xs font-medium text-amber-400 text-center block">Satış</span>
+                            <div class="text-center my-2">
+                                <span id="sales-stat-total" class="text-lg font-bold text-white">0.00 ₼</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                                <div class="bg-amber-500 h-full w-full"></div>
+                            </div>
+                        </div>
+
+                        <!-- Ümumi mənfəət -->
+                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 flex flex-col justify-between shadow-sm">
+                            <span class="text-xs font-medium text-slate-400 text-center block">Ümumi mənfəət</span>
+                            <div class="text-center my-2">
+                                <span id="sales-stat-profit" class="text-lg font-bold text-slate-200">0.00 ₼</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                                <div class="bg-emerald-500 h-full w-3/4"></div>
+                            </div>
+                        </div>
+
+                        <!-- Orta çek məbləği -->
+                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 flex flex-col justify-between shadow-sm">
+                            <span class="text-xs font-medium text-slate-400 text-center block">Orta çek məbləği</span>
+                            <div class="text-center my-2">
+                                <span id="sales-stat-avg-check" class="text-lg font-bold text-slate-200">0.00 ₼</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                                <div class="bg-blue-500 h-full w-1/2"></div>
+                            </div>
+                        </div>
+
+                        <!-- Çeklər -->
+                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 flex flex-col justify-between shadow-sm">
+                            <span class="text-xs font-medium text-slate-400 text-center block">Çeklər</span>
+                            <div class="text-center my-2">
+                                <span id="sales-stat-checks" class="text-xl font-bold text-white">0</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                                <div class="bg-indigo-500 h-full w-2/3"></div>
+                            </div>
+                        </div>
+
+                        <!-- Qonaqlar -->
+                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 flex flex-col justify-between shadow-sm">
+                            <span class="text-xs font-medium text-slate-400 text-center block">Qonaqlar</span>
+                            <div class="text-center my-2">
+                                <span id="sales-stat-guests" class="text-xl font-bold text-white">0</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                                <div class="bg-purple-500 h-full w-1/3"></div>
+                            </div>
+                        </div>
+
+                        <!-- Orta vaxt -->
+                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 flex flex-col justify-between shadow-sm">
+                            <span class="text-xs font-medium text-slate-400 text-center block">Orta vaxt</span>
+                            <div class="text-center my-2">
+                                <span id="sales-stat-avg-time" class="text-base font-bold text-white">0d 0h 0m</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                                <div class="bg-rose-500 h-full w-4/5"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. ƏSAS QRAFİK: Satış Dinamikası -->
+                    <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-sm space-y-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <h2 class="text-base font-bold text-white flex items-center gap-2">
+                                <i data-lucide="line-chart" class="w-4 h-4 text-amber-500"></i> Satış dinamikası
+                            </h2>
+                            <div class="flex items-center gap-1 bg-slate-800/80 p-1 rounded-xl border border-slate-700/50">
+                                <button onclick="setSalesPeriod('daily')" id="btn-period-daily" class="px-3 py-1 text-xs font-semibold rounded-lg bg-amber-500 text-slate-950 transition">Günlük</button>
+                                <button onclick="setSalesPeriod('weekly')" id="btn-period-weekly" class="px-3 py-1 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition">Həftəlik</button>
+                                <button onclick="setSalesPeriod('monthly')" id="btn-period-monthly" class="px-3 py-1 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition">Aylıq</button>
+                            </div>
+                        </div>
+                        <div class="h-64 relative w-full">
+                            <canvas id="salesMainChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 3. SAATA VƏ HƏFTƏ GÜNÜNƏ GÖRƏ QRAFİKLƏR -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Saata görə -->
+                        <div class="lg:col-span-2 bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-sm flex flex-col justify-between">
+                            <h2 class="text-base font-bold text-white mb-3 flex items-center gap-2">
+                                <i data-lucide="clock" class="w-4 h-4 text-amber-500"></i> Saata görə satış
+                            </h2>
+                            <div class="h-56 relative w-full">
+                                <canvas id="salesHourlyChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Həftə gününə görə -->
+                        <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-sm flex flex-col justify-between">
+                            <div class="flex items-center justify-between mb-3">
+                                <h2 class="text-base font-bold text-white flex items-center gap-2">
+                                    <i data-lucide="calendar-days" class="w-4 h-4 text-amber-500"></i> Həftə gününə görə
+                                </h2>
+                                <div class="flex items-center gap-1 bg-slate-800 p-1 rounded-lg">
+                                    <button onclick="toggleDayChartType('pie')" id="btn-day-pie" class="bg-amber-500 text-slate-950 p-1 rounded"><i data-lucide="pie-chart" class="w-3.5 h-3.5"></i></button>
+                                    <button onclick="toggleDayChartType('bar')" id="btn-day-bar" class="text-slate-400 p-1 hover:text-white"><i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i></button>
+                                </div>
+                            </div>
+                            <div class="h-56 relative w-full">
+                                <canvas id="salesWeekdayChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. ÇOX SATILAN MƏHSULLAR CƏDVƏLİ -->
+                    <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-sm space-y-4">
+                        <h2 class="text-base font-bold text-white flex items-center gap-2">
+                            <i data-lucide="package-check" class="w-4 h-4 text-amber-500"></i> Çox satılan məhsullar
+                        </h2>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-slate-800 text-xs font-semibold text-slate-400 bg-slate-950/50">
+                                        <th class="py-3 px-4">Məhsul</th>
+                                        <th class="py-3 px-4 text-center">Sifarişlər (Say)</th>
+                                        <th class="py-3 px-4 text-right">Məbləğ (₼)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="top-products-tbody" class="divide-y divide-slate-800/60 text-xs">
+                                    <!-- Dinamik Məlumatlar Buraya Yüklənəcək -->
+                                </tbody>
+                            </table>
+                            <!-- Məlumat Olmadıqda -->
+                            <div id="top-products-empty" class="hidden text-center py-8 text-slate-500 text-xs">
+                                Məlumat tapılmadı
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- SATIŞ TABI -->
+            <div id="content-satis" class="tab-content hidden">
+                
+                <!-- ÇEKLƏR ALT TABI / ARAYÜZÜ (GÖNDƏRİLƏN ŞƏKİLLƏRƏ UYĞUN OLARAQ TƏNZİMLƏNDİ) -->
+                <div id="cekler-tab-content" class="space-y-4">
+                    
+                    <!-- 1. YUXARI PANORAMA (BAŞLIQ VƏ TƏQVİM/ALƏTLƏR) -->
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2">
+                        <!-- SOL: Başlıq, Sayğac və Alt-sekseya Tabları -->
+                        <div class="flex flex-wrap items-center gap-6">
+                            <div class="flex items-center gap-2">
+                                <h1 class="text-xl font-bold text-white tracking-wide">Çeklər</h1>
+                                <span class="text-slate-400 text-sm font-semibold">24</span>
+                            </div>
+
+                            <div class="flex items-center gap-4 text-xs font-medium">
+                                <button class="text-sky-400 font-bold border-b-2 border-sky-400 pb-1">Çek</button>
+                                <button class="text-slate-400 hover:text-white transition pb-1">Açıq çeklər</button>
+                                <button class="text-slate-400 hover:text-white transition pb-1">Silinmiş</button>
+                                <button class="text-slate-400 hover:text-white transition pb-1">Birləşdirilmiş çeklər</button>
+                            </div>
+                        </div>
+
+                        <!-- SAĞ: Tarix Düyməsi və İkonlar -->
+                        <div class="flex items-center gap-2 self-start md:self-auto">
+                            <!-- Tarix seçimi düyməsi -->
+                            <button class="flex items-center gap-2 bg-slate-900 border border-slate-800 text-slate-200 hover:bg-slate-800 px-3 py-1.5 rounded-xl text-xs font-medium transition shadow-sm">
+                                <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i>
+                                <span>31 Aug - 6 Sep</span>
+                            </button>
+
+                            <!-- Şəbəkə, Çap, Yükləmə, Yeniləmə, Profil və Çat ikonları -->
+                            <div class="flex items-center gap-1">
+                                <button class="p-2 text-slate-400 hover:text-white bg-slate-900 border border-slate-800 rounded-xl transition hover:bg-slate-800"><i data-lucide="layout-grid" class="w-4 h-4"></i></button>
+                                <button class="p-2 text-slate-400 hover:text-white bg-slate-900 border border-slate-800 rounded-xl transition hover:bg-slate-800"><i data-lucide="printer" class="w-4 h-4"></i></button>
+                                <button class="p-2 text-slate-400 hover:text-white bg-slate-900 border border-slate-800 rounded-xl transition hover:bg-slate-800"><i data-lucide="download" class="w-4 h-4"></i></button>
+                                <button class="p-2 text-slate-400 hover:text-white bg-slate-900 border border-slate-800 rounded-xl transition hover:bg-slate-800"><i data-lucide="rotate-cw" class="w-4 h-4"></i></button>
+                                <button class="p-2 text-slate-400 hover:text-white bg-slate-900 border border-slate-800 rounded-xl transition hover:bg-slate-800"><i data-lucide="user" class="w-4 h-4"></i></button>
+                                <button class="p-2 text-sky-400 bg-sky-500/10 border border-sky-500/20 rounded-xl transition hover:bg-sky-500/20 ml-1"><i data-lucide="message-square" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. FİLTRLƏR SEKSİYASI -->
+                    <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900/60 p-2.5 rounded-2xl border border-slate-800/80">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <!-- ID Axtarış -->
+                            <div class="relative w-36 sm:w-44">
+                                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-1/2 -translate-y-1/2"></i>
+                                <input type="text" placeholder="ID" class="w-full bg-slate-950 border border-slate-800 text-xs text-slate-200 pl-8 pr-2 py-1.5 rounded-xl outline-none focus:border-amber-500 transition">
+                            </div>
+
+                            <!-- Məhsul Filter Dropdown -->
+                            <button class="flex items-center gap-2 bg-sky-500/10 text-sky-400 border border-sky-500/20 px-3 py-1.5 rounded-xl text-xs font-semibold hover:bg-sky-500/20 transition">
+                                <span>Məhsul</span>
+                                <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                            </button>
+
+                            <!-- Status Filter Dropdown (Açılır menyu strukturu) -->
+                            <div class="relative group">
+                                <button class="flex items-center gap-2 bg-sky-500/10 text-sky-400 border border-sky-500/20 px-3 py-1.5 rounded-xl text-xs font-semibold hover:bg-sky-500/20 transition">
+                                    <span>Status</span>
+                                    <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                                </button>
+                                
+                                <!-- Status Menyusu -->
+                                <div class="hidden group-hover:block absolute left-0 top-full mt-1 w-44 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl p-2 z-50 space-y-1">
+                                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-800 rounded-lg text-xs text-slate-200 cursor-pointer">
+                                        <input type="checkbox" class="rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-0"> <span>Açıq</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-800 rounded-lg text-xs text-slate-200 cursor-pointer">
+                                        <input type="checkbox" class="rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-0"> <span>Ödənilmiş</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-800 rounded-lg text-xs text-slate-200 cursor-pointer">
+                                        <input type="checkbox" class="rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-0"> <span>Qarson səhvi</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-800 rounded-lg text-xs text-slate-200 cursor-pointer">
+                                        <input type="checkbox" class="rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-0"> <span>Şirkət hesabına</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-800 rounded-lg text-xs text-slate-200 cursor-pointer">
+                                        <input type="checkbox" class="rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-0"> <span>Qonaq tərk etdi</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-800 rounded-lg text-xs text-slate-200 cursor-pointer">
+                                        <input type="checkbox" class="rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-0"> <span>Birləşdirildi</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-800 rounded-lg text-xs text-slate-200 cursor-pointer">
+                                        <input type="checkbox" class="rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-0"> <span>Ləğv edildi</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Satış üsulu Dropdown -->
+                            <button class="flex items-center gap-2 bg-sky-500/10 text-sky-400 border border-sky-500/20 px-3 py-1.5 rounded-xl text-xs font-semibold hover:bg-sky-500/20 transition">
+                                <span>Satış üsulu</span>
+                                <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                            </button>
+
+                            <!-- Ümumi Filtrə Butonu -->
+                            <button class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-xl text-xs font-semibold transition">
+                                <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5"></i>
+                                <span>Filtrlər</span>
+                            </button>
+                        </div>
+
+                        <!-- Öyrən Dropdown -->
+                        <button class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3 py-1.5 rounded-xl text-xs font-medium transition">
+                            <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+                            <span>Öyrən</span>
+                            <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+
+                    <!-- 3. ÇEKLƏR CƏDVƏLİ (BÜTÜN SÜTUNLAR ŞƏKİLLƏRƏ TAM UYĞUNDUR) -->
+                    <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-x-auto shadow-xl">
+                        <table class="w-full text-left border-collapse min-w-[1000px]" id="checksTable">
+                            <thead>
+                                <tr class="bg-slate-950/80 text-xs font-semibold text-slate-400 border-b border-slate-800">
+                                    <th class="py-3.5 px-4 cursor-pointer hover:text-white" onclick="sortTable(0)">
+                                        <div class="flex items-center gap-1">
+                                            <span>#Çek</span>
+                                            <i data-lucide="arrow-up-down" class="w-3 h-3 text-sky-400"></i>
+                                        </div>
+                                    </th>
+                                    <th class="py-3.5 px-4 cursor-pointer hover:text-white" onclick="sortTable(1)">
+                                        <div class="flex items-center gap-1">
+                                            <span>Əməkdaş</span>
+                                            <i data-lucide="arrow-up-down" class="w-3 h-3 text-sky-400"></i>
+                                        </div>
+                                    </th>
+                                    <th class="py-3.5 px-4 cursor-pointer hover:text-white" onclick="sortTable(2)">
+                                        <div class="flex items-center gap-1">
+                                            <span>Yaradıldı</span>
+                                            <i data-lucide="arrow-up-down" class="w-3 h-3 text-sky-400"></i>
+                                        </div>
+                                    </th>
+                                    <th class="py-3.5 px-4 cursor-pointer hover:text-white" onclick="sortTable(3)">
+                                        <div class="flex items-center gap-1">
+                                            <span>Bağlandı</span>
+                                            <i data-lucide="arrow-up-down" class="w-3 h-3 text-sky-400"></i>
+                                        </div>
+                                    </th>
+                                    <th class="py-3.5 px-4 text-right cursor-pointer hover:text-white" onclick="sortTable(4)">
+                                        <div class="flex items-center justify-end gap-1">
+                                            <div>
+                                                <span>Cəm</span>
+                                                <p class="text-[10px] text-sky-400 font-normal">77.70</p>
+                                            </div>
+                                            <i data-lucide="arrow-up-down" class="w-3 h-3 text-sky-400"></i>
+                                        </div>
+                                    </th>
+                                    <th class="py-3.5 px-4 text-right cursor-pointer hover:text-white" onclick="sortTable(5)">
+                                        <div class="flex items-center justify-end gap-1">
+                                            <div>
+                                                <span>Endirim ₼</span>
+                                                <p class="text-[10px] text-slate-500 font-normal">0.00 ₼</p>
+                                            </div>
+                                            <i data-lucide="arrow-up-down" class="w-3 h-3 text-sky-400"></i>
+                                        </div>
+                                    </th>
+                                    <th class="py-3.5 px-4 text-right cursor-pointer hover:text-white" onclick="sortTable(6)">
+                                        <div class="flex items-center justify-end gap-1">
+                                            <div>
+                                                <span>Yekun</span>
+                                                <p class="text-[10px] text-sky-400 font-normal">77.70</p>
+                                            </div>
+                                            <i data-lucide="arrow-up-down" class="w-3 h-3 text-sky-400"></i>
+                                        </div>
+                                    </th>
+                                    <th class="py-3.5 px-4 text-center cursor-pointer hover:text-white" onclick="sortTable(7)">
+                                        <div class="flex items-center justify-center gap-1">
+                                            <span>Ödəniş üsulu</span>
+                                            <i data-lucide="arrow-up-down" class="w-3 h-3 text-sky-400"></i>
+                                        </div>
+                                    </th>
+                                    <th class="py-3.5 px-4 text-center cursor-pointer hover:text-white" onclick="sortTable(8)">
+                                        <div class="flex items-center justify-center gap-1">
+                                            <span>Status</span>
+                                            <i data-lucide="arrow-up-down" class="w-3 h-3 text-sky-400"></i>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/60 text-xs text-slate-300">
+                                
+                                <!-- SƏTİR 1 -->
+                                <tr class="hover:bg-slate-800/40 transition">
+                                    <td class="py-3.5 px-4 font-semibold text-sky-400 cursor-pointer hover:underline">14038</td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-medium text-slate-200">Samir bəy</p>
+                                        <p class="text-[10px] text-slate-500">Cashier</p>
+                                    </td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-semibold text-slate-200">14:52</p>
+                                        <p class="text-[10px] text-slate-500">05 Sentyabr</p>
+                                    </td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-semibold text-slate-200">14:52</p>
+                                        <p class="text-[10px] text-slate-500">05 Sentyabr</p>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-right font-medium text-slate-200">1.00</td>
+                                    <td class="py-3.5 px-4 text-right text-slate-400">0.00</td>
+                                    <td class="py-3.5 px-4 text-right font-semibold text-slate-100">1.00</td>
+                                    <td class="py-3.5 px-4 text-center">
+                                        <span class="inline-flex items-center justify-center bg-amber-400 text-slate-950 font-bold w-6 h-6 rounded text-[11px]">N</span>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-center">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shadow-sm shadow-emerald-500/50" title="Açıq / Uğurlu"></span>
+                                    </td>
+                                </tr>
+
+                                <!-- SƏTİR 2 -->
+                                <tr class="hover:bg-slate-800/40 transition">
+                                    <td class="py-3.5 px-4 font-semibold text-sky-400 cursor-pointer hover:underline">14028</td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-medium text-slate-200">Samir bəy</p>
+                                        <p class="text-[10px] text-slate-500">Cashier</p>
+                                    </td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-semibold text-slate-200">19:17</p>
+                                        <p class="text-[10px] text-slate-500">01 Sentyabr</p>
+                                    </td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-semibold text-slate-200">19:24</p>
+                                        <p class="text-[10px] text-slate-500">01 Sentyabr</p>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-right font-medium text-slate-200">1.20</td>
+                                    <td class="py-3.5 px-4 text-right text-slate-400">0.00</td>
+                                    <td class="py-3.5 px-4 text-right font-semibold text-slate-100">1.20</td>
+                                    <td class="py-3.5 px-4 text-center">
+                                        <span class="inline-flex items-center justify-center bg-amber-400 text-slate-950 font-bold w-6 h-6 rounded text-[11px]">N</span>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-center">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shadow-sm shadow-emerald-500/50"></span>
+                                    </td>
+                                </tr>
+
+                                <!-- SƏTİR 3 -->
+                                <tr class="hover:bg-slate-800/40 transition">
+                                    <td class="py-3.5 px-4 font-semibold text-sky-400 cursor-pointer hover:underline">14041</td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-medium text-slate-200">Samir bəy</p>
+                                        <p class="text-[10px] text-slate-500">Cashier</p>
+                                    </td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-semibold text-slate-200">10:55</p>
+                                        <p class="text-[10px] text-slate-500">06 Sentyabr</p>
+                                    </td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-semibold text-slate-200">10:56</p>
+                                        <p class="text-[10px] text-slate-500">06 Sentyabr</p>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-right font-medium text-slate-200">1.50</td>
+                                    <td class="py-3.5 px-4 text-right text-slate-400">0.00</td>
+                                    <td class="py-3.5 px-4 text-right font-semibold text-slate-100">1.50</td>
+                                    <td class="py-3.5 px-4 text-center">
+                                        <span class="inline-flex items-center justify-center bg-amber-400 text-slate-950 font-bold w-6 h-6 rounded text-[11px]">N</span>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-center">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shadow-sm shadow-emerald-500/50"></span>
+                                    </td>
+                                </tr>
+
+                                <!-- SƏTİR 4 -->
+                                <tr class="hover:bg-slate-800/40 transition">
+                                    <td class="py-3.5 px-4 font-semibold text-sky-400 cursor-pointer hover:underline">14039</td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-medium text-slate-200">Samir bəy</p>
+                                        <p class="text-[10px] text-slate-500">Cashier</p>
+                                    </td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-semibold text-slate-200">19:23</p>
+                                        <p class="text-[10px] text-slate-500">05 Sentyabr</p>
+                                    </td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-semibold text-slate-200">19:25</p>
+                                        <p class="text-[10px] text-slate-500">05 Sentyabr</p>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-right font-medium text-slate-200">1.50</td>
+                                    <td class="py-3.5 px-4 text-right text-slate-400">0.00</td>
+                                    <td class="py-3.5 px-4 text-right font-semibold text-slate-100">1.50</td>
+                                    <td class="py-3.5 px-4 text-center">
+                                        <span class="inline-flex items-center justify-center bg-amber-400 text-slate-950 font-bold w-6 h-6 rounded text-[11px]">N</span>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-center">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shadow-sm shadow-emerald-500/50"></span>
+                                    </td>
+                                </tr>
+
+                                <!-- SƏTİR 5 -->
+                                <tr class="hover:bg-slate-800/40 transition">
+                                    <td class="py-3.5 px-4 font-semibold text-sky-400 cursor-pointer hover:underline">14035</td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-medium text-slate-200">Samir bəy</p>
+                                        <p class="text-[10px] text-slate-500">Cashier</p>
+                                    </td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-semibold text-slate-200">14:47</p>
+                                        <p class="text-[10px] text-slate-500">04 Sentyabr</p>
+                                    </td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-semibold text-slate-200">14:47</p>
+                                        <p class="text-[10px] text-slate-500">04 Sentyabr</p>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-right font-medium text-slate-200">1.50</td>
+                                    <td class="py-3.5 px-4 text-right text-slate-400">0.00</td>
+                                    <td class="py-3.5 px-4 text-right font-semibold text-slate-100">1.50</td>
+                                    <td class="py-3.5 px-4 text-center">
+                                        <span class="inline-flex items-center justify-center bg-amber-400 text-slate-950 font-bold w-6 h-6 rounded text-[11px]">N</span>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-center">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shadow-sm shadow-emerald-500/50"></span>
+                                    </td>
+                                </tr>
+
+                                <!-- SƏTİR 6 -->
+                                <tr class="hover:bg-slate-800/40 transition">
+                                    <td class="py-3.5 px-4 font-semibold text-sky-400 cursor-pointer hover:underline">14033</td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-medium text-slate-200">Samir bəy</p>
+                                        <p class="text-[10px] text-slate-500">Cashier</p>
+                                    </td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-semibold text-slate-200">12:47</p>
+                                        <p class="text-[10px] text-slate-500">04 Sentyabr</p>
+                                    </td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-semibold text-slate-200">12:47</p>
+                                        <p class="text-[10px] text-slate-500">04 Sentyabr</p>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-right font-medium text-slate-200">1.50</td>
+                                    <td class="py-3.5 px-4 text-right text-slate-400">0.00</td>
+                                    <td class="py-3.5 px-4 text-right font-semibold text-slate-100">1.50</td>
+                                    <td class="py-3.5 px-4 text-center">
+                                        <span class="inline-flex items-center justify-center bg-amber-400 text-slate-950 font-bold w-6 h-6 rounded text-[11px]">N</span>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-center">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shadow-sm shadow-emerald-500/50"></span>
+                                    </td>
+                                </tr>
+
+                                <!-- SƏTİR 7 -->
+                                <tr class="hover:bg-slate-800/40 transition">
+                                    <td class="py-3.5 px-4 font-semibold text-sky-400 cursor-pointer hover:underline">14021</td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-medium text-slate-200">Samir bəy</p>
+                                        <p class="text-[10px] text-slate-500">Cashier</p>
+                                    </td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-semibold text-slate-200">11:00</p>
+                                        <p class="text-[10px] text-slate-500">31 Avqust</p>
+                                    </td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-semibold text-slate-200">11:02</p>
+                                        <p class="text-[10px] text-slate-500">31 Avqust</p>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-right font-medium text-slate-200">2.10</td>
+                                    <td class="py-3.5 px-4 text-right text-slate-400">0.00</td>
+                                    <td class="py-3.5 px-4 text-right font-semibold text-slate-100">2.10</td>
+                                    <td class="py-3.5 px-4 text-center">
+                                        <span class="inline-flex items-center justify-center bg-amber-400 text-slate-950 font-bold w-6 h-6 rounded text-[11px]">N</span>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-center">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shadow-sm shadow-emerald-500/50"></span>
+                                    </td>
+                                </tr>
+
+                                <!-- SƏTİR 8 -->
+                                <tr class="hover:bg-slate-800/40 transition">
+                                    <td class="py-3.5 px-4 font-semibold text-sky-400 cursor-pointer hover:underline">14022</td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-medium text-slate-200">Samir bəy</p>
+                                        <p class="text-[10px] text-slate-500">Cashier</p>
+                                    </td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-semibold text-slate-200">12:08</p>
+                                        <p class="text-[10px] text-slate-500">31 Avqust</p>
+                                    </td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-semibold text-slate-200">12:14</p>
+                                        <p class="text-[10px] text-slate-500">31 Avqust</p>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-right font-medium text-slate-200">3.00</td>
+                                    <td class="py-3.5 px-4 text-right text-slate-400">0.00</td>
+                                    <td class="py-3.5 px-4 text-right font-semibold text-slate-100">3.00</td>
+                                    <td class="py-3.5 px-4 text-center">
+                                        <span class="inline-flex items-center justify-center bg-amber-400 text-slate-950 font-bold w-6 h-6 rounded text-[11px]">N</span>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-center">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shadow-sm shadow-emerald-500/50"></span>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- MALİYYƏ TABI -->
+            <div id="content-maliyye" class="tab-content hidden">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center text-slate-400">
+                    <i data-lucide="wallet" class="w-12 h-12 mx-auto mb-2 text-amber-500"></i>
+                    <h2 class="text-lg font-bold text-white">Maliyyə İdarəetməsi</h2>
+                    <p class="text-xs mt-1">Gəlir və xərc hesabatları məlumatları...</p>
+                </div>
+            </div>
+
+            <!-- MARKETİNQ TABI -->
+            <div id="content-marketinq" class="tab-content hidden">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center text-slate-400">
+                    <i data-lucide="megaphone" class="w-12 h-12 mx-auto mb-2 text-amber-500"></i>
+                    <h2 class="text-lg font-bold text-white">Marketinq Panel</h2>
+                    <p class="text-xs mt-1">Endirim kampaaniyaları və bonuslar...</p>
+                </div>
+            </div>
+
+            <!-- ANBAR TABI -->
+            <div id="content-anbar" class="tab-content hidden">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center text-slate-400">
+                    <i data-lucide="boxes" class="w-12 h-12 mx-auto mb-2 text-amber-500"></i>
+                    <h2 class="text-lg font-bold text-white">Anbar Qalığı</h2>
+                    <p class="text-xs mt-1">Məhsul siyahısı və stok nəzarəti...</p>
+                </div>
+            </div>
+
+            <!-- ƏMƏKDAŞ TABI -->
+            <div id="content-emekdas" class="tab-content hidden">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center text-slate-400">
+                    <i data-lucide="users" class="w-12 h-12 mx-auto mb-2 text-amber-500"></i>
+                    <h2 class="text-lg font-bold text-white">Əməkdaşlar Siyahısı</h2>
+                    <p class="text-xs mt-1">İşçi heyəti və icazələrin idarə olunması...</p>
+                </div>
+            </div>
+
+            <!-- TƏNZİMLƏMƏLƏR TABI -->
+            <div id="content-tenzimlemeler" class="tab-content hidden">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center text-slate-400">
+                    <i data-lucide="settings" class="w-12 h-12 mx-auto mb-2 text-amber-500"></i>
+                    <h2 class="text-lg font-bold text-white">Sistem Tənzimləmələri</h2>
+                    <p class="text-xs mt-1">Kassa və istifadəçi konfiqurasiyası...</p>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- JAVASCRIPT KODLARI -->
+    <script>
+        // Lucide ikonetkalarını aktivləşdir
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+
+        let sortDirections = {};
+
+        function sortTable(columnIndex) {
+            const table = document.getElementById("checksTable");
+            if (!table) return;
+            const tbody = table.querySelector("tbody");
+            const rows = Array.from(tbody.querySelectorAll("tr"));
+
+            sortDirections[columnIndex] = !sortDirections[columnIndex];
+            const isAsc = sortDirections[columnIndex];
+
+            rows.sort((a, b) => {
+                let cellA = a.children[columnIndex].innerText.trim();
+                let cellB = b.children[columnIndex].innerText.trim();
+
+                let valA = parseFloat(cellA.replace(',', '.')) || cellA;
+                let valB = parseFloat(cellB.replace(',', '.')) || cellB;
+
+                if (typeof valA === 'number' && typeof valB === 'number') {
+                    return isAsc ? valA - valB : valB - valA;
+                } else {
+                    return isAsc ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+                }
+            });
+
+            rows.forEach(row => tbody.appendChild(row));
+        }
+
+        // Tab Değişmə Funksiyası
+        function switchTab(element, tabId) {
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('bg-amber-500', 'text-slate-950', 'font-bold');
+                btn.classList.add('text-slate-400', 'hover:bg-slate-800/60', 'hover:text-white');
+            });
+
+            if (element) {
+                element.classList.remove('text-slate-400', 'hover:bg-slate-800/60', 'hover:text-white');
+                element.classList.add('bg-amber-500', 'text-slate-950', 'font-bold');
+            }
+
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.add('hidden'));
+
+            const activeContent = document.getElementById('content-' + tabId);
+            if (activeContent) {
+                activeContent.classList.remove('hidden');
+            }
+
+            const titleEl = document.getElementById('active-tab-title');
+            if (titleEl && element) {
+                const textSpan = element.querySelector('span');
+                if (textSpan) titleEl.innerText = textSpan.innerText;
+            }
+        }
+
+        function selectMainTab(element, tabId) {
+            switchTab(element, tabId);
+        }
+
+        // Admin Menyusunun Açılıb-Bağlanması
+        function toggleAdminMenu() {
+            const dropdown = document.getElementById('admin-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        window.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('admin-dropdown');
+            const button = e.target.closest('button[onclick="toggleAdminMenu()"]');
+            if (dropdown && button === null && !dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // POS Canlı Saat
+        setInterval(() => {
+            const clockEl = document.getElementById('pos-clock');
+            if (clockEl) {
+                clockEl.innerText = new Date().toLocaleTimeString('az-AZ');
+            }
+        }, 1000);
+
+        function toggleSubmenu(submenuId, chevronId) {
+            const submenu = document.getElementById(submenuId);
+            const chevron = document.getElementById(chevronId);
+
+            submenu.classList.toggle('hidden');
+
+            if (chevron) {
+                chevron.classList.toggle('rotate-180');
+            }
+        }
+
+        function selectSubTab(element, subTabId) {
+            const parent = element.parentElement;
+            const allSubTabs = document.querySelectorAll('.sub-tab-btn');
+            
+            allSubTabs.forEach(tab => {
+                tab.classList.remove('bg-slate-800', 'text-white', 'font-bold');
+                tab.classList.add('text-slate-400', 'font-medium');
+            });
+
+            element.classList.remove('text-slate-400', 'font-medium');
+            element.classList.add('bg-slate-800', 'text-white', 'font-bold');
+
+            if (subTabId === 'kohne-lovhe' || subTabId === 'lovhe') {
+                loadLovheData();
+            }
+
+            // Satışlar altabı seçildikdə görünüşü dəyişmək və məlumatları yükləmək
+            const lovheContent = document.getElementById('lovhe-tab-content');
+            const satislarContent = document.getElementById('satislar-tab-content');
+
+            if (subTabId === 'satislar' || subTabId === 'kohne-lovhe' || subTabId === 'lovhe' || subTabId === 'hesabatlar' || subTabId === 'tarixce') {
+                const statBtn = document.querySelector('button[onclick*="statistikalar"]');
+                if (statBtn) switchTab(statBtn, 'statistikalar');
+                
+                if (subTabId === 'satislar') {
+                    if (lovheContent) lovheContent.classList.add('hidden');
+                    if (satislarContent) {
+                        satislarContent.classList.remove('hidden');
+                        fetchSalesAnalytics();
+                    }
+                } else if (subTabId === 'kohne-lovhe' || subTabId === 'lovhe') {
+                    if (satislarContent) satislarContent.classList.add('hidden');
+                    if (lovheContent) lovheContent.classList.remove('hidden');
+                }
+            }
+            
+            // Satış -> Çeklər seçildikdə Satış tabını göstər
+            if (subTabId === 'cekler' || subTabId === 'sifaris-bildirisleri' || subTabId === 'geri-qaytarilma' || subTabId === 'odeme-usullari' || subTabId === 'satis-usullari') {
+                const satisBtn = document.querySelector('button[onclick*="satis-sub"]');
+                if (satisBtn) switchTab(satisBtn, 'satis');
+            }
+
+            // Maliyyə
+            if (subTabId === 'hesablar' || subTabId === 'emeliyyatlar' || subTabId === 'emekhaqqi') {
+                const mBtn = document.querySelector('button[onclick*="maliyye-sub"]');
+                if (mBtn) switchTab(mBtn, 'maliyye');
+            }
+
+            // Marketinq
+            if (subTabId === 'musteriler' || subTabId === 'musteri-qrupu' || subTabId === 'deyerlendirmeler') {
+                const mBtn = document.querySelector('button[onclick*="marketinq-sub"]');
+                if (mBtn) switchTab(mBtn, 'marketinq');
+            }
+
+            // Anbar
+            if (subTabId === 'ehtiyat' || subTabId === 'tedarukler' || subTabId === 'tedaruklerin-geri-qaytarilmasi' || subTabId === 'kocurmeler' || subTabId === 'tullanti-israf' || subTabId === 'hereket-hesabatlari' || subTabId === 'mehsul-hereketleri' || subTabId === 'anbar-siyahisi') {
+                const aBtn = document.querySelector('button[onclick*="anbar-sub"]');
+                if (aBtn) switchTab(aBtn, 'anbar');
+            }
+
+            // Əməkdaş
+            if (subTabId === 'istifadəçiler' || subTabId === 'vezifeler') {
+                const eBtn = document.querySelector('button[onclick*="emekdas-sub"]');
+                if (eBtn) switchTab(eBtn, 'emekdas');
+            }
+
+            // Tənzimləmələr
+            if (subTabId === 'umumi' || subTabId === 'cekler-tenzimleme' || subTabId === 'abunelik') {
+                const tBtn = document.querySelector('button[onclick*="tenzimlemeler-sub"]');
+                if (tBtn) switchTab(tBtn, 'tenzimlemeler');
+            }
+        }
+
+        // --- CHART.JS QRAFİK İDARƏETMƏSİ ---
+        const charts = {};
+
+        const chartConfigData = {
+            odenisChart: {
+                labels: ['Nağd', 'Kart / POS', 'Köçürmə'],
+                data: [3304.40, 936.16, 500.00],
+                colors: ['#f59e0b', '#3b82f6', '#10b981']
+            },
+            mexaricChart: {
+                labels: ['Kommunal', 'Tədarük', 'Əməkhaqqı'],
+                data: [450.00, 1200.00, 800.00],
+                colors: ['#ef4444', '#8b5cf6', '#ec4899']
+            },
+            hesabChart: {
+                labels: ['Kassa', 'Kart'],
+                data: [3304.40, 936.16],
+                colors: ['#f59e0b', '#f59e0b99']
+            },
+            kateqoriyaChart: {
+                labels: ['Yaxlar', 'Filtrlər', 'Aksessuar'],
+                data: [1500, 900, 600],
+                colors: ['#f59e0b', '#10b981', '#6366f1']
+            },
+            mehsulChart: {
+                labels: ['Mühərrik yağı 5W-30', 'Yağ filtri', 'Əyləc bəndi'],
+                data: [45, 30, 20],
+                colors: ['#3b82f6', '#f59e0b', '#8b5cf6']
+            },
+            isciChart: {
+                labels: ['Əli M.', 'Vəli K.', 'Ayşə T.'],
+                data: [4200, 3100, 2500],
+                colors: ['#10b981', '#f59e0b', '#ec4899']
+            }
+        };
+
+        function initChart(canvasId, type = 'bar') {
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) return;
+
+            const config = chartConfigData[canvasId];
+            if (!config) return;
+
+            if (charts[canvasId]) {
+                charts[canvasId].destroy();
+            }
+
+            charts[canvasId] = new Chart(ctx, {
+                type: type,
+                data: {
+                    labels: config.labels,
+                    datasets: [{
+                        data: config.data,
+                        backgroundColor: config.colors,
+                        borderColor: '#0f172a',
+                        borderWidth: type === 'pie' ? 2 : 0,
+                        borderRadius: type === 'bar' ? 4 : 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: type === 'pie',
+                            position: 'bottom',
+                            labels: { color: '#94a3b8', font: { size: 10 } }
+                        }
+                    },
+                    scales: type === 'bar' ? {
+                        x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } },
+                        y: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: '#1e293b' } }
+                    } : {}
+                }
+            });
+        }
+
+        function switchChartType(canvasId, type) {
+            initChart(canvasId, type);
+            
+            const prefix = canvasId.replace('Chart', '');
+            const btnBar = document.getElementById(`btn-chart-${prefix}-bar`);
+            const btnPie = document.getElementById(`btn-chart-${prefix}-pie`);
+
+            if (btnBar && btnPie) {
+                if (type === 'bar') {
+                    btnBar.className = 'bg-amber-500 text-slate-950 p-1 rounded';
+                    btnPie.className = 'text-slate-400 p-1 hover:text-white';
+                } else {
+                    btnPie.className = 'bg-amber-500 text-slate-950 p-1 rounded';
+                    btnBar.className = 'text-slate-400 p-1 hover:text-white';
+                }
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            Object.keys(chartConfigData).forEach(canvasId => {
+                initChart(canvasId, 'bar');
+            });
+
+            // Satışlar altabı üçün başlanğıc konfiqurasiyaları
+            setDefaultDateRange();
+            initSalesCharts();
+            
+            // Hər 30 saniyədən bir real zamanlı satış məlumatlarını yenilə
+            setInterval(fetchSalesAnalytics, 30000);
+        });
+
+        async function loadLovheData() {
+            try {
+                const response = await fetch('/api/dashboard/stats');
+                if (!response.ok) return;
+                const data = await response.json();
+
+                if (document.getElementById('stat-satis')) document.getElementById('stat-satis').innerText = `${data.satis.toFixed(2)} ₼`;
+                if (document.getElementById('stat-menfeet')) document.getElementById('stat-menfeet').innerText = `${data.menfeet.toFixed(2)} ₼`;
+                if (document.getElementById('stat-orta-cek')) document.getElementById('stat-orta-cek').innerText = `${data.ortaCek.toFixed(2)} ₼`;
+                if (document.getElementById('stat-cek-sayi')) document.getElementById('stat-cek-sayi').innerText = data.cekSayi;
+                if (document.getElementById('stat-qonaqlar')) document.getElementById('stat-qonaqlar').innerText = data.qonaqSayi;
+                if (document.getElementById('stat-qaytarilan')) document.getElementById('stat-qaytarilan').innerText = `${data.qaytarilan.toFixed(2)} ₼`;
+                if (document.getElementById('stat-orta-vaxt')) document.getElementById('stat-orta-vaxt').innerText = data.ortaVaxt;
+            } catch (error) {
+                console.error("Məlumatlar çəkilərkən xəta baş verdi:", error);
+            }
+        }
+
+        // --- REAL-TIME SATIŞLAR STATİSTİKASI SİSTEMİ ---
+        let currentPeriod = 'daily';
+        let dayChartType = 'pie';
+        const salesCharts = {};
+
+        function setDefaultDateRange() {
+            const end = new Date();
+            const start = new Date();
+            start.setDate(end.getDate() - 7);
+
+            const startDateInput = document.getElementById('sales-start-date');
+            const endDateInput = document.getElementById('sales-end-date');
+
+            if (startDateInput) startDateInput.value = start.toISOString().split('T')[0];
+            if (endDateInput) endDateInput.value = end.toISOString().split('T')[0];
+        }
+
+        function initSalesCharts() {
+            // 1. Əsas Satış Dinamikası (Line)
+            const ctxMain = document.getElementById('salesMainChart')?.getContext('2d');
+            if (ctxMain) {
+                salesCharts.main = new Chart(ctxMain, {
+                    type: 'line',
+                    data: { labels: [], datasets: [{ label: 'Satış (₼)', data: [], borderColor: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.1)', fill: true, tension: 0.3 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8' }, grid: { display: false } }, y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } } } }
+                });
+            }
+
+            // 2. Saata Görə (Bar)
+            const ctxHourly = document.getElementById('salesHourlyChart')?.getContext('2d');
+            if (ctxHourly) {
+                salesCharts.hourly = new Chart(ctxHourly, {
+                    type: 'bar',
+                    data: { labels: Array.from({length: 24}, (_, i) => `${i}:00`), datasets: [{ label: 'Satış', data: [], backgroundColor: '#3b82f6', borderRadius: 4 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { display: false } }, y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } } } }
+                });
+            }
+
+            // 3. Həftə Gününə Görə (Pie/Bar)
+            renderWeekdayChart([]);
+        }
+
+        function renderWeekdayChart(data = [], labels = ['B.e.', 'Ç.ə.', 'Çəş.', 'C.a.', 'Cümə', 'Şənbə', 'Bazar']) {
+            const ctxWeekday = document.getElementById('salesWeekdayChart')?.getContext('2d');
+            if (!ctxWeekday) return;
+
+            if (salesCharts.weekday) salesCharts.weekday.destroy();
+
+            salesCharts.weekday = new Chart(ctxWeekday, {
+                type: dayChartType,
+                data: {
+                    labels: labels,
+                    datasets: [{ data: data, backgroundColor: ['#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#f97316', '#06b6d4'] }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: dayChartType === 'pie', position: 'right', labels: { color: '#94a3b8', font: { size: 10 } } } },
+                    scales: dayChartType === 'bar' ? { x: { ticks: { color: '#94a3b8' }, grid: { display: false } }, y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } } } : {}
+                }
+            });
+        }
+
+        function toggleDayChartType(type) {
+            dayChartType = type;
+            const btnPie = document.getElementById('btn-day-pie');
+            const btnBar = document.getElementById('btn-day-bar');
+
+            if (btnPie) btnPie.className = type === 'pie' ? 'bg-amber-500 text-slate-950 p-1 rounded' : 'text-slate-400 p-1 hover:text-white';
+            if (btnBar) btnBar.className = type === 'bar' ? 'bg-amber-500 text-slate-950 p-1 rounded' : 'text-slate-400 p-1 hover:text-white';
+            fetchSalesAnalytics();
+        }
+
+        function setSalesPeriod(period) {
+            currentPeriod = period;
+            ['daily', 'weekly', 'monthly'].forEach(p => {
+                const btn = document.getElementById(`btn-period-${p}`);
+                if (btn) btn.className = p === period ? 'px-3 py-1 text-xs font-semibold rounded-lg bg-amber-500 text-slate-950 transition' : 'px-3 py-1 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition';
+            });
+            fetchSalesAnalytics();
+        }
+
+        // BAZADAN MƏLUMATLARIN ÇƏKİLMƏSİ (FETCH API)
+        async function fetchSalesAnalytics() {
+            const startDateEl = document.getElementById('sales-start-date');
+            const endDateEl = document.getElementById('sales-end-date');
+            const refreshIcon = document.getElementById('refresh-icon');
+
+            const startDate = startDateEl ? startDateEl.value : '';
+            const endDate = endDateEl ? endDateEl.value : '';
+
+            if (refreshIcon) refreshIcon.classList.add('animate-spin');
+
+            try {
+                // Backend API sorğusu
+                const response = await fetch(`/api/analytics/sales?startDate=${startDate}&endDate=${endDate}&period=${currentPeriod}`);
+                
+                let data;
+                if (response.ok) {
+                    data = await response.json();
+                } else {
+                    // Backend qoşulmadıqda test (mock) məlumatları
+                    data = getMockSalesData();
+                }
+
+                updateSalesUI(data);
+            } catch (error) {
+                console.warn("Backend qoşulmayıb, test məlumatları göstərilir:", error);
+                updateSalesUI(getMockSalesData());
+            } finally {
+                if (refreshIcon) setTimeout(() => refreshIcon.classList.remove('animate-spin'), 500);
+            }
+        }
+
+        // UI-ın Dinamik Yenilənməsi
+        function updateSalesUI(data) {
+            // 1. Kartlar
+            if (document.getElementById('sales-stat-total')) document.getElementById('sales-stat-total').innerText = `${data.stats.totalSales.toFixed(2)} ₼`;
+            if (document.getElementById('sales-stat-profit')) document.getElementById('sales-stat-profit').innerText = `${data.stats.profit.toFixed(2)} ₼`;
+            if (document.getElementById('sales-stat-avg-check')) document.getElementById('sales-stat-avg-check').innerText = `${data.stats.avgCheck.toFixed(2)} ₼`;
+            if (document.getElementById('sales-stat-checks')) document.getElementById('sales-stat-checks').innerText = data.stats.checksCount;
+            if (document.getElementById('sales-stat-guests')) document.getElementById('sales-stat-guests').innerText = data.stats.guestsCount;
+            if (document.getElementById('sales-stat-avg-time')) document.getElementById('sales-stat-avg-time').innerText = data.stats.avgTime;
+
+            // 2. Əsas Qrafik
+            if (salesCharts.main) {
+                salesCharts.main.data.labels = data.mainChart.labels;
+                salesCharts.main.data.datasets[0].data = data.mainChart.values;
+                salesCharts.main.update();
+            }
+
+            // 3. Saata görə Qrafik
+            if (salesCharts.hourly) {
+                salesCharts.hourly.data.datasets[0].data = data.hourlyChart;
+                salesCharts.hourly.update();
+            }
+
+            // 4. Həftə gününə görə Qrafik
+            renderWeekdayChart(data.weekdayChart.values, data.weekdayChart.labels);
+
+            // 5. Çox satılan məhsullar cədvəli
+            const tbody = document.getElementById('top-products-tbody');
+            const emptyMsg = document.getElementById('top-products-empty');
+
+            if (tbody && emptyMsg) {
+                if (data.topProducts && data.topProducts.length > 0) {
+                    emptyMsg.classList.add('hidden');
+                    tbody.innerHTML = data.topProducts.map(p => `
+                        <tr class="hover:bg-slate-800/40 transition">
+                            <td class="py-2.5 px-4 font-medium text-slate-200">${p.name}</td>
+                            <td class="py-2.5 px-4 text-center font-bold text-amber-400">${p.orders}</td>
+                            <td class="py-2.5 px-4 text-right text-emerald-400 font-semibold">${p.amount.toFixed(2)} ₼</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '';
+                    emptyMsg.classList.remove('hidden');
+                }
+            }
+        }
+
+        // Backend hələ hazır olmadıqda test üçün struktur
+        function getMockSalesData() {
+            return {
+                stats: { totalSales: 0.00, profit: 0.00, avgCheck: 0.00, checksCount: 0, guestsCount: 0, avgTime: '0d 0h 0m' },
+                mainChart: {
+                    labels: ['31 Avq', '01 Sen', '02 Sen', '03 Sen', '04 Sen', '05 Sen', '06 Sen'],
+                    values: [0, 0, 0, 0, 0, 0, 0]
+                },
+                hourlyChart: Array(24).fill(0),
+                weekdayChart: {
+                    labels: ['Cümə axş.', 'Cümə', 'Şənbə'],
+                    values: [0, 0, 0]
+                },
+                topProducts: []
+            };
+        }
+    </script>
+</body>
+</html>
