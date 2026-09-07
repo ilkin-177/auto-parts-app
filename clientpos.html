@@ -178,7 +178,7 @@
                             Tədarüklər
                         </button>
                         <button onclick="selectSubTab(this, 'tedaruklerin-geri-qaytarilmasi')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
-                            Tədarüklərin geri qaytarılması
+                            Tədarüklərin geri қайtarılması
                         </button>
                         <button onclick="selectSubTab(this, 'kocurmeler')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
                             Köçürmələr
@@ -187,7 +187,7 @@
                             Tullantı (İsraf)
                         </button>
                         <button onclick="selectSubTab(this, 'hereket-hesabatlari')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
-                            Hərəkət hesabatları
+                            Hərəkət hesabatlari
                         </button>
                         <button onclick="selectSubTab(this, 'mehsul-hereketleri')" class="sub-tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
                             Məhsul hərəkətləri
@@ -507,7 +507,7 @@
                     </div>
                 </div>
 
-                <!-- STATİSTİKALAR -> SATIŞLAR ALTABI (YENİ ƏLAVƏ EDİLDİ) -->
+                <!-- STATİSTİKALAR -> SATIŞLAR ALTABI -->
                 <div id="satislar-tab-content" class="p-2 space-y-6 hidden">
                     
                     <!-- YUXARI PANEL: Başlıq, Tarix Aralığı Seçimi və Yeniləmə Butonu -->
@@ -674,12 +674,133 @@
                     </div>
 
                 </div>
+
+                <!-- STATİSTİKALAR -> HESABATLAR ALTABI (YENİ ƏLAVƏ EDİLDİ) -->
+                <div id="hesabatlar-tab-content" class="p-2 space-y-6 hidden">
+                    
+                    <!-- YUXARI PANEL: Başlıq və Alətlər -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
+                        <div>
+                            <h1 class="text-2xl font-bold text-white">Hesabatlar</h1>
+                            <p class="text-xs text-slate-400">Satış və mənfəət üzrə ətraflı statistik hesabat</p>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 shadow-sm">
+                                <i data-lucide="calendar" class="w-4 h-4 text-amber-500"></i>
+                                <input type="date" id="reports-start-date" onchange="fetchHesabatlarData()" class="bg-transparent text-xs text-slate-200 outline-none cursor-pointer">
+                                <span class="text-xs text-slate-500">—</span>
+                                <input type="date" id="reports-end-date" onchange="fetchHesabatlarData()" class="bg-transparent text-xs text-slate-200 outline-none cursor-pointer">
+                            </div>
+
+                            <button onclick="fetchHesabatlarData()" title="Yenilə" class="p-2 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 rounded-xl transition shadow-sm flex items-center justify-center">
+                                <i data-lucide="rotate-cw" id="reports-refresh-icon" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- MƏHSULLAR CƏDVƏLİ (BÜTÜN PARAMETRLƏR SÜTUN KİMİ NƏZƏRDƏ TUTULUB) -->
+                    <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-x-auto shadow-xl">
+                        <table class="w-full text-left border-collapse min-w-[1200px]" id="hesabatlarTable">
+                            <thead>
+                                <tr class="bg-slate-950/80 text-xs font-semibold text-slate-400 border-b border-slate-800">
+                                    <th class="py-3.5 px-4 font-bold text-amber-400">ID</th>
+                                    <th class="py-3.5 px-4 text-center">Ad</th>
+                                    <th class="py-3.5 px-4 text-right">Kateqoriya</th>
+                                    <th class="py-3.5 px-4 text-right">Say</th>
+                                    <th class="py-3.5 px-4 text-right">Qiymət</th>
+                                    <th class="py-3.5 px-4 text-right">Orta satış qiyməti</th>
+                                    <th class="py-3.5 px-4 text-right">Cəm endirim</th>
+                                    <th class="py-3.5 px-4 text-center">Ümumi maya dəyəri</th>
+                                    <th class="py-3.5 px-4 text-right">Cəm</th>
+                                    <th class="py-3.5 px-4 text-right">Satış</th>
+                                    <th class="py-3.5 px-4 text-right">Mənfəət</th>
+                                </tr>
+                            </thead>
+                            <tbody id="hesabatlar-tbody" class="divide-y divide-slate-800/60 text-xs text-slate-300">
+                                <!-- Bazadan Real Zamana Görə Oxunacaq Sətirlər -->
+                            </tbody>
+                        </table>
+                        
+                        <!-- Məlumat Olmadıqda -->
+                        <div id="hesabatlar-empty" class="hidden text-center py-12 text-slate-500 text-xs">
+                            Göstərilən tarix aralığında hesabat məlumatı tapılmadı.
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- STATİSTİKALAR -> TARİXÇƏ ALTABI -->
+                <div id="tarixce-tab-content" class="p-2 space-y-6 hidden">
+                    
+                    <!-- YUXARI PANEL: Başlıq və Tarix Seçimi -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
+                        <div>
+                            <h1 class="text-2xl font-bold text-white">Tarixçə</h1>
+                            <p class="text-xs text-slate-400">Çek əməliyyatlarının ətraflı tarixçəsi</p>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 shadow-sm">
+                                <i data-lucide="calendar" class="w-4 h-4 text-amber-500"></i>
+                                <input type="date" id="tarixce-start-date" class="bg-transparent text-xs text-slate-200 outline-none cursor-pointer">
+                                <span class="text-xs text-slate-500">—</span>
+                                <input type="date" id="tarixce-end-date" class="bg-transparent text-xs text-slate-200 outline-none cursor-pointer">
+                            </div>
+
+                            <button title="Yenilə" class="p-2 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 rounded-xl transition shadow-sm flex items-center justify-center">
+                                <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- TARİXÇƏ CƏDVƏLİ -->
+                    <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-x-auto shadow-xl">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-950/80 text-xs font-semibold text-slate-400 border-b border-slate-800">
+                                    <th class="py-3.5 px-4 font-bold text-amber-400">Çek İd</th>
+                                    <th class="py-3.5 px-4">Çekin yaradılma tarixi</th>
+                                    <th class="py-3.5 px-4">Çek əməliyyatları</th>
+                                    <th class="py-3.5 px-4 text-right">Qiymət</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tarixce-tbody" class="divide-y divide-slate-800/60 text-xs text-slate-300">
+                                <tr class="hover:bg-slate-800/40 transition">
+                                    <td class="py-3.5 px-4 font-semibold text-amber-400">#14038</td>
+                                    <td class="py-3.5 px-4 text-slate-200">05 Sentyabr 2026, 14:52</td>
+                                    <td class="py-3.5 px-4">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Çek ödənildi</span>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-right font-semibold text-slate-100">1.00 ₼</td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/40 transition">
+                                    <td class="py-3.5 px-4 font-semibold text-amber-400">#14028</td>
+                                    <td class="py-3.5 px-4 text-slate-200">01 Sentyabr 2026, 19:17</td>
+                                    <td class="py-3.5 px-4">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Çek ödənildi</span>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-right font-semibold text-slate-100">1.20 ₼</td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/40 transition">
+                                    <td class="py-3.5 px-4 font-semibold text-amber-400">#14041</td>
+                                    <td class="py-3.5 px-4 text-slate-200">06 Sentyabr 2026, 10:55</td>
+                                    <td class="py-3.5 px-4">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Çek ödənildi</span>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-right font-semibold text-slate-100">1.50 ₼</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
             </div>
 
             <!-- SATIŞ TABI -->
             <div id="content-satis" class="tab-content hidden">
                 
-                <!-- ÇEKLƏR ALT TABI / ARAYÜZÜ (GÖNDƏRİLƏN ŞƏKİLLƏRƏ UYĞUN OLARAQ TƏNZİMLƏNDİ) -->
+                <!-- ÇEKLƏR ALT TABI / ARAYÜZÜ -->
                 <div id="cekler-tab-content" class="space-y-4">
                     
                     <!-- 1. YUXARI PANORAMA (BAŞLIQ VƏ TƏQVİM/ALƏTLƏR) -->
@@ -734,14 +855,13 @@
                                 <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
                             </button>
 
-                            <!-- Status Filter Dropdown (Açılır menyu strukturu) -->
+                            <!-- Status Filter Dropdown -->
                             <div class="relative group">
                                 <button class="flex items-center gap-2 bg-sky-500/10 text-sky-400 border border-sky-500/20 px-3 py-1.5 rounded-xl text-xs font-semibold hover:bg-sky-500/20 transition">
                                     <span>Status</span>
                                     <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
                                 </button>
                                 
-                                <!-- Status Menyusu -->
                                 <div class="hidden group-hover:block absolute left-0 top-full mt-1 w-44 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl p-2 z-50 space-y-1">
                                     <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-800 rounded-lg text-xs text-slate-200 cursor-pointer">
                                         <input type="checkbox" class="rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-0"> <span>Açıq</span>
@@ -788,7 +908,7 @@
                         </button>
                     </div>
 
-                    <!-- 3. ÇEKLƏR CƏDVƏLİ (BÜTÜN SÜTUNLAR ŞƏKİLLƏRƏ TAM UYĞUNDUR) -->
+                    <!-- 3. ÇEKLƏR CƏDVƏLİ -->
                     <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-x-auto shadow-xl">
                         <table class="w-full text-left border-collapse min-w-[1000px]" id="checksTable">
                             <thead>
@@ -1074,6 +1194,166 @@
 
                 </div>
 
+                <!-- SİFARİŞ BİLDİRİŞLƏRİ ALT TABI -->
+                <div id="sifaris-bildirisleri-tab-content" class="space-y-4 hidden">
+                    
+                    <!-- 1. YUXARI PANORAMA (BAŞLIQ VƏ TƏQVİM/ALƏTLƏR) -->
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2">
+                        <!-- SOL: Başlıq Və Sayğac -->
+                        <div class="flex items-center gap-2">
+                            <h1 class="text-xl font-bold text-white tracking-wide">Sifariş bildirişləri</h1>
+                            <span class="text-slate-400 text-sm font-semibold">3</span>
+                        </div>
+
+                        <!-- SAĞ: Tarix Düyməsi və İkonlar -->
+                        <div class="flex items-center gap-2 self-start md:self-auto">
+                            <!-- Tarix seçimi düyməsi -->
+                            <button class="flex items-center gap-2 bg-slate-900 border border-slate-800 text-slate-200 hover:bg-slate-800 px-3 py-1.5 rounded-xl text-xs font-medium transition shadow-sm">
+                                <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i>
+                                <span>31 Aug - 6 Sep</span>
+                            </button>
+
+                            <!-- Şəbəkə, Çap, Yükləmə, Yeniləmə, Profil və Çat ikonları -->
+                            <div class="flex items-center gap-1">
+                                <button class="p-2 text-slate-400 hover:text-white bg-slate-900 border border-slate-800 rounded-xl transition hover:bg-slate-800"><i data-lucide="layout-grid" class="w-4 h-4"></i></button>
+                                <button class="p-2 text-slate-400 hover:text-white bg-slate-900 border border-slate-800 rounded-xl transition hover:bg-slate-800"><i data-lucide="printer" class="w-4 h-4"></i></button>
+                                <button class="p-2 text-slate-400 hover:text-white bg-slate-900 border border-slate-800 rounded-xl transition hover:bg-slate-800"><i data-lucide="download" class="w-4 h-4"></i></button>
+                                <button class="p-2 text-slate-400 hover:text-white bg-slate-900 border border-slate-800 rounded-xl transition hover:bg-slate-800"><i data-lucide="rotate-cw" class="w-4 h-4"></i></button>
+                                <button class="p-2 text-slate-400 hover:text-white bg-slate-900 border border-slate-800 rounded-xl transition hover:bg-slate-800"><i data-lucide="user" class="w-4 h-4"></i></button>
+                                <button class="p-2 text-sky-400 bg-sky-500/10 border border-sky-500/20 rounded-xl transition hover:bg-sky-500/20 ml-1"><i data-lucide="message-square" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. FİLTRLƏR SEKSİYASI -->
+                    <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900/60 p-2.5 rounded-2xl border border-slate-800/80">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <!-- ID Axtarış -->
+                            <div class="relative w-36 sm:w-44">
+                                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-1/2 -translate-y-1/2"></i>
+                                <input type="text" placeholder="ID" class="w-full bg-slate-950 border border-slate-800 text-xs text-slate-200 pl-8 pr-2 py-1.5 rounded-xl outline-none focus:border-amber-500 transition">
+                            </div>
+
+                            <!-- Status Filter Dropdown -->
+                            <div class="relative group">
+                                <button class="flex items-center gap-2 bg-sky-500/10 text-sky-400 border border-sky-500/20 px-3 py-1.5 rounded-xl text-xs font-semibold hover:bg-sky-500/20 transition">
+                                    <span>Status</span>
+                                    <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                                </button>
+                                
+                                <div class="hidden group-hover:block absolute left-0 top-full mt-1 w-44 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl p-2 z-50 space-y-1">
+                                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-800 rounded-lg text-xs text-slate-200 cursor-pointer">
+                                        <input type="checkbox" class="rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-0"> <span>Gözləmədə</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-800 rounded-lg text-xs text-slate-200 cursor-pointer">
+                                        <input type="checkbox" class="rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-0"> <span>Təsdiqləndi</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-800 rounded-lg text-xs text-slate-200 cursor-pointer">
+                                        <input type="checkbox" class="rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-0"> <span>Çatdırıldı</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-800 rounded-lg text-xs text-slate-200 cursor-pointer">
+                                        <input type="checkbox" class="rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-0"> <span>Ləğv edildi</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Ümumi Filtrə Butonu -->
+                            <button class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-xl text-xs font-semibold transition">
+                                <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5"></i>
+                                <span>Filtrlər</span>
+                            </button>
+                        </div>
+
+                        <!-- Öyrən Dropdown -->
+                        <button class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3 py-1.5 rounded-xl text-xs font-medium transition">
+                            <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+                            <span>Öyrən</span>
+                            <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+
+                    <!-- 3. SİFARİŞ BİLDİRİŞLƏRİ CƏDVƏLİ -->
+                    <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-x-auto shadow-xl">
+                        <table class="w-full text-left border-collapse min-w-[900px]" id="orderNotificationsTable">
+                            <thead>
+                                <tr class="bg-slate-950/80 text-xs font-semibold text-slate-400 border-b border-slate-800">
+                                    <th class="py-3.5 px-4 font-bold text-amber-400 cursor-pointer hover:text-white">
+                                        <div class="flex items-center gap-1">
+                                            <span>Bildiriş ID</span>
+                                            <i data-lucide="arrow-up-down" class="w-3 h-3 text-sky-400"></i>
+                                        </div>
+                                    </th>
+                                    <th class="py-3.5 px-4 cursor-pointer hover:text-white">
+                                        <div class="flex items-center gap-1">
+                                            <span>Yaradıldı</span>
+                                            <i data-lucide="arrow-up-down" class="w-3 h-3 text-sky-400"></i>
+                                        </div>
+                                    </th>
+                                    <th class="py-3.5 px-4 cursor-pointer hover:text-white">
+                                        <div class="flex items-center gap-1">
+                                            <span>Çek ID</span>
+                                            <i data-lucide="arrow-up-down" class="w-3 h-3 text-sky-400"></i>
+                                        </div>
+                                    </th>
+                                    <th class="py-3.5 px-4 text-center cursor-pointer hover:text-white">
+                                        <div class="flex items-center justify-center gap-1">
+                                            <span>Status</span>
+                                            <i data-lucide="arrow-up-down" class="w-3 h-3 text-sky-400"></i>
+                                        </div>
+                                    </th>
+                                    <th class="py-3.5 px-4 text-right cursor-pointer hover:text-white">
+                                        <div class="flex items-center justify-end gap-1">
+                                            <span>Sifariş nömrəsi</span>
+                                            <i data-lucide="arrow-up-down" class="w-3 h-3 text-sky-400"></i>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/60 text-xs text-slate-300">
+                                <!-- SƏTİR 1 -->
+                                <tr class="hover:bg-slate-800/40 transition">
+                                    <td class="py-3.5 px-4 font-semibold text-amber-400">#N-901</td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-semibold text-slate-200">15:10</p>
+                                        <p class="text-[10px] text-slate-500">06 Sentyabr 2026</p>
+                                    </td>
+                                    <td class="py-3.5 px-4 font-semibold text-sky-400 cursor-pointer hover:underline">14041</td>
+                                    <td class="py-3.5 px-4 text-center">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Təsdiqləndi</span>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-right font-medium text-slate-200">ORD-2026-881</td>
+                                </tr>
+                                <!-- SƏTİR 2 -->
+                                <tr class="hover:bg-slate-800/40 transition">
+                                    <td class="py-3.5 px-4 font-semibold text-amber-400">#N-900</td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-semibold text-slate-200">14:20</p>
+                                        <p class="text-[10px] text-slate-500">05 Sentyabr 2026</p>
+                                    </td>
+                                    <td class="py-3.5 px-4 font-semibold text-sky-400 cursor-pointer hover:underline">14038</td>
+                                    <td class="py-3.5 px-4 text-center">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">Gözləmədə</span>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-right font-medium text-slate-200">ORD-2026-880</td>
+                                </tr>
+                                <!-- SƏTİR 3 -->
+                                <tr class="hover:bg-slate-800/40 transition">
+                                    <td class="py-3.5 px-4 font-semibold text-amber-400">#N-899</td>
+                                    <td class="py-3.5 px-4">
+                                        <p class="font-semibold text-slate-200">11:05</p>
+                                        <p class="text-[10px] text-slate-500">04 Sentyabr 2026</p>
+                                    </td>
+                                    <td class="py-3.5 px-4 font-semibold text-sky-400 cursor-pointer hover:underline">14035</td>
+                                    <td class="py-3.5 px-4 text-center">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20">Ləğv edildi</span>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-right font-medium text-slate-200">ORD-2026-879</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
             </div>
 
             <!-- MALİYYƏ TABI -->
@@ -1240,9 +1520,11 @@
                 loadLovheData();
             }
 
-            // Satışlar altabı seçildikdə görünüşü dəyişmək və məlumatları yükləmək
+            // statistikalar tab-ı kontent idarəetməsi
             const lovheContent = document.getElementById('lovhe-tab-content');
             const satislarContent = document.getElementById('satislar-tab-content');
+            const hesabatlarContent = document.getElementById('hesabatlar-tab-content');
+            const tarixceContent = document.getElementById('tarixce-tab-content');
 
             if (subTabId === 'satislar' || subTabId === 'kohne-lovhe' || subTabId === 'lovhe' || subTabId === 'hesabatlar' || subTabId === 'tarixce') {
                 const statBtn = document.querySelector('button[onclick*="statistikalar"]');
@@ -1250,20 +1532,50 @@
                 
                 if (subTabId === 'satislar') {
                     if (lovheContent) lovheContent.classList.add('hidden');
+                    if (hesabatlarContent) hesabatlarContent.classList.add('hidden');
+                    if (tarixceContent) tarixceContent.classList.add('hidden');
                     if (satislarContent) {
                         satislarContent.classList.remove('hidden');
                         fetchSalesAnalytics();
                     }
+                } else if (subTabId === 'hesabatlar') {
+                    if (lovheContent) lovheContent.classList.add('hidden');
+                    if (satislarContent) satislarContent.classList.add('hidden');
+                    if (tarixceContent) tarixceContent.classList.add('hidden');
+                    if (hesabatlarContent) {
+                        hesabatlarContent.classList.remove('hidden');
+                        fetchHesabatlarData();
+                    }
+                } else if (subTabId === 'tarixce') {
+                    if (lovheContent) lovheContent.classList.add('hidden');
+                    if (satislarContent) satislarContent.classList.add('hidden');
+                    if (hesabatlarContent) hesabatlarContent.classList.add('hidden');
+                    if (tarixceContent) {
+                        tarixceContent.classList.remove('hidden');
+                    }
                 } else if (subTabId === 'kohne-lovhe' || subTabId === 'lovhe') {
                     if (satislarContent) satislarContent.classList.add('hidden');
+                    if (hesabatlarContent) hesabatlarContent.classList.add('hidden');
+                    if (tarixceContent) tarixceContent.classList.add('hidden');
                     if (lovheContent) lovheContent.classList.remove('hidden');
                 }
             }
             
-            // Satış -> Çeklər seçildikdə Satış tabını göstər
+            // Satış -> Alt tab idarəetməsi
             if (subTabId === 'cekler' || subTabId === 'sifaris-bildirisleri' || subTabId === 'geri-qaytarilma' || subTabId === 'odeme-usullari' || subTabId === 'satis-usullari') {
                 const satisBtn = document.querySelector('button[onclick*="satis-sub"]');
                 if (satisBtn) switchTab(satisBtn, 'satis');
+
+                const ceklerContent = document.getElementById('cekler-tab-content');
+                const sifarisContent = document.getElementById('sifaris-bildirisleri-tab-content');
+
+                if (subTabId === 'sifaris-bildirisleri') {
+                    if (ceklerContent) ceklerContent.classList.add('hidden');
+                    if (sifarisContent) sifarisContent.classList.remove('hidden');
+                } else if (subTabId === 'cekler') {
+                    if (sifarisContent) sifarisContent.classList.add('hidden');
+                    if (ceklerContent) ceklerContent.classList.remove('hidden');
+                }
             }
 
             // Maliyyə
@@ -1401,6 +1713,9 @@
             setDefaultDateRange();
             initSalesCharts();
             
+            // Hesabatlar tarix aralığı
+            setHesabatlarDefaultDateRange();
+            
             // Hər 30 saniyədən bir real zamanlı satış məlumatlarını yenilə
             setInterval(fetchSalesAnalytics, 30000);
         });
@@ -1432,173 +1747,247 @@
             const end = new Date();
             const start = new Date();
             start.setDate(end.getDate() - 7);
+            
+            const startInput = document.getElementById('sales-start-date');
+            const endInput = document.getElementById('sales-end-date');
+            if (startInput) startInput.value = start.toISOString().split('T')[0];
+            if (endInput) endInput.value = end.toISOString().split('T')[0];
+        }
 
-            const startDateInput = document.getElementById('sales-start-date');
-            const endDateInput = document.getElementById('sales-end-date');
-
-            if (startDateInput) startDateInput.value = start.toISOString().split('T')[0];
-            if (endDateInput) endDateInput.value = end.toISOString().split('T')[0];
+        function setHesabatlarDefaultDateRange() {
+            const end = new Date();
+            const start = new Date();
+            start.setDate(end.getDate() - 7);
+            
+            const startInput = document.getElementById('reports-start-date');
+            const endInput = document.getElementById('reports-end-date');
+            if (startInput) startInput.value = start.toISOString().split('T')[0];
+            if (endInput) endInput.value = end.toISOString().split('T')[0];
         }
 
         function initSalesCharts() {
-            // 1. Əsas Satış Dinamikası (Line)
-            const ctxMain = document.getElementById('salesMainChart')?.getContext('2d');
+            const ctxMain = document.getElementById('salesMainChart');
             if (ctxMain) {
                 salesCharts.main = new Chart(ctxMain, {
                     type: 'line',
-                    data: { labels: [], datasets: [{ label: 'Satış (₼)', data: [], borderColor: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.1)', fill: true, tension: 0.3 }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8' }, grid: { display: false } }, y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } } } }
+                    data: {
+                        labels: ['B.e.', 'Ç.ə.', 'Ç.', 'C.ə.', 'C.', 'Ş.', 'B.'],
+                        datasets: [{
+                            label: 'Satış (₼)',
+                            data: [120, 190, 300, 250, 200, 350, 400],
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { ticks: { color: '#94a3b8' }, grid: { display: false } },
+                            y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } }
+                        }
+                    }
                 });
             }
 
-            // 2. Saata Görə (Bar)
-            const ctxHourly = document.getElementById('salesHourlyChart')?.getContext('2d');
+            const ctxHourly = document.getElementById('salesHourlyChart');
             if (ctxHourly) {
                 salesCharts.hourly = new Chart(ctxHourly, {
                     type: 'bar',
-                    data: { labels: Array.from({length: 24}, (_, i) => `${i}:00`), datasets: [{ label: 'Satış', data: [], backgroundColor: '#3b82f6', borderRadius: 4 }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { display: false } }, y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } } } }
+                    data: {
+                        labels: ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'],
+                        datasets: [{
+                            label: 'Satış',
+                            data: [30, 80, 150, 220, 180, 240, 190, 90],
+                            backgroundColor: '#3b82f6',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { ticks: { color: '#94a3b8' }, grid: { display: false } },
+                            y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } }
+                        }
+                    }
                 });
             }
 
-            // 3. Həftə Gününə Görə (Pie/Bar)
-            renderWeekdayChart([]);
-        }
-
-        function renderWeekdayChart(data = [], labels = ['B.e.', 'Ç.ə.', 'Çəş.', 'C.a.', 'Cümə', 'Şənbə', 'Bazar']) {
-            const ctxWeekday = document.getElementById('salesWeekdayChart')?.getContext('2d');
-            if (!ctxWeekday) return;
-
-            if (salesCharts.weekday) salesCharts.weekday.destroy();
-
-            salesCharts.weekday = new Chart(ctxWeekday, {
-                type: dayChartType,
-                data: {
-                    labels: labels,
-                    datasets: [{ data: data, backgroundColor: ['#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#f97316', '#06b6d4'] }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: dayChartType === 'pie', position: 'right', labels: { color: '#94a3b8', font: { size: 10 } } } },
-                    scales: dayChartType === 'bar' ? { x: { ticks: { color: '#94a3b8' }, grid: { display: false } }, y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } } } : {}
-                }
-            });
-        }
-
-        function toggleDayChartType(type) {
-            dayChartType = type;
-            const btnPie = document.getElementById('btn-day-pie');
-            const btnBar = document.getElementById('btn-day-bar');
-
-            if (btnPie) btnPie.className = type === 'pie' ? 'bg-amber-500 text-slate-950 p-1 rounded' : 'text-slate-400 p-1 hover:text-white';
-            if (btnBar) btnBar.className = type === 'bar' ? 'bg-amber-500 text-slate-950 p-1 rounded' : 'text-slate-400 p-1 hover:text-white';
-            fetchSalesAnalytics();
+            const ctxWeekday = document.getElementById('salesWeekdayChart');
+            if (ctxWeekday) {
+                salesCharts.weekday = new Chart(ctxWeekday, {
+                    type: 'pie',
+                    data: {
+                        labels: ['B.e.', 'Ç.ə.', 'Ç.', 'C.ə.', 'C.', 'Ş.', 'B.'],
+                        datasets: [{
+                            data: [15, 12, 18, 20, 25, 30, 22],
+                            backgroundColor: ['#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#f97316', '#14b8a6']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } } }
+                    }
+                });
+            }
         }
 
         function setSalesPeriod(period) {
             currentPeriod = period;
             ['daily', 'weekly', 'monthly'].forEach(p => {
                 const btn = document.getElementById(`btn-period-${p}`);
-                if (btn) btn.className = p === period ? 'px-3 py-1 text-xs font-semibold rounded-lg bg-amber-500 text-slate-950 transition' : 'px-3 py-1 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition';
+                if (btn) {
+                    if (p === period) {
+                        btn.className = 'px-3 py-1 text-xs font-semibold rounded-lg bg-amber-500 text-slate-950 transition';
+                    } else {
+                        btn.className = 'px-3 py-1 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition';
+                    }
+                }
             });
             fetchSalesAnalytics();
         }
 
-        // BAZADAN MƏLUMATLARIN ÇƏKİLMƏSİ (FETCH API)
+        function toggleDayChartType(type) {
+            dayChartType = type;
+            const btnPie = document.getElementById('btn-day-pie');
+            const btnBar = document.getElementById('btn-day-bar');
+            if (btnPie && btnBar) {
+                if (type === 'pie') {
+                    btnPie.className = 'bg-amber-500 text-slate-950 p-1 rounded';
+                    btnBar.className = 'text-slate-400 p-1 hover:text-white';
+                } else {
+                    btnBar.className = 'bg-amber-500 text-slate-950 p-1 rounded';
+                    btnPie.className = 'text-slate-400 p-1 hover:text-white';
+                }
+            }
+            if (salesCharts.weekday) {
+                salesCharts.weekday.config.type = type;
+                salesCharts.weekday.options.plugins.legend.display = type === 'pie';
+                salesCharts.weekday.options.scales = type === 'bar' ? {
+                    x: { ticks: { color: '#94a3b8' }, grid: { display: false } },
+                    y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } }
+                } : {};
+                salesCharts.weekday.update();
+            }
+        }
+
         async function fetchSalesAnalytics() {
-            const startDateEl = document.getElementById('sales-start-date');
-            const endDateEl = document.getElementById('sales-end-date');
             const refreshIcon = document.getElementById('refresh-icon');
-
-            const startDate = startDateEl ? startDateEl.value : '';
-            const endDate = endDateEl ? endDateEl.value : '';
-
             if (refreshIcon) refreshIcon.classList.add('animate-spin');
 
             try {
-                // Backend API sorğusu
-                const response = await fetch(`/api/analytics/sales?startDate=${startDate}&endDate=${endDate}&period=${currentPeriod}`);
+                const startDate = document.getElementById('sales-start-date')?.value;
+                const endDate = document.getElementById('sales-end-date')?.value;
                 
-                let data;
+                const response = await fetch(`/api/analytics/sales?start=${startDate}&end=${endDate}&period=${currentPeriod}`);
                 if (response.ok) {
-                    data = await response.json();
-                } else {
-                    // Backend qoşulmadıqda test (mock) məlumatları
-                    data = getMockSalesData();
-                }
+                    const data = await response.json();
+                    
+                    if (document.getElementById('sales-stat-total')) document.getElementById('sales-stat-total').innerText = `${data.totalSales.toFixed(2)} ₼`;
+                    if (document.getElementById('sales-stat-profit')) document.getElementById('sales-stat-profit').innerText = `${data.totalProfit.toFixed(2)} ₼`;
+                    if (document.getElementById('sales-stat-avg-check')) document.getElementById('sales-stat-avg-check').innerText = `${data.avgCheck.toFixed(2)} ₼`;
+                    if (document.getElementById('sales-stat-checks')) document.getElementById('sales-stat-checks').innerText = data.checkCount;
+                    if (document.getElementById('sales-stat-guests')) document.getElementById('sales-stat-guests').innerText = data.guestCount;
+                    if (document.getElementById('sales-stat-avg-time')) document.getElementById('sales-stat-avg-time').innerText = data.avgTime;
 
-                updateSalesUI(data);
-            } catch (error) {
-                console.warn("Backend qoşulmayıb, test məlumatları göstərilir:", error);
-                updateSalesUI(getMockSalesData());
+                    if (salesCharts.main && data.mainChart) {
+                        salesCharts.main.data.labels = data.mainChart.labels;
+                        salesCharts.main.data.datasets[0].data = data.mainChart.values;
+                        salesCharts.main.update();
+                    }
+
+                    if (salesCharts.hourly && data.hourlyChart) {
+                        salesCharts.hourly.data.labels = data.hourlyChart.labels;
+                        salesCharts.hourly.data.datasets[0].data = data.hourlyChart.values;
+                        salesCharts.hourly.update();
+                    }
+
+                    if (salesCharts.weekday && data.weekdayChart) {
+                        salesCharts.weekday.data.labels = data.weekdayChart.labels;
+                        salesCharts.weekday.data.datasets[0].data = data.weekdayChart.values;
+                        salesCharts.weekday.update();
+                    }
+
+                    const tbody = document.getElementById('top-products-tbody');
+                    const emptyMsg = document.getElementById('top-products-empty');
+                    if (tbody && data.topProducts) {
+                        tbody.innerHTML = '';
+                        if (data.topProducts.length === 0) {
+                            if (emptyMsg) emptyMsg.classList.remove('hidden');
+                        } else {
+                            if (emptyMsg) emptyMsg.classList.add('hidden');
+                            data.topProducts.forEach(prod => {
+                                const tr = document.createElement('tr');
+                                tr.className = 'hover:bg-slate-800/40 transition';
+                                tr.innerHTML = `
+                                    <td class="py-3 px-4 font-medium text-slate-200">${prod.name}</td>
+                                    <td class="py-3 px-4 text-center text-slate-400">${prod.count}</td>
+                                    <td class="py-3 px-4 text-right font-semibold text-amber-400">${prod.total.toFixed(2)} ₼</td>
+                                `;
+                                tbody.appendChild(tr);
+                            });
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Satış analitikası çəkilərkən xəta:", err);
             } finally {
-                if (refreshIcon) setTimeout(() => refreshIcon.classList.remove('animate-spin'), 500);
+                if (refreshIcon) refreshIcon.classList.remove('animate-spin');
             }
         }
 
-        // UI-ın Dinamik Yenilənməsi
-        function updateSalesUI(data) {
-            // 1. Kartlar
-            if (document.getElementById('sales-stat-total')) document.getElementById('sales-stat-total').innerText = `${data.stats.totalSales.toFixed(2)} ₼`;
-            if (document.getElementById('sales-stat-profit')) document.getElementById('sales-stat-profit').innerText = `${data.stats.profit.toFixed(2)} ₼`;
-            if (document.getElementById('sales-stat-avg-check')) document.getElementById('sales-stat-avg-check').innerText = `${data.stats.avgCheck.toFixed(2)} ₼`;
-            if (document.getElementById('sales-stat-checks')) document.getElementById('sales-stat-checks').innerText = data.stats.checksCount;
-            if (document.getElementById('sales-stat-guests')) document.getElementById('sales-stat-guests').innerText = data.stats.guestsCount;
-            if (document.getElementById('sales-stat-avg-time')) document.getElementById('sales-stat-avg-time').innerText = data.stats.avgTime;
+        async function fetchHesabatlarData() {
+            const refreshIcon = document.getElementById('reports-refresh-icon');
+            if (refreshIcon) refreshIcon.classList.add('animate-spin');
 
-            // 2. Əsas Qrafik
-            if (salesCharts.main) {
-                salesCharts.main.data.labels = data.mainChart.labels;
-                salesCharts.main.data.datasets[0].data = data.mainChart.values;
-                salesCharts.main.update();
-            }
+            try {
+                const startDate = document.getElementById('reports-start-date')?.value;
+                const endDate = document.getElementById('reports-end-date')?.value;
 
-            // 3. Saata görə Qrafik
-            if (salesCharts.hourly) {
-                salesCharts.hourly.data.datasets[0].data = data.hourlyChart;
-                salesCharts.hourly.update();
-            }
+                const response = await fetch(`/api/reports/products?start=${startDate}&end=${endDate}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    const tbody = document.getElementById('hesabatlar-tbody');
+                    const emptyMsg = document.getElementById('hesabatlar-empty');
 
-            // 4. Həftə gününə görə Qrafik
-            renderWeekdayChart(data.weekdayChart.values, data.weekdayChart.labels);
-
-            // 5. Çox satılan məhsullar cədvəli
-            const tbody = document.getElementById('top-products-tbody');
-            const emptyMsg = document.getElementById('top-products-empty');
-
-            if (tbody && emptyMsg) {
-                if (data.topProducts && data.topProducts.length > 0) {
-                    emptyMsg.classList.add('hidden');
-                    tbody.innerHTML = data.topProducts.map(p => `
-                        <tr class="hover:bg-slate-800/40 transition">
-                            <td class="py-2.5 px-4 font-medium text-slate-200">${p.name}</td>
-                            <td class="py-2.5 px-4 text-center font-bold text-amber-400">${p.orders}</td>
-                            <td class="py-2.5 px-4 text-right text-emerald-400 font-semibold">${p.amount.toFixed(2)} ₼</td>
-                        </tr>
-                    `).join('');
-                } else {
-                    tbody.innerHTML = '';
-                    emptyMsg.classList.remove('hidden');
+                    if (tbody) {
+                        tbody.innerHTML = '';
+                        if (!data || data.length === 0) {
+                            if (emptyMsg) emptyMsg.classList.remove('hidden');
+                        } else {
+                            if (emptyMsg) emptyMsg.classList.add('hidden');
+                            data.forEach(item => {
+                                const tr = document.createElement('tr');
+                                tr.className = 'hover:bg-slate-800/40 transition';
+                                tr.innerHTML = `
+                                    <td class="py-3.5 px-4 font-bold text-amber-400">#${item.id}</td>
+                                    <td class="py-3.5 px-4 text-center font-medium text-slate-200">${item.name}</td>
+                                    <td class="py-3.5 px-4 text-right text-slate-400">${item.category}</td>
+                                    <td class="py-3.5 px-4 text-right text-slate-300 font-semibold">${item.quantity}</td>
+                                    <td class="py-3.5 px-4 text-right text-slate-300">${item.price.toFixed(2)} ₼</td>
+                                    <td class="py-3.5 px-4 text-right text-slate-300">${item.avgPrice.toFixed(2)} ₼</td>
+                                    <td class="py-3.5 px-4 text-right text-rose-400">${item.discount.toFixed(2)} ₼</td>
+                                    <td class="py-3.5 px-4 text-center text-slate-400">${item.cost.toFixed(2)} ₼</td>
+                                    <td class="py-3.5 px-4 text-right text-slate-200 font-medium">${item.total.toFixed(2)} ₼</td>
+                                    <td class="py-3.5 px-4 text-right text-amber-400 font-bold">${item.sales.toFixed(2)} ₼</td>
+                                    <td class="py-3.5 px-4 text-right text-emerald-400 font-bold">${item.profit.toFixed(2)} ₼</td>
+                                `;
+                                tbody.appendChild(tr);
+                            });
+                        }
+                    }
                 }
+            } catch (err) {
+                console.error("Hesabatlar çəkilərkən xəta:", err);
+            } finally {
+                if (refreshIcon) refreshIcon.classList.remove('animate-spin');
             }
-        }
-
-        // Backend hələ hazır olmadıqda test üçün struktur
-        function getMockSalesData() {
-            return {
-                stats: { totalSales: 0.00, profit: 0.00, avgCheck: 0.00, checksCount: 0, guestsCount: 0, avgTime: '0d 0h 0m' },
-                mainChart: {
-                    labels: ['31 Avq', '01 Sen', '02 Sen', '03 Sen', '04 Sen', '05 Sen', '06 Sen'],
-                    values: [0, 0, 0, 0, 0, 0, 0]
-                },
-                hourlyChart: Array(24).fill(0),
-                weekdayChart: {
-                    labels: ['Cümə axş.', 'Cümə', 'Şənbə'],
-                    values: [0, 0, 0]
-                },
-                topProducts: []
-            };
         }
     </script>
 </body>
